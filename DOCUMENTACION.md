@@ -213,7 +213,7 @@ Estos son los materiales del curso que quedan por desarrollar para poder imparti
 
 #### Materiales transversales
 
-- [ ] **Vídeo de bienvenida** al curso (2-3 min) — presentación de la formadora y del enfoque
+- [ ] **Vídeo de bienvenida** al curso (2-3 min) — presentación de la Formador y del enfoque
 - [ ] **Guía de inicio en Moodle** para el participante (cómo navegar, entregar tareas, participar en foros)
 - [ ] **Glosario de términos de IA** para docentes de ELE (PDF descargable)
 - [ ] **Cuestionario de satisfacción** al final del curso
@@ -304,7 +304,7 @@ Para añadir o modificar rutas de aprendizaje por área, edita el objeto `RUTAS_
 📁 CURSO: IA para la enseñanza de ELE
 │
 ├── 🏠 Sección 0 — Bienvenida y orientación
-│   ├── 📹 Vídeo de bienvenida de la formadora
+│   ├── 📹 Vídeo de bienvenida de la Formador
 │   ├── 📄 Guía de inicio: cómo navegar por el curso
 │   ├── 📋 Cuestionario diagnóstico inicial (integrado o enlace a la web)
 │   ├── 💬 Foro de presentación: "Cuéntanos quién eres y qué esperas del curso"
@@ -362,7 +362,7 @@ Para añadir o modificar rutas de aprendizaje por área, edita el objeto `RUTAS_
 
 #### Ajustes de matrícula
 
-- **Método de matrícula:** Manual (la formadora inscribe a los participantes) o mediante clave de matriculación
+- **Método de matrícula:** Manual (la Formador inscribe a los participantes) o mediante clave de matriculación
 - **Clave de matriculación:** Crear una clave sencilla y comunicarla a los inscritos
 
 ### 7.3 Crear cada tipo de recurso en Moodle
@@ -549,7 +549,7 @@ Las fechas aparecen en varios sitios. Busca y reemplaza `abril 2026` en:
 
 | Rol | Persona | Contacto |
 |-----|---------|----------|
-| Formadora y coordinadora del curso | Javier Benítez Láinez | benitezl@go.ugr.es |
+| Formador y coordinadora del curso | Javier Benítez Láinez | benitezl@go.ugr.es |
 | Subdirección Académica de Español | Sonia A. Sánchez Molero / María Estévez Funes | subdireccionhisp@clm.ugr.es |
 | Soporte técnico Moodle CLM | Equipo de informática | angel.espigares@clm.ugr.es |
 | Web y diseño | Equipo de diseño gráfico | francisco.arco@fyg.ugr.es |

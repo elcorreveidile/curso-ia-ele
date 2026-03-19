@@ -105,7 +105,7 @@ Mostrar lista de participantes: No
 - Tipo: **URL** o **Etiqueta** con video incrustado
 - Nombre: Vídeo de bienvenida
 - URL: [Enlace al video en Vimeo/YouTube]
-- Descripción: "Conoce a la formadora y descubre qué aprenderás en este curso"
+- Descripción: "Conoce a la Formador y descubre qué aprenderás en este curso"
 
 **Esta guía:**
 - Tipo: **Página** o **Archivo** (PDF)

@@ -446,4 +446,4 @@ En la actividad de este módulo, escribirás tu propia declaración de uso étic
 
 **Lectura creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026
-**Autor:** [Nombre de la formadora]
+**Autor:** Javier Benítez Láinez

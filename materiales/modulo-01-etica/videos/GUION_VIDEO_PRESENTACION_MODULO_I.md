@@ -255,7 +255,7 @@
 **Visual:**
 - Título: "¡Comenzamos!"
 - Imagen inspiradora: profesor/a con alumnado
-- Mensaje final: "La IA sin criterio es peligrosa. La IA con criterio es transformadora."
+- Mensaje final: "La IA sin criterio es peligrosa. La IA con criterio es transFormador."
 - Cita: "Con gran poder viene gran responsabilidad"
 
 **Audio:**

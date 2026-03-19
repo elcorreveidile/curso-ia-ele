@@ -149,7 +149,7 @@ Tu declaración puede seguir esta estructura (pero no es obligatorio):
 
 ## 🎯 FEEDBACK QUE RECIBIRÁS
 
-La formadora proporcionará feedback sobre:
+La Formador proporcionará feedback sobre:
 
 1. **Principios éticos:** Qué principios son fuertes, cuáles podrían profundizarse
 2. **Aplicación ELE:** Cómo tu declaración aborda retos específicos de ELE

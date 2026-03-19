@@ -16,7 +16,7 @@ Esta guía responde a las preguntas más frecuentes sobre cómo navegar y partic
 El curso está organizado en **6 secciones principales**:
 
 ### 🏠 Sección 0: Bienvenida y orientación
-- Vídeo de bienvenida de la formadora
+- Vídeo de bienvenida de la Formador
 - Esta guía de inicio
 - Cuestionario diagnóstico inicial
 - Foro de presentación
@@ -189,7 +189,7 @@ En la página principal del curso, verás:
 **Calificaciones:**
 - Ve a **"Calificaciones"** en el menú lateral
 - Verás tus notas en tareas y foros
-- Las notas se actualizan después de la revisión de la formadora
+- Las notas se actualizan después de la revisión de la Formador
 
 ---
 
@@ -232,12 +232,12 @@ En la página principal del curso, verás:
 **Foro de dudas:**
 - Hay un foro específico para **"Dudas y preguntas"**
 - Publica tu pregunta allí
-- La formadora o compañeros/as te responderán
+- La Formador o compañeros/as te responderán
 - Antes de preguntar, verifica si alguien ya preguntó lo mismo
 
-**Correo directo a la formadora:**
+**Correo directo a la Formador:**
 - Para cuestiones personales o urgentes
-- Correo: [correo formadora]
+- Correo: [correo Formador]
 - Asunto: "[IA-ELE] Tu consulta"
 
 ---
@@ -314,9 +314,9 @@ Si has llegado hasta aquí y has completado el checklist, estás listo/a para co
 
 ## 📧 CONTACTO
 
-**Formadora del curso:**
-- Nombre: [Nombre de la formadora]
-- Correo: [Correo formadora]
+**Formador del curso:**
+- Nombre: Javier Benítez Láinez
+- Correo: [Correo Formador]
 - Horario de atención: [Indicar si aplica]
 
 **Soporte técnico Moodle:**
@@ -327,7 +327,7 @@ Si has llegado hasta aquí y has completado el checklist, estás listo/a para co
 
 ¡Mucha suerte con el curso! ¡Estoy deseando acompañarte en este aprendizaje.
 
-**[Nombre de la formadora]**
+**Javier Benítez Láinez**
 **Centro de Lenguas Modernas - Universidad de Granada**
 **Marzo 2026**
 

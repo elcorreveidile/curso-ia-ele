@@ -7,7 +7,7 @@
 
 **Institución:** Centro de Lenguas Modernas (CLM) - Universidad de Granada
 **Fecha:** Marzo 2026
-**Responsable:** [Nombre de la formadora]
+**Responsable:** Javier Benítez Láinez
 **Duración del curso:** 20 horas en 4 semanas (abril 2026)
 **Destinatarios:** ~41 docentes de ELE del CLM
 
@@ -247,7 +247,7 @@ curso-ia-ele/
 
 | Concepto | Costo |
 |----------|-------|
-| Formadora (20 horas) | 1.500 € |
+| Formador (20 horas) | 1.500 € |
 | Grabación y edición videos | 500 € |
 | Plataforma Moodle (ya disponible) | 0 € |
 | Formspree Plus (opcional) | 10 €/mes |
@@ -332,7 +332,7 @@ Este proyecto fue posible gracias a:
 
 **Para consultas sobre este proyecto:**
 
-- **Responsable:** [Nombre de la formadora]
+- **Responsable:** Javier Benítez Láinez
 - **Correo:** benitezl@go.ugr.es
 - **Web del curso:** https://elcorreveidile.github.io/curso-ia-ele/
 - **Repositorio:** https://github.com/elcorreveidile/curso-ia-ele

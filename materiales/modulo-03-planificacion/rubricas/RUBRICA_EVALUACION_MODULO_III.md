@@ -180,7 +180,7 @@ Responder a estas preguntas:
 
 ## 🎯 FEEDBACK QUE RECIBIRÁS
 
-La formadora proporcionará feedback sobre:
+La Formador proporcionará feedback sobre:
 
 1. **Fortalezas:** Qué aspects de tu plan y reflexión son excelentes
 2. **Áreas de mejora:** Qué podrías hacer diferente la próxima vez
