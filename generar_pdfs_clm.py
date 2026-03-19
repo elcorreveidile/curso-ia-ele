@@ -33,6 +33,12 @@ PDF_CSS = CSS(string="""
         padding-bottom: 10px;
     }
 
+    .logo {
+        max-width: 80px;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
     .universidad {
         font-size: 9pt;
         margin-bottom: 6px;
@@ -149,6 +155,7 @@ def markdown_to_html(markdown_content):
     # Construir HTML con header CLM
     header_html = f"""
     <div class="header">
+        <img src="clm-rojo.png" class="logo" alt="Logo CLM">
         <p class="universidad">Universidad de Granada · Centro de Lenguas Modernas</p>
         <p class="curso-title">IA para la enseñanza de ELE: planificación de clases y creación de materiales</p>
         <table class="info-table">
@@ -240,7 +247,11 @@ def create_pdf(md_file):
         output_path = OUTPUT_DIR / relative_path.with_suffix('.pdf')
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        HTML(string=html_string).write_pdf(str(output_path), stylesheets=[PDF_CSS])
+        # Obtener directorio del script para encontrar el logo
+        script_dir = Path(__file__).parent
+        logo_path = script_dir / "clm-rojo.png"
+
+        HTML(string=html_string, base_url=str(script_dir)).write_pdf(str(output_path), stylesheets=[PDF_CSS])
 
         print(f"✅ {relative_path}")
         return True
