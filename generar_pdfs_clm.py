@@ -75,6 +75,7 @@ PDF_CSS = CSS(string="""
 
     .section {
         margin: 15px 0;
+        page-break-inside: avoid;
     }
 
     .section-title {
@@ -104,22 +105,26 @@ PDF_CSS = CSS(string="""
         font-size: 12pt;
         font-weight: bold;
         margin: 12px 0 6px 0;
+        page-break-after: avoid;
     }
 
     h3 {
         font-size: 11pt;
         font-weight: bold;
         margin: 10px 0 6px 0;
+        page-break-after: avoid;
     }
 
     ul, ol {
         margin: 6px 0;
         padding-left: 22px;
+        page-break-inside: avoid;
     }
 
     li {
         margin: 3px 0;
         line-height: 1.4;
+        page-break-inside: avoid;
     }
 
     strong {
@@ -131,6 +136,9 @@ PDF_CSS = CSS(string="""
         line-height: 1.4;
         word-wrap: break-word;
         overflow-wrap: break-word;
+        orphans: 3;
+        widows: 3;
+        page-break-inside: avoid;
     }
 
     pre {
@@ -147,6 +155,15 @@ PDF_CSS = CSS(string="""
     code {
         font-family: 'Courier New', monospace;
         font-size: 9pt;
+    }
+
+    blockquote {
+        margin: 10px 0;
+        padding: 8px 12px;
+        border-left: 3px solid #000;
+        background-color: #f9f9f9;
+        font-style: italic;
+        page-break-inside: avoid;
     }
 """)
 
@@ -223,6 +240,16 @@ def markdown_to_html(markdown_content):
             html_lines.append(f'<span>{text}</span>')
             html_lines.append(f'</div>')
             i += 1
+
+        elif line.startswith('> '):
+            # Blockquote - recoger todas las líneas consecutivas que empiezan con >
+            html_lines.append('<blockquote>')
+            while i < len(lines) and lines[i].strip().startswith('> '):
+                text = lines[i].strip()[2:]
+                text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+                html_lines.append(f'<p>{text}</p>')
+                i += 1
+            html_lines.append('</blockquote>')
 
         elif line.startswith('### '):
             text = line[4:].strip()
