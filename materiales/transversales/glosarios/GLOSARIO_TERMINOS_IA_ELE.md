@@ -211,31 +211,5 @@ Ejercicio dramático donde el alumnado interpreta un personaje o situación. La 
 
 ---
 
-## 💡 CÓMO USAR ESTE GLOSARIO
-
-### Para principiantes:
-Empieza por los términos marcados con **negrita** en las definiciones. Son los más fundamentales.
-
-### Para intermedios:
-Consulta términos cuando los encuentres en las lecturas o videos. El contexto ayudará a entender mejor.
-
-### Para avanzados:
-Usa este glosario como referencia cuando escribas tus propios prompts o system prompts.
-
----
-
-## 📚 RECURSOS ADICIONALES
-
-**Para aprender más:**
-- [OpenAI Glossary](https://platform.openai.com/docs/glossary)
-- [Anthropic Glossary](https://docs.anthropic.com/claude/docs/glossary)
-- [Google AI Glossary](https://ai.google.dev/glossary)
-
-**Diccionarios especializados:**
-- Cambridge Dictionary of Artificial Intelligence
-- IEEE Standard Glossary of Software Engineering Terminology
-
----
-
 **Glosario creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026
