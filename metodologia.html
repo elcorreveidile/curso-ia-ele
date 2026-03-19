@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metodología · IA para la enseñanza de ELE</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="inner-page">
+
+<nav class="inner-nav" id="innerNav">
+  <a href="index.html" class="inner-nav__logo">IA<span>ELE</span></a>
+  <div class="inner-nav__links">
+    <a href="descripcion.html">El curso</a>
+    <a href="programa.html">Programa</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="metodologia.html" class="active">Metodología</a>
+    <a href="index.html" class="inner-nav__cta">Cuestionario</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__tag">Cómo trabajamos</p>
+    <h1 class="page-hero__title">Metodología y evaluación</h1>
+    <p class="page-hero__desc">Un enfoque práctico y centrado en la acción que combina autonomía, colaboración y reflexión crítica.</p>
+  </div>
+</div>
+
+<div class="inner-content">
+
+  <div class="meto-grid" style="margin-bottom:4rem">
+    <div class="meto-card reveal">
+      <div class="meto-card__icon">🎬</div>
+      <h3 class="meto-card__title">Videotutorías colaborativas</h3>
+      <p class="meto-card__text">Tres sesiones síncronas donde se trabaja en grupo, se comparten producciones y se construye conocimiento de forma conjunta.</p>
+    </div>
+    <div class="meto-card reveal">
+      <div class="meto-card__icon">🧩</div>
+      <h3 class="meto-card__title">Tareas asincrónicas</h3>
+      <p class="meto-card__text">Actividades prácticas en Moodle que culminan en producciones reales: declaraciones éticas, asistentes, planes de clase y kits de recursos.</p>
+    </div>
+    <div class="meto-card reveal">
+      <div class="meto-card__icon">💬</div>
+      <h3 class="meto-card__title">Foros de reflexión</h3>
+      <p class="meto-card__text">Espacios de debate donde compartir avances, dudas y reflexiones con el resto del grupo, fomentando el aprendizaje entre iguales.</p>
+    </div>
+  </div>
+
+  <div class="reveal" style="margin-bottom:1.5rem">
+    <p class="section__tag">Evaluación</p>
+    <h2 class="section__title" style="font-size:1.8rem">¿Cómo se evalúa el curso?</h2>
+  </div>
+  <div class="eval-grid">
+    <div class="eval-card eval-card--1 reveal">
+      <span class="eval-card__num">01</span>
+      <h4 class="eval-card__title">Asistencia</h4>
+      <p class="eval-card__text">Participación activa en un mínimo de 2 de las 3 sesiones de videotutoría. Requisito obligatorio para el certificado.</p>
+    </div>
+    <div class="eval-card eval-card--2 reveal">
+      <span class="eval-card__num">02</span>
+      <h4 class="eval-card__title">Seguimiento en Moodle</h4>
+      <p class="eval-card__text">Participación reflexiva en los foros de cada módulo y seguimiento continuado de la plataforma.</p>
+    </div>
+    <div class="eval-card eval-card--3 reveal">
+      <span class="eval-card__num">03</span>
+      <h4 class="eval-card__title">Tareas por módulo</h4>
+      <p class="eval-card__text">Resolución de actividades prácticas al final de cada módulo: autoevaluaciones, resúmenes y entregas.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p><strong>IA para la enseñanza de ELE</strong> · Formación docente · Abril 2027</p>
+</footer>
+<script>
+  const nav = document.getElementById('innerNav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+  document.querySelectorAll('.reveal').forEach(el => {
+    new IntersectionObserver(([e]) => { if(e.isIntersecting){ el.classList.add('visible'); } }, {threshold:.1}).observe(el);
+  });
+</script>
+</body>
+</html>
