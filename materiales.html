@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Materiales del Curso · IA para la enseñanza de ELE</title>
+  <meta name="description" content="Materiales complementarios del curso de IA para docentes de ELE. Lecturas, rúbricas, plantillas, guías y más.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .materials-hero {
+      min-height: 50vh;
+      background: linear-gradient(160deg, #0D1117 0%, #1A0A0F 50%, #0D1117 100%);
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      padding: 4rem 2.5rem 3rem;
+    }
+    .materials-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 90% 10%, rgba(200,16,46,.22) 0%, transparent 45%),
+        radial-gradient(ellipse at 5% 90%, rgba(200,16,46,.12) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, rgba(26,58,107,.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .materials-hero::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--clm-red), transparent);
+    }
+    .materials-content {
+      max-width: 1200px; margin: 0 auto;
+      padding: 4rem 2.5rem;
+      position: relative; z-index: 1;
+    }
+    .materials-eyebrow {
+      font-size: .72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .12em;
+      color: var(--orange); margin-bottom: 1rem;
+    }
+    .materials-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 800; line-height: 1.1;
+      color: var(--ink); margin-bottom: 1rem;
+    }
+    .materials-subtitle {
+      font-size: 1.05rem; color: rgba(20,24,32,.7);
+      max-width: 700px; line-height: 1.7; margin-bottom: 3rem;
+    }
+
+    /* Sección de módulos */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+    .module-card {
+      background: var(--canvas);
+      border: 1px solid rgba(20,24,32,.1);
+      border-radius: var(--r-xl);
+      padding: 2rem;
+      transition: all .3s ease;
+    }
+    .module-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,.08);
+      transform: translateY(-2px);
+    }
+    .module-number {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--clm-red);
+      margin-bottom: 0.5rem;
+    }
+    .module-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    .module-description {
+      font-size: 0.95rem;
+      color: rgba(20,24,32,.7);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Lista de recursos */
+    .resource-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .resource-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(20,24,32,.1);
+    }
+    .resource-item:last-child {
+      border-bottom: none;
+    }
+    .resource-icon {
+      font-size: 1.5rem;
+      width: 40px;
+      text-align: center;
+    }
+    .resource-link {
+      flex: 1;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .resource-link:hover {
+      color: var(--clm-red);
+      text-decoration: underline;
+    }
+    .resource-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .btn-action {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      border-radius: var(--r-sm);
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-view {
+      background: var(--blue);
+      color: var(--white);
+    }
+    .btn-view:hover {
+      background: var(--clm-red-dark);
+    }
+    .btn-download {
+      background: transparent;
+      border: 1px solid var(--blue);
+      color: var(--blue);
+    }
+    .btn-download:hover {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    /* Estadísticas */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin: 4rem 0;
+      padding: 3rem;
+      background: var(--canvas);
+      border-radius: var(--r-xl);
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--clm-red);
+      margin-bottom: 0.5rem;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: rgba(20,24,32,.7);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    /* Footer */
+    .materials-footer {
+      margin-top: 4rem;
+      padding: 3rem 2.5rem;
+      background: var(--ink);
+      color: var(--canvas);
+      text-align: center;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--orange);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color .2s;
+    }
+    .back-link:hover {
+      color: var(--clm-red);
+    }
+
+    @media (max-width: 768px) {
+      .modules-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="materials-hero">
+    <div class="home-top">
+      <div class="home-logo">
+        <span>IA</span>
+        <span>ELE</span>
+      </div>
+      <nav class="home-nav">
+        <a href="index.html">Inicio</a>
+        <a href="descripcion.html">Descripción</a>
+        <a href="programa.html">Programa</a>
+        <a href="materiales.html">Materiales</a>
+      </nav>
+    </div>
+
+    <div class="home-body">
+      <div class="materials-eyebrow">📚 Recursos educativos</div>
+      <h1 class="materials-title">Materiales del Curso</h1>
+      <p class="materials-subtitle">
+        Todos los materiales complementarios del curso "IA para la enseñanza de ELE" disponibles para descargar.
+        Organizados por módulos y listos para usar en tu práctica docente.
+      </p>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="materials-content">
+
+    <!-- Estadísticas -->
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-number">28</div>
+        <div class="stat-label">Documentos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Guiones de vídeo</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">4</div>
+        <div class="stat-label">Rúbricas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">400+</div>
+        <div class="stat-label">Páginas</div>
+      </div>
+    </section>
+
+    <!-- Módulo I -->
+    <section class="module-card">
+      <div class="module-number">I</div>
+      <h2 class="module-title">Ética, Equidad y Prompts Eficaces</h2>
+      <p class="module-description">Reflexión crítica sobre el uso de IA en educación ELE y técnicas de ingeniería de prompts.</p>
+
+      <ul class="resource-list">
+        <li class="resource-item">
+          <span class="resource-icon">📹</span>
+          <a href="materiales/modulo-01-etica/videos/GUION_VIDEO_PRESENTACION_MODULO_I.md" target="_blank" class="resource-link">
+            Guion vídeo presentación (5-10 min)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-01-etica/videos/GUION_VIDEO_PRESENTACION_MODULO_I.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📄</span>
+          <a href="materiales/modulo-01-etica/lecturas/LECTURA_1_ETICA_IA_EDUCACION_ELE.md" target="_blank" class="resource-link">
+            Lectura 1: Ética de la IA en Educación ELE (15+ páginas)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-01-etica/lecturas/LECTURA_1_ETICA_IA_EDUCACION_ELE.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📄</span>
+          <a href="materiales/modulo-01-etica/lecturas/LECTURA_2_INGENIERIA_PROMPTS_ELE.md" target="_blank" class="resource-link">
+            Lectura 2: Guía de Ingeniería de Prompts (10+ páginas)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-01-etica/lecturas/LECTURA_2_INGENIERIA_PROMPTS_ELE.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📋</span>
+          <a href="materiales/modulo-01-etica/casos-reales/CASOS_REALES_MODULO_I.md" target="_blank" class="resource-link">
+            Casos reales: Uso positivo y problemático de IA en ELE
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-01-etica/casos-reales/CASOS_REALES_MODULO_I.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📊</span>
+          <a href="materiales/modulo-01-etica/rubricas/RUBRICA_EVALUACION_MODULO_I.md" target="_blank" class="resource-link">
+            Rúbrica de evaluación: "Mi declaración de uso ético"
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-01-etica/rubricas/RUBRICA_EVALUACION_MODULO_I.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Módulo II -->
+    <section class="module-card">
+      <div class="module-number">II</div>
+      <h2 class="module-title">Tu Asistente de ELE: Chatbots a tu Medida</h2>
+      <p class="module-description">Creación de mini asistentes personalizados para generar materiales didácticos de ELE.</p>
+
+      <ul class="resource-list">
+        <li class="resource-item">
+          <span class="resource-icon">📹</span>
+          <a href="materiales/modulo-02-asistentes/videos/GUION_VIDEO_TUTORIAL_MODULO_II.md" target="_blank" class="resource-link">
+            Guion vídeo tutorial (10-15 min)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-02-asistentes/videos/GUION_VIDEO_TUTORIAL_MODULO_II.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📋</span>
+          <a href="materiales/modulo-02-asistentes/guias-comparativas/GUIA_COMPARATIVA_HERRAMIENTAS_IA.md" target="_blank" class="resource-link">
+            Guía comparativa de herramientas (ChatGPT, Claude, Gemini, Copilot)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-02-asistentes/guias-comparativas/GUIA_COMPARATIVA_HERRAMIENTAS_IA.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📝</span>
+          <a href="materiales/modulo-02-asistentes/plantillas/PLANTILLAS_SYSTEM_PROMPT_A1_C2.md" target="_blank" class="resource-link">
+            Plantillas system prompt (A1-C2, 7 plantillas completas)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-02-asistentes/plantillas/PLANTILLAS_SYSTEM_PROMPT_A1_C2.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📊</span>
+          <a href="materiales/modulo-02-asistentes/rubricas/RUBRICA_EVALUACION_MODULO_II.md" target="_blank" class="resource-link">
+            Rúbrica de evaluación: "Crea tu primer mini asistente ELE"
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-02-asistentes/rubricas/RUBRICA_EVALUACION_MODULO_II.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Módulo III -->
+    <section class="module-card">
+      <div class="module-number">III</div>
+      <h2 class="module-title">Planifica con IA: Clases Alineadas con el MCER</h2>
+      <p class="module-description">Generación de planes de clase completos usando prompts plantilla y criterios MCER/PCIC.</p>
+
+      <ul class="resource-list">
+        <li class="resource-item">
+          <span class="resource-icon">📹</span>
+          <a href="materiales/modulo-03-planificacion/videos/GUION_VIDEO_DEMOSTRATIVO_MODULO_III.md" target="_blank" class="resource-link">
+            Guion vídeo demostrativo (15-20 min): Generación en tiempo real
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-03-planificacion/videos/GUION_VIDEO_DEMOSTRATIVO_MODULO_III.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📄</span>
+          <a href="materiales/modulo-03-planificacion/plantillas/PROMPT_PLANTILLA_PLANES_CLASE.md" target="_blank" class="resource-link">
+            Prompt plantilla para planes de clase (EL MÁS IMPORTANTE)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-03-planificacion/plantillas/PROMPT_PLANTILLA_PLANES_CLASE.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📝</span>
+          <a href="materiales/modulo-03-planificacion/plantillas/PLANTILLA_PLAN_CLASE.md" target="_blank" class="resource-link">
+            Plantilla de plan de clase (Word/PDF)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-03-planificacion/plantillas/PLANTILLA_PLAN_CLASE.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📚</span>
+          <a href="materiales/modulo-03-planificacion/banco-mcer/BANCO_DESCRIPOTORES_MCER_PCIC.md" target="_blank" class="resource-link">
+            Banco de descriptores MCER/PCIC (prompt-friendly)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-03-planificacion/banco-mcer/BANCO_DESCRIPOTORES_MCER_PCIC.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">🛠️</span>
+          <a href="materiales/modulo-03-planificacion/tutoriales/TUTORIAL_MINI_APP_GENERADOR_PLANES.md" target="_blank" class="resource-link">
+            Tutorial: Mini app generador de planes de clase
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-03-planificacion/tutoriales/TUTORIAL_MINI_APP_GENERADOR_PLANES.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📊</span>
+          <a href="materiales/modulo-03-planificacion/rubricas/RUBRICA_EVALUACION_MODULO_III.md" target="_blank" class="resource-link">
+            Rúbrica de evaluación: "Genera y evalúa un plan de clase"
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-03-planificacion/rubricas/RUBRICA_EVALUACION_MODULO_III.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Módulo IV -->
+    <section class="module-card">
+      <div class="module-number">IV</div>
+      <h2 class="module-title">Crea sin Límites: Recursos Multimodales con IA</h2>
+      <p class="module-description">Generación de imágenes, audios y mapas mentales usando herramientas de IA gratuitas.</p>
+
+      <ul class="resource-list">
+        <li class="resource-item">
+          <span class="resource-icon">📹</span>
+          <a href="materiales/modulo-04-recursos/videos/GUION_VIDEO_IMAGENES.md" target="_blank" class="resource-link">
+            Guion vídeo: Generación de imágenes (5-8 min)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-04-recursos/videos/GUION_VIDEO_IMAGENES.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📹</span>
+          <a href="materiales/modulo-04-recursos/videos/GUION_VIDEO_AUDIO.md" target="_blank" class="resource-link">
+            Guion vídeo: Creación de audios (5-8 min)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-04-recursos/videos/GUION_VIDEO_AUDIO.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📹</span>
+          <a href="materiales/modulo-04-recursos/videos/GUION_VIDEO_MAPAS_MENTALES.md" target="_blank" class="resource-link">
+            Guion vídeo: Mapas mentales de vocabulario (5-8 min)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-04-recursos/videos/GUION_VIDEO_MAPAS_MENTALES.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">🛠️</span>
+          <a href="materiales/modulo-04-recursos/guias-herramientas/GUIA_HERRAMIENTAS_GRATUITAS_MULTIMODALES.md" target="_blank" class="resource-link">
+            Guía de herramientas gratuitas (imágenes, audio, mapas)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-04-recursos/guias-herramientas/GUIA_HERRAMIENTAS_GRATUITAS_MULTIMODALES.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">✅</span>
+          <a href="materiales/modulo-04-recursos/criterios-calidad/CRITERIOS_CALIDAD_RECURSOS_MULTIMODALES.md" target="_blank" class="resource-link">
+            Criterios de calidad para recursos multimodales
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-04-recursos/criterios-calidad/CRITERIOS_CALIDAD_RECURSOS_MULTIMODALES.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📊</span>
+          <a href="materiales/modulo-04-recursos/rubricas/RUBRICA_EVALUACION_MODULO_IV.md" target="_blank" class="resource-link">
+            Rúbrica de evaluación: "Kit de recursos multimodales"
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/modulo-04-recursos/rubricas/RUBRICA_EVALUACION_MODULO_IV.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Materiales transversales -->
+    <section class="module-card">
+      <div class="module-number">📚</div>
+      <h2 class="module-title">Materiales Transversales</h2>
+      <p class="module-description">Documentos que aplican a todo el curso: vídeos, guías, evaluación y más.</p>
+
+      <ul class="resource-list">
+        <li class="resource-item">
+          <span class="resource-icon">🎬</span>
+          <a href="materiales/transversales/videos/GUION_VIDEO_BIENVENIDA.md" target="_blank" class="resource-link">
+            Guion vídeo de bienvenida (2-3 min)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/transversales/videos/GUION_VIDEO_BIENVENIDA.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📘</span>
+          <a href="materiales/transversales/guias/GUIA_INICIO_MOODLE.md" target="_blank" class="resource-link">
+            Guía de inicio en Moodle (12 secciones)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/transversales/guias/GUIA_INICIO_MOODLE.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">🛠️</span>
+          <a href="materiales/transversales/guias/GUIA_IMPLEMENTACION_MOODLE_COMPLETA.md" target="_blank" class="resource-link">
+            Guía de implementación en Moodle (detallada)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/transversales/guias/GUIA_IMPLEMENTACION_MOODLE_COMPLETA.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📖</span>
+          <a href="materiales/transversales/glosarios/GLOSARIO_TERMINOS_IA_ELE.md" target="_blank" class="resource-link">
+            Glosario de términos de IA (50 términos definidos)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/transversales/glosarios/GLOSARIO_TERMINOS_IA_ELE.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📋</span>
+          <a href="materiales/transversales/evaluacion/CUESTIONARIO_SATISFACCION.md" target="_blank" class="resource-link">
+            Cuestionario de satisfacción (10 secciones completas)
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/materiales/transversales/evaluacion/CUESTIONARIO_SATISFACCION.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Documentos principales -->
+    <section class="module-card">
+      <div class="module-number">📄</div>
+      <h2 class="module-title">Documentos Principales del Proyecto</h2>
+      <p class="module-description">Documentos clave sobre el proyecto y el curso completo.</p>
+
+      <ul class="resource-list">
+        <li class="resource-item">
+          <span class="resource-icon">📋</span>
+          <a href="RESUMEN_EJECUTIVO_PROYECTO.md" target="_blank" class="resource-link">
+            Resumen ejecutivo del proyecto completo
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/RESUMEN_EJECUTIVO_PROYECTO.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📖</span>
+          <a href="DOCUMENTACION.md" target="_blank" class="resource-link">
+            Documentación completa del proyecto
+          </a>
+          <div class="resource-actions">
+            <a href="https://github.com/elcorreveidile/curso-ia-ele/blob/main/DOCUMENTACION.md" class="btn-action btn-view">Ver en GitHub</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Llamada a la acción -->
+    <section style="text-align: center; margin-top: 4rem; padding: 3rem; background: var(--canvas); border-radius: var(--r-xl);">
+      <h2 style="font-size: 1.5rem; color: var(--ink); margin-bottom: 1rem;">¿Listo para usar estos materiales?</h2>
+      <p style="color: rgba(20,24,32,.7); max-width: 600px; margin: 0 auto 2rem;">
+        Cada documento está listo para ser usado en tu práctica docente.
+        Puedes verlos en línea en GitHub o descargarlos para uso offline.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="https://github.com/elcorreveidile/curso-ia-ele/tree/main/materiales" target="_blank"
+           style="padding: 1rem 2rem; background: var(--blue); color: var(--white); text-decoration: none; border-radius: var(--r-sm); font-weight: 600;">
+          📂 Ver todos los materiales en GitHub
+        </a>
+        <a href="index.html"
+           style="padding: 1rem 2rem; background: var(--clm-red); color: var(--white); text-decoration: none; border-radius: var(--r-sm); font-weight: 600;">
+          🏠 Volver al inicio
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="materials-footer">
+    <p style="margin-bottom: 0.5rem;">
+      <strong>Javier Benítez Láinez</strong> · Formador de formadores
+    </p>
+    <p style="font-size: 0.9rem; color: rgba(255,255,255,.5); margin-bottom: 1rem;">
+      Centro de Lenguas Modernas · Universidad de Granada · Abril 2026
+    </p>
+    <a href="index.html" class="back-link">
+      ← Volver al inicio
+    </a>
+  </footer>
+
+</body>
+</html>
