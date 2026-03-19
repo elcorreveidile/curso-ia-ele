@@ -211,5 +211,12 @@ Ejercicio dramático donde el alumnado interpreta un personaje o situación. La 
 
 ---
 
+## 📚 RECURSO ADICIONAL
+
+**Para ampliar conocimientos:**
+- [Anthropic Glossary](https://docs.anthropic.com/en/docs/glossary)
+
+---
+
 **Glosario creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026
