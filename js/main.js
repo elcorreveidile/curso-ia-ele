@@ -213,10 +213,10 @@ function getRuta(nivel, area) {
       { paso:1, titulo:'Primeros pasos con IA', desc:'Abre ChatGPT o Claude y empieza una conversación sobre algo relacionado con tu trabajo diario en el CLM. No necesitas saber nada: solo escribe lo que necesitas como si le hablaras a un compañero.', tiempo:'Esta semana', icono:'👋' },
       { paso:2, titulo:'Entiende qué puede y qué no puede hacer la IA', desc:'Prueba a pedirle que redacte un correo, que traduzca un aviso, que responda una duda. Observa dónde acierta y dónde falla. La clave es desarrollar criterio propio.', tiempo:'1-2 semanas', icono:'🔍' },
       { paso:3, titulo:'IA en tu día a día', desc:'Elige UNA tarea de tu trabajo habitual que sea repetitiva (redactar, resumir, traducir, responder preguntas frecuentes) y empieza a usar la IA para esa tarea concretamente.', tiempo:'2-3 semanas', icono:'⚙️' },
-      { paso:4, titulo:'Ética y uso responsable', desc:'Antes de usar la IA con alumnado o en comunicaciones externas, infórmate sobre qué datos no debes compartir y cómo verificar la información que genera. Módulo I de este curso.', tiempo:'1 semana', icono:'🧭' },
+      { paso:4, titulo:'Ética y uso responsable', desc:'Antes de usar la IA con personas externas o en comunicaciones oficiales, infórmate sobre qué datos no debes compartir y cómo verificar siempre la información que genera.', tiempo:'1 semana', icono:'🧭' },
     ],
     2: [
-      { paso:1, titulo:'Prompts que funcionan', desc:'Aprende a escribir instrucciones claras: especifica el rol, el contexto, el formato y el tono que quieres. Un buen prompt multiplica la calidad del resultado. Módulo I de este curso.', tiempo:'1-2 semanas', icono:'✍️' },
+      { paso:1, titulo:'Prompts que funcionan', desc:'Aprende a escribir instrucciones claras: especifica el rol, el contexto, el formato y el tono que quieres. Un buen prompt multiplica la calidad del resultado.', tiempo:'1-2 semanas', icono:'✍️' },
       { paso:2, titulo:'Construye tu biblioteca de prompts', desc:'Crea un documento con los 5-10 prompts que más uses en tu trabajo. Reutilizarlos te ahorrará tiempo cada semana y mejorarán con el uso.', tiempo:'2-3 semanas', icono:'📂' },
       { paso:3, titulo:'Herramientas específicas para tu área', desc:'Explora las herramientas de IA más útiles para tu puesto en el CLM: generadores de imágenes, transcripción de audio, traducción avanzada, asistentes de código o escritura.', tiempo:'2-3 semanas', icono:'🛠️' },
       { paso:4, titulo:'Ética y sesgos', desc:'Con uso más regular llega la responsabilidad: aprende a detectar alucinaciones, verificar datos y comunicar al alumnado cuándo un contenido ha sido generado con IA.', tiempo:'1 semana', icono:'⚖️' },
@@ -333,9 +333,7 @@ const PERFILES = {
     color: '#2E7D5E',
     colorLight: '#e8f5f0',
     descripcion: 'Estás en los primeros pasos del mundo de la IA. Tienes potencial enorme porque partes sin hábitos incorrectos y con toda la curva de aprendizaje por delante. En el CLM hay muchas tareas cotidianas donde la IA puede ayudarte desde el primer día.',
-    fortalezas: ['Mentalidad abierta al aprendizaje', 'Sin malos hábitos digitales que corregir', 'Máximo potencial de crecimiento'],
-    curso: '✅ Este curso está diseñado exactamente para ti. Parte de cero y llega a crear materiales y herramientas propias paso a paso.',
-    cursoColor: '#2E7D5E'
+    fortalezas: ['Mentalidad abierta al aprendizaje', 'Sin malos hábitos digitales que corregir', 'Máximo potencial de crecimiento']
   },
   2: {
     nombre: 'Explorador/a activo/a',
@@ -343,9 +341,7 @@ const PERFILES = {
     color: '#1A4A8A',
     colorLight: '#D6E8F7',
     descripcion: 'Has explorado la IA por tu cuenta y tienes una idea de sus posibilidades, pero tu uso todavía es intuitivo e irregular. Necesitas método y criterio para sacarle partido real en tu trabajo diario en el CLM.',
-    fortalezas: ['Familiaridad con herramientas básicas', 'Motivación y curiosidad demostradas', 'Base sólida para sistematizar la práctica'],
-    curso: '✅ Este curso te dará el método que te falta para pasar de uso esporádico a integración real en tu práctica profesional.',
-    cursoColor: '#1A4A8A'
+    fortalezas: ['Familiaridad con herramientas básicas', 'Motivación y curiosidad demostradas', 'Base sólida para sistematizar la práctica']
   },
   3: {
     nombre: 'Practicante',
@@ -353,9 +349,7 @@ const PERFILES = {
     color: '#E8532B',
     colorLight: '#FBE9E3',
     descripcion: 'Usas la IA con regularidad y criterio. Tu competencia digital es sólida y ya integras herramientas en tu trabajo. El siguiente salto es profundizar en aplicaciones avanzadas y empezar a crear recursos y flujos propios.',
-    fortalezas: ['Uso regular y sistemático de IA', 'Competencia digital consolidada', 'Capacidad de evaluar y filtrar resultados'],
-    curso: '✅ Este curso te aportará valor especialmente en los módulos III y IV. Considera también el rol de referente en tu área del CLM.',
-    cursoColor: '#E8532B'
+    fortalezas: ['Uso regular y sistemático de IA', 'Competencia digital consolidada', 'Capacidad de evaluar y filtrar resultados']
   },
   4: {
     nombre: 'Referente digital',
@@ -363,11 +357,248 @@ const PERFILES = {
     color: '#6C3483',
     colorLight: '#f3e8fa',
     descripcion: 'Tienes un dominio sólido de la IA y sus aplicaciones. Eres capaz de evaluar herramientas, crear recursos propios y guiar a otros. Tu siguiente reto es liderar la transformación digital del CLM desde tu posición.',
-    fortalezas: ['Dominio técnico y conceptual avanzado', 'Capacidad creativa y crítica desarrollada', 'Potencial de liderazgo e impacto en el CLM'],
-    curso: '💡 Ya tienes el nivel para sacar el máximo de este curso. Te recomendamos especialmente el rol de formador/a interno/a para los 110 trabajadores del CLM.',
-    cursoColor: '#6C3483'
+    fortalezas: ['Dominio técnico y conceptual avanzado', 'Capacidad creativa y crítica desarrollada', 'Potencial de liderazgo e impacto en el CLM']
   }
 };
+
+/* ═══════════════════════════════════════════════════════
+   RECOMENDACIÓN CONTEXTUAL POR ÁREA Y NIVEL
+   Cada área recibe una propuesta formativa específica,
+   sin mezclar el curso de ELE con perfiles no docentes.
+═══════════════════════════════════════════════════════ */
+function getRecomendacion(nivel, area) {
+  const p = PERFILES[nivel];
+
+  // Docentes de ELE → recomendamos el curso de abril
+  if (area === 'docente-esp') {
+    const msgs = {
+      1: { titulo: '🎓 Curso recomendado · IA para la enseñanza de ELE (abril 2027)',
+           texto: 'Este curso está diseñado exactamente para ti. Parte de cero, no requiere conocimientos previos de IA y llega a crear materiales y herramientas propias en cuatro semanas. Es tu próximo paso natural.',
+           acciones: [
+             { label: 'Ver el programa del curso', url: 'programa.html', primary: true },
+             { label: 'Hacer el cuestionario del curso', url: 'cuestionario-curso.html', primary: false },
+           ]},
+      2: { titulo: '🎓 Curso recomendado · IA para la enseñanza de ELE (abril 2027)',
+           texto: 'Este curso te dará el método y la estructura que te faltan para pasar de uso esporádico a integración real en tu práctica de ELE. Aprovecha las videotutorías para compartir lo que ya has explorado.',
+           acciones: [
+             { label: 'Ver el programa del curso', url: 'programa.html', primary: true },
+             { label: 'Hacer el cuestionario del curso', url: 'cuestionario-curso.html', primary: false },
+           ]},
+      3: { titulo: '🎓 Curso recomendado · IA para la enseñanza de ELE (abril 2027)',
+           texto: 'Los módulos III y IV son donde más puedes crecer. El curso también es una oportunidad para convertirte en referente del departamento de español del CLM y compartir tu experiencia con los 41 docentes del área.',
+           acciones: [
+             { label: 'Ver el programa del curso', url: 'programa.html', primary: true },
+             { label: 'Hacer el cuestionario del curso', url: 'cuestionario-curso.html', primary: false },
+           ]},
+      4: { titulo: '💡 Ya tienes el nivel · Considera el rol de formador/a interno',
+           texto: 'Con tu nivel, este curso puede ser una actualización valiosa, pero tu impacto real está en liderar la integración de la IA en el CLM. Plantéate diseñar un itinerario formativo para tus compañeros/as de departamento.',
+           acciones: [
+             { label: 'Ver el programa del curso', url: 'programa.html', primary: false },
+             { label: 'Hacer el cuestionario del curso', url: 'cuestionario-curso.html', primary: true },
+           ]},
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // Docentes de Lenguas Modernas → el curso de ELE puede interesar pero con matices
+  if (area === 'docente-lm') {
+    const msgs = {
+      1: { titulo: '📚 Recursos recomendados para docentes de lenguas modernas',
+           texto: 'Empieza con los fundamentos: ChatGPT o Claude para generar actividades en tu idioma, adaptar textos auténticos al nivel de tus estudiantes y crear ejercicios gramaticales. El curso de ELE de abril puede interesarte aunque está orientado al español — los principios son transferibles.',
+           acciones: [
+             { label: 'Ver el curso de ELE (abril 2027)', url: 'programa.html', primary: false },
+             { label: 'Hacer el diagnóstico completo', url: 'diagnostico-clm.html', primary: false },
+           ]},
+      2: { titulo: '📚 Tu próximo paso: prompts específicos para tu idioma',
+           texto: 'Aprende a escribir prompts en el idioma que enseñas para obtener materiales más auténticos y culturalmente precisos. El curso de ELE de abril cubre técnicas directamente aplicables a cualquier idioma.',
+           acciones: [
+             { label: 'Ver el curso de ELE (abril 2027)', url: 'programa.html', primary: true },
+           ]},
+      3: { titulo: '⚡ Crea herramientas propias para tu idioma',
+           texto: 'Con tu nivel, el siguiente paso es diseñar mini asistentes especializados en el idioma que enseñas, generar recursos multimodales propios y empezar a compartirlos con tus compañeros/as del CLM.',
+           acciones: [
+             { label: 'Ver el curso de ELE (abril 2027)', url: 'programa.html', primary: false },
+           ]},
+      4: { titulo: '🏆 Referente digital en Lenguas Modernas del CLM',
+           texto: 'Plantéate liderar la formación interna en IA para el profesorado de lenguas modernas del CLM. Hay docentes de inglés, francés, alemán, italiano y otras lenguas que podrían beneficiarse de tu experiencia.',
+           acciones: [
+             { label: 'Ver el curso de ELE (abril 2027)', url: 'programa.html', primary: false },
+           ]},
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // Administración
+  if (area === 'administracion') {
+    const msgs = {
+      1: { titulo: '📋 Por dónde empezar en Administración',
+           texto: 'Tu primera herramienta: usa ChatGPT o Claude para redactar correos en inglés, francés o alemán para el alumnado internacional. Es la tarea más inmediata y donde notarás el impacto desde el primer día. Sin coste, sin instalación.',
+           acciones: [
+             { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+             { label: 'Probar ChatGPT gratis', url: 'https://chatgpt.com', primary: false },
+           ]},
+      2: { titulo: '📋 Sistematiza tu uso de IA en gestión',
+           texto: 'Crea una biblioteca de prompts para tus tareas más frecuentes: confirmaciones de matrícula, respuestas a consultas de Study Abroad, comunicados de eventos, informes de actividad. Cada prompt bien diseñado te ahorra 20 minutos.',
+           acciones: [
+             { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+           ]},
+      3: { titulo: '⚡ Automatización avanzada en Administración CLM',
+           texto: 'Explora herramientas como Make o Zapier para conectar la IA con tus flujos de trabajo existentes. Considera hablar con el equipo de informática del CLM para integrar IA en los procesos de gestión.',
+           acciones: [
+             { label: 'Explorar Make (automatización)', url: 'https://make.com', primary: true },
+           ]},
+      4: { titulo: '🏆 Lidera la transformación digital del CLM',
+           texto: 'Con tu nivel, puedes proponer a dirección una política de uso de IA para los procesos administrativos del CLM: qué herramientas usar, qué datos proteger y cómo formar al equipo.',
+           acciones: [] },
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // Informática y Sistemas
+  if (area === 'informatica') {
+    const msgs = {
+      1: { titulo: '💻 Empieza por la API',
+           texto: 'Con tu base técnica, el primer paso es hacer una llamada a la API de Anthropic o OpenAI desde terminal. En 30 minutos tienes tu primer script funcionando. Desde ahí las posibilidades son enormes.',
+           acciones: [
+             { label: 'Documentación API Anthropic', url: 'https://docs.anthropic.com', primary: true },
+             { label: 'Documentación API OpenAI', url: 'https://platform.openai.com/docs', primary: false },
+           ]},
+      2: { titulo: '💻 Integra IA en los sistemas del CLM',
+           texto: 'Identifica un proceso concreto donde la IA pueda añadir valor: clasificación de consultas del alumnado, generación de respuestas automáticas, transcripción de audio para accesibilidad. Diseña un prototipo pequeño.',
+           acciones: [
+             { label: 'Documentación API Anthropic', url: 'https://docs.anthropic.com', primary: true },
+           ]},
+      3: { titulo: '⚡ RAG y bases de conocimiento internas',
+           texto: 'El siguiente nivel para el CLM es un sistema RAG que permita a la IA consultar documentos internos (guías, reglamentos, FAQs) antes de responder. Herramienta clave para automatizar la atención al alumnado.',
+           acciones: [
+             { label: 'Explorar LangChain', url: 'https://langchain.com', primary: true },
+           ]},
+      4: { titulo: '🏆 Arquitectura IA para el CLM',
+           texto: 'Con tu nivel puedes diseñar la infraestructura completa de IA del CLM: qué modelos, qué datos, qué políticas de privacidad, qué integraciones. Eres el perfil más valioso para liderar esta transformación.',
+           acciones: [] },
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // Diseño Gráfico y Web
+  if (area === 'diseno') {
+    const msgs = {
+      1: { titulo: '🎨 IA generativa para diseño',
+           texto: 'Empieza con Canva Magic Studio o Adobe Firefly — están integrados en herramientas que ya conoces. Para imágenes más personalizadas, prueba DALL-E 3 (dentro de ChatGPT Plus) o Midjourney.',
+           acciones: [
+             { label: 'Canva Magic Studio', url: 'https://canva.com', primary: true },
+             { label: 'Adobe Firefly', url: 'https://firefly.adobe.com', primary: false },
+           ]},
+      2: { titulo: '🎨 Flujos de trabajo asistidos por IA',
+           texto: 'Integra la IA en tu proceso creativo: usa ChatGPT para generar copies, briefings y conceptos visuales; usa generadores de imagen para bocetos rápidos. La IA como asistente creativo, tú como director/a.',
+           acciones: [
+             { label: 'Explorar Midjourney', url: 'https://midjourney.com', primary: true },
+           ]},
+      3: { titulo: '⚡ Producción audiovisual con IA para el CLM',
+           texto: 'ElevenLabs para voiceovers institucionales, Runway para vídeo generativo, Whisper para transcripción automática. Puedes transformar la producción audiovisual del CLM con estas herramientas.',
+           acciones: [
+             { label: 'ElevenLabs (voz)', url: 'https://elevenlabs.io', primary: true },
+             { label: 'Runway (vídeo)', url: 'https://runwayml.com', primary: false },
+           ]},
+      4: { titulo: '🏆 Guía de estilo IA para el CLM',
+           texto: 'Documenta cómo usar la IA manteniendo la identidad visual del CLM: qué estilos, referencias y restricciones usar en los prompts para que los resultados sean coherentes con la marca institucional.',
+           acciones: [] },
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // Biblioteca
+  if (area === 'biblioteca') {
+    const msgs = {
+      1: { titulo: '📚 IA para servicios bibliotecarios',
+           texto: 'Empieza usando ChatGPT o Claude para generar descripciones y resúmenes de recursos en varios idiomas. Con el alumnado internacional del CLM, poder ofrecer información en inglés, francés o alemán instantáneamente tiene un valor enorme.',
+           acciones: [
+             { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+           ]},
+      2: { titulo: '📚 Asistente de consultas bibliográficas',
+           texto: 'Diseña un chatbot sencillo que responda preguntas frecuentes del alumnado sobre los fondos de la biblioteca, horarios y servicios. El equipo de informática del CLM puede ayudarte a integrarlo.',
+           acciones: [
+             { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+           ]},
+      3: { titulo: '⚡ Catalogación y gestión inteligente',
+           texto: 'Usa la IA para automatizar parte del proceso de catalogación, generar metadatos enriquecidos y crear guías de lectura temáticas adaptadas a los programas del CLM.',
+           acciones: [] },
+      4: { titulo: '🏆 Servicios de información aumentados con IA',
+           texto: 'Con tu nivel, puedes diseñar un sistema de recomendación de recursos personalizado para el alumnado del CLM, integrando IA con el catálogo existente.',
+           acciones: [] },
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // Conserjería
+  if (area === 'conserjeria') {
+    const msgs = {
+      1: { titulo: '🏢 IA para el día a día en Conserjería',
+           texto: 'Tu herramienta más útil: usa Google Translate o DeepL para comunicarte con el alumnado internacional cuando el idioma sea una barrera. Para avisos escritos más elaborados, ChatGPT puede redactarlos en el idioma que necesites en segundos.',
+           acciones: [
+             { label: 'Probar DeepL (traducción)', url: 'https://deepl.com', primary: true },
+             { label: 'Probar ChatGPT gratis', url: 'https://chatgpt.com', primary: false },
+           ]},
+      2: { titulo: '🏢 Comunicaciones multilingües con IA',
+           texto: 'Crea una pequeña biblioteca de avisos y comunicados habituales de conserjería traducidos al inglés, francés y alemán con ayuda de la IA. Una vez hechos, los reutilizas indefinidamente.',
+           acciones: [
+             { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+           ]},
+      3: { titulo: '⚡ Gestión de incidencias asistida por IA',
+           texto: 'Usa la IA para redactar partes de incidencias, informes de mantenimiento y comunicaciones internas de forma más rápida y clara. También puede ayudarte a organizar y priorizar tareas del día.',
+           acciones: [] },
+      4: { titulo: '🏆 Referente digital en tu área',
+           texto: 'Con tu nivel, puedes compartir las herramientas y flujos que has desarrollado con el resto del equipo de conserjería y mantenimiento. Eres un recurso valioso para el CLM.',
+           acciones: [] },
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // Dirección
+  if (area === 'direccion') {
+    const msgs = {
+      1: { titulo: '🎯 IA para la gestión directiva del CLM',
+           texto: 'Empieza usando la IA para lo más inmediato: redactar comunicaciones institucionales, generar borradores de informes y traducir documentos para socios internacionales. ChatGPT o Claude en 10 minutos al día pueden transformar tu productividad.',
+           acciones: [
+             { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+           ]},
+      2: { titulo: '🎯 IA como apoyo a la toma de decisiones',
+           texto: 'Usa la IA para analizar datos de matriculación, sintetizar informes largos y explorar escenarios estratégicos. Pídele que identifique patrones en los datos que tienes y que genere recomendaciones preliminares.',
+           acciones: [
+             { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+           ]},
+      3: { titulo: '⚡ Estrategia institucional de IA para el CLM',
+           texto: 'Con tu nivel, el siguiente paso es diseñar una política de uso de IA para el CLM: qué herramientas pueden usar los distintos equipos, qué datos son confidenciales y qué formación necesita cada perfil de los 110 trabajadores.',
+           acciones: [] },
+      4: { titulo: '🏆 Lidera la transformación digital del CLM',
+           texto: 'Tienes el conocimiento y la posición para convertir el CLM en una organización referente en el uso ético y eficaz de la IA en la enseñanza de idiomas. Diseña el plan, forma al equipo y comunícalo a la comunidad universitaria.',
+           acciones: [] },
+    };
+    return msgs[nivel] || msgs[1];
+  }
+
+  // General / no especificado
+  const msgs = {
+    1: { titulo: '🌱 Tu primer paso con la IA',
+         texto: 'Abre ChatGPT o Claude, crea una cuenta gratuita y empieza una conversación sobre algo de tu trabajo. No necesitas preparación: simplemente escribe lo que necesitas como si le hablaras a un compañero.',
+         acciones: [
+           { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+           { label: 'Probar ChatGPT gratis', url: 'https://chatgpt.com', primary: false },
+         ]},
+    2: { titulo: '🚀 Sistematiza tu uso de IA',
+         texto: 'Elige una tarea concreta de tu trabajo y aprende a escribir un buen prompt para ella. Con método, la calidad de los resultados mejora exponencialmente.',
+         acciones: [
+           { label: 'Probar Claude gratis', url: 'https://claude.ai', primary: true },
+         ]},
+    3: { titulo: '⚡ Crea herramientas propias',
+         texto: 'Con tu nivel, el siguiente paso es construir flujos y herramientas que otros en el CLM puedan usar. Comparte lo que has aprendido.',
+         acciones: [] },
+    4: { titulo: '🏆 Comparte tu conocimiento en el CLM',
+         texto: 'Eres de las personas con mayor nivel de IA en el CLM. El mayor impacto que puedes generar ahora es formar a tus compañeros/as.',
+         acciones: [] },
+  };
+  return msgs[nivel] || msgs[1];
+}
 
 /* ═══════════════════════════════════════════════════════
    RENDER RESULTADOS
@@ -439,16 +670,17 @@ function renderResultados({ nivel, total, knowPct, digPct, elePct, area }) {
       </div>
     </div>
 
-    <div class="res-curso" style="border-left:4px solid ${perfil.cursoColor};background:${perfil.colorLight}">
-      <h3 class="res-section-title" style="color:${perfil.cursoColor}">¿Es este curso para ti?</h3>
-      <p class="res-curso__text">${perfil.curso}</p>
-    </div>
-
-    <div class="res-actions">
-      <a href="programa.html" class="btn btn--primary">Ver programa del curso</a>
-      <a href="calendario.html" class="btn btn--outline">Ver calendario</a>
-      <button onclick="window.print()" class="btn btn--outline">🖨 Imprimir resultados</button>
-    </div>
+    ${(()=>{
+      const rec = getRecomendacion(nivel, area);
+      const btns = rec.acciones.length > 0
+        ? rec.acciones.map(a => `<a href="${a.url}" class="btn ${a.primary ? 'btn--primary' : 'btn--outline'}" ${a.url.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>${a.label}</a>`).join('')
+        : '';
+      return `<div class="res-curso" style="border-left:4px solid ${perfil.color};background:${perfil.colorLight}">
+        <h3 class="res-section-title" style="color:${perfil.color}">${rec.titulo}</h3>
+        <p class="res-curso__text">${rec.texto}</p>
+        ${btns ? `<div class="res-actions" style="margin-top:1.25rem;padding:0">${btns}<button onclick="window.print()" class="btn btn--outline">🖨 Imprimir</button></div>` : '<div class="res-actions" style="margin-top:1.25rem;padding:0"><button onclick="window.print()" class="btn btn--outline">🖨 Imprimir resultados</button></div>'}
+      </div>`;
+    })()}
   `;
 
   /* Animar barras con un pequeño delay */
