@@ -71,39 +71,51 @@ document.getElementById('btnPrevE')?.addEventListener('click', prevSection);
    Bonus: frecuencia de uso real de IA (+10 máx)
 ═══════════════════════════════════════════════════════ */
 
-/* Respuestas correctas sección C */
-const CORRECT = {
-  p17: 'Aprende de datos',
-  p21: 'Instrucción',
-  p22: 'Puede errar y sesgar',
-  pk1: 'b',  // LLM
-  pk2: 'c',  // Alucinación
-  pk3: 'b',  // Fine-tuning
-  pk4: 'a',  // Generativa vs discriminativa
-  pk5: 'c',  // Token
-  pk6: 'b',  // Temperatura
-  pk7: 'a',  // RAG
-  pk8: 'c',  // Sesgo
-  pk9: 'b',  // Zero-shot
-  pk10: 'a', // API vs web
-};
+/* ════════════════════════════════════════════════════════
+   MOTOR DE PUNTUACIÓN — compatible con ambos formularios
+   · diagnostico-clm.html → campos: cd1-cd8, ia_area1-5, pk1-pk6, pk3(múltiple)
+   · diagnostico anterior → campos: p6-p15, p24-p32, p17, p18, p21, p22, pk1-pk10
+════════════════════════════════════════════════════════ */
 
+// Respuestas correctas — diagnóstico CLM (diagnostico-clm.html)
+const CORRECT_CLM = {
+  pk1: 'c',  // Qué es la IA
+  pk2: 'b',  // Qué es un prompt
+  pk4: 'b',  // Alucinación
+  pk5: 'b',  // Origen de sesgos
+  pk6: 'a',  // Privacidad y datos
+};
+const PK3_CORRECT = new Set(['ChatGPT','Claude','Gemini','Midjourney','ElevenLabs']);
+
+// Respuestas correctas — formulario antiguo / cuestionario docentes
+const CORRECT_OLD = {
+  p17: 'Aprende de datos', p21: 'Instrucción', p22: 'Puede errar y sesgar',
+  pk1: 'b', pk2: 'c', pk3: 'b', pk4: 'a', pk5: 'c',
+  pk6: 'b', pk7: 'a', pk8: 'c', pk9: 'b', pk10: 'a',
+};
 const P18_CORRECT = new Set(['ChatGPT','Claude','Gemini','Copilot','Midjourney','ElevenLabs']);
+
+function scorePk3(vals) {
+  if (!vals || vals.length === 0) return 0;
+  let hits = 0, errors = 0;
+  vals.forEach(v => {
+    if (v === 'No lo sé') return;
+    PK3_CORRECT.has(v) ? hits++ : errors++;
+  });
+  const net = hits - errors;
+  return net <= 0 ? 0 : net <= 2 ? 1 : net <= 4 ? 2 : 3;
+}
 
 function scoreP18(vals) {
   if (!vals || vals.length === 0) return 0;
   let hits = 0, errors = 0;
   vals.forEach(v => P18_CORRECT.has(v) ? hits++ : errors++);
   const net = hits - errors;
-  if (net <= 0) return 0;
-  if (net <= 2) return 1;
-  if (net <= 4) return 2;
-  return 3;
+  return net <= 0 ? 0 : net <= 2 ? 1 : net <= 4 ? 2 : 3;
 }
 
 function getFormValues(form) {
-  const fd = new FormData(form);
-  const vals = {};
+  const fd = new FormData(form), vals = {};
   for (const [k, v] of fd.entries()) {
     if (vals[k]) {
       vals[k] = Array.isArray(vals[k]) ? [...vals[k], v] : [vals[k], v];
@@ -115,39 +127,72 @@ function getFormValues(form) {
 }
 
 function calcDiagnostico(vals) {
-  /* 1. Conocimiento objetivo */
-  let knowScore = 0;
-  const knowTotal = Object.keys(CORRECT).length + 1;
-  Object.entries(CORRECT).forEach(([q, c]) => { if (vals[q] === c) knowScore++; });
-  const p18v = Array.isArray(vals.p18) ? vals.p18 : (vals.p18 ? [vals.p18] : []);
-  knowScore += scoreP18(p18v) / 3;
-  const knowPct = Math.round((knowScore / knowTotal) * 100);
+  // Detectar qué formulario es según los campos presentes
+  const isCLM = !!(vals.cd1 || vals.cd2 || vals.ia_area1);
 
-  /* 2. Competencia digital */
-  const digKeys = ['p6','p7','p8','p9','p10','p11','p12','p13','p14','p15'];
+  /* ── 1. CONOCIMIENTO OBJETIVO (0-100) ── */
+  let knowScore = 0, knowTotal = 0;
+  if (isCLM) {
+    knowTotal = Object.keys(CORRECT_CLM).length + 1; // +1 por pk3 múltiple
+    Object.entries(CORRECT_CLM).forEach(([q, c]) => { if (vals[q] === c) knowScore++; });
+    const pk3v = Array.isArray(vals.pk3) ? vals.pk3 : (vals.pk3 ? [vals.pk3] : []);
+    knowScore += scorePk3(pk3v) / 3;
+  } else {
+    knowTotal = Object.keys(CORRECT_OLD).length + 1;
+    Object.entries(CORRECT_OLD).forEach(([q, c]) => { if (vals[q] === c) knowScore++; });
+    const p18v = Array.isArray(vals.p18) ? vals.p18 : (vals.p18 ? [vals.p18] : []);
+    knowScore += scoreP18(p18v) / 3;
+  }
+  const knowPct = knowTotal > 0 ? Math.round((knowScore / knowTotal) * 100) : 0;
+
+  /* ── 2. COMPETENCIA DIGITAL (0-100) ── */
   let digSum = 0, digCount = 0;
-  digKeys.forEach(k => { if (vals[k]) { digSum += parseInt(vals[k]); digCount++; } });
-  const p16map = {'Evito usarla':1,'Uso cuando proponen':2,'Uso puntual':3,'Integro habitualmente':4,'Soy referente':5};
-  if (vals.p16 && p16map[vals.p16]) { digSum += p16map[vals.p16]; digCount++; }
+  if (isCLM) {
+    ['cd1','cd2','cd3','cd4','cd5','cd6','cd7','cd8'].forEach(k => {
+      if (vals[k]) { digSum += parseInt(vals[k]); digCount++; }
+    });
+    const actMap = {
+      'Evito usarla':1, 'La uso si no hay otra opción':2,
+      'La uso para tareas concretas':3, 'La integro habitualmente':4, 'Soy referente':5
+    };
+    if (vals.actitud_tec && actMap[vals.actitud_tec]) { digSum += actMap[vals.actitud_tec]; digCount++; }
+  } else {
+    ['p6','p7','p8','p9','p10','p11','p12','p13','p14','p15'].forEach(k => {
+      if (vals[k]) { digSum += parseInt(vals[k]); digCount++; }
+    });
+    const p16map = {'Evito usarla':1,'Uso cuando proponen':2,'Uso puntual':3,'Integro habitualmente':4,'Soy referente':5};
+    if (vals.p16 && p16map[vals.p16]) { digSum += p16map[vals.p16]; digCount++; }
+  }
   const digPct = digCount > 0 ? Math.round(((digSum / digCount) - 1) / 4 * 100) : 0;
 
-  /* 3. Herramientas digitales en el trabajo */
-  const eleKeys = ['p24','p25','p26','p27','p28','p29','p30','p31','p32'];
+  /* ── 3. HERRAMIENTAS DIGITALES EN EL TRABAJO (0-100) ── */
   let eleSum = 0, eleCount = 0;
-  eleKeys.forEach(k => { if (vals[k]) { eleSum += parseInt(vals[k]); eleCount++; } });
+  if (isCLM) {
+    ['ia_area1','ia_area2','ia_area3','ia_area4','ia_area5'].forEach(k => {
+      if (vals[k]) { eleSum += parseInt(vals[k]); eleCount++; }
+    });
+  } else {
+    ['p24','p25','p26','p27','p28','p29','p30','p31','p32'].forEach(k => {
+      if (vals[k]) { eleSum += parseInt(vals[k]); eleCount++; }
+    });
+  }
   const elePct = eleCount > 0 ? Math.round(((eleSum / eleCount) - 1) / 4 * 100) : 0;
 
-  /* 4. Bonus frecuencia */
-  const freqMap = {'Nunca':0,'1-2 veces':0.25,'Ocasionalmente':0.5,'Varias veces semana':0.75,'A diario':1};
-  const freqBonus = (freqMap[vals.p19] || 0) * 10;
+  /* ── 4. BONUS FRECUENCIA ── */
+  const freqMap = {
+    'Nunca':0, 'Probado 1-2 veces':0.15, '1-2 veces':0.15,
+    'Ocasionalmente':0.40, 'Varias veces semana':0.70, 'A diario':1
+  };
+  const freqKey = vals.freq_ia || vals.p19 || '';
+  const freqBonus = (freqMap[freqKey] || 0) * 10;
 
-  /* 5. Puntuación final */
+  /* ── 5. PUNTUACIÓN FINAL ── */
   const total = Math.round((knowPct * 0.50) + (digPct * 0.25) + (elePct * 0.25) + freqBonus);
 
-  /* 6. Nivel */
-  let nivel = total < 28 ? 1 : total < 52 ? 2 : total < 72 ? 3 : 4;
+  /* ── 6. NIVEL ── */
+  const nivel = total < 28 ? 1 : total < 52 ? 2 : total < 72 ? 3 : 4;
 
-  /* 7. Área de trabajo */
+  /* ── 7. ÁREA ── */
   const area = vals.area_trabajo || 'general';
 
   return { nivel, total, knowPct, digPct, elePct, area };
