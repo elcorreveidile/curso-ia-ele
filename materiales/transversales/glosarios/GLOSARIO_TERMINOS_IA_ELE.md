@@ -1,17 +1,3 @@
-# ÍNDICE
-
-## 📋 CONTENIDO DEL GLOSARIO
-
-- **A-C:** AGI, Alucinación, Ambiente, API, Aprendizaje automático, Chatbot, Contexto
-- **D-F:** Deepfake, Dialogue, Escritura, Frame
-- **I-L:** Ingeniería de prompts, Input, Iteración, LLM, Learning
-- **M-P:** MCER, Modelo, Multimodal, Parámetro, PCIC, Prompt
-- **R-S:** Response time, Role, Rúbrica, Salida, Sesgo, Subjuntivo, System prompt
-- **T-V:** Temperatura, Token, Training, Translation, Voice cloning
-- **Otros términos importantes**
-
-\newpage
-
 # GLOSARIO DE TÉRMINOS DE IA PARA DOCENTES DE ELE
 ### 50 términos clave definidos y contextualizados para la enseñanza de Español como Lengua Extranjera
 
