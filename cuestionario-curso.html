@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionario del curso · IA para la enseñanza de ELE</title>
+  <meta name="description" content="Cuestionario de inicio del curso de formación docente sobre IA para ELE. Abril 2027.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos adicionales específicos de este cuestionario */
+    .curso-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--orange-light); color: var(--orange);
+      font-size: .75rem; font-weight: 700;
+      padding: .35rem .9rem; border-radius: 100px;
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: 1rem;
+    }
+    .perfil-docente-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem;
+      margin-top: 1rem;
+    }
+    .perfil-card {
+      background: var(--white); border-radius: var(--r-lg);
+      padding: 1.5rem; text-align: center;
+      border: 2px solid var(--canvas-alt);
+      transition: border-color .2s, transform .2s;
+      cursor: pointer;
+    }
+    .perfil-card:hover { border-color: var(--blue-mid); transform: translateY(-2px); }
+    .perfil-card.selected { border-color: var(--blue); background: var(--blue-light); }
+    .perfil-card__emoji { font-size: 2rem; margin-bottom: .5rem; }
+    .perfil-card__name { font-family: var(--font-display); font-size: .95rem; font-weight: 700; color: var(--ink); }
+    .perfil-card__desc { font-size: .78rem; color: var(--ink-muted); margin-top: .25rem; line-height: 1.4; }
+    @media (max-width: 700px) { .perfil-docente-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="landing-hero">
+
+  <div class="landing-top">
+    <div class="landing-logo">IA<span>ELE</span></div>
+    <nav class="landing-nav">
+      <a href="descripcion.html">El curso</a>
+      <a href="programa.html">Programa</a>
+      <a href="calendario.html">Calendario</a>
+      <a href="metodologia.html">Metodología</a>
+      <a href="index.html">← Inicio</a>
+    </nav>
+  </div>
+
+  <div class="landing-body">
+
+    <div class="landing-pitch reveal">
+      <div class="landing-pitch__left">
+        <div class="curso-badge">📅 Curso de abril 2027</div>
+        <h1 class="landing-pitch__title">
+          Cuestionario de<br><em>inicio del curso</em>
+        </h1>
+      </div>
+      <div>
+        <p class="landing-pitch__text">
+          Este cuestionario es exclusivo para los docentes inscritos en el curso <em>IA para la enseñanza de ELE</em>. Nos ayuda a conocer tu punto de partida como docente y a adaptar los contenidos a las necesidades reales del grupo.
+        </p>
+        <div class="landing-pitch__links">
+          <a href="programa.html" class="landing-pitch__link">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Ver programa del curso
+          </a>
+          <a href="calendario.html" class="landing-pitch__link">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Fechas de las videotutorías
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="landing-form-wrap reveal">
+
+      <div class="cuestionario-intro" style="border-radius:0;margin:0;">
+        <div>
+          <h2 class="cuestionario-intro__title">Cuestionario de inicio · Docentes ELE</h2>
+          <p class="cuestionario-intro__text">Confidencial · Sin respuestas incorrectas · 15-20 minutos</p>
+        </div>
+        <div class="cuestionario-intro__meta">
+          <span class="cuest-badge">📋 4 bloques</span>
+          <span class="cuest-badge">🎯 Perfil docente</span>
+        </div>
+      </div>
+
+      <div class="q-progress" style="margin:1.5rem 1.5rem 0;border-radius:12px;">
+        <span class="q-progress__label">Progreso</span>
+        <div class="q-progress__bar"><div class="q-progress__fill" id="progressFill"></div></div>
+        <span class="q-progress__pct" id="progressPct">0%</span>
+      </div>
+
+      <div class="q-sections" style="padding:0 1.5rem;margin-top:1rem;margin-bottom:0;">
+        <button class="q-section-tab active" id="tab-A"><span class="q-section-tab__dot"></span>1 · Perfil</button>
+        <button class="q-section-tab" id="tab-B"><span class="q-section-tab__dot"></span>2 · Práctica docente</button>
+        <button class="q-section-tab" id="tab-C"><span class="q-section-tab__dot"></span>3 · IA en ELE</button>
+        <button class="q-section-tab" id="tab-D"><span class="q-section-tab__dot"></span>4 · Expectativas</button>
+      </div>
+
+      <div id="formWrapper" style="padding:1.5rem;">
+      <form id="cursoForm" action="https://formspree.io/f/mjgalypd" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="Cuestionario inicio curso · IA para ELE · Abril 2027">
+        <input type="hidden" name="_tipo" value="cuestionario-curso-docentes">
+
+        <!-- ══════════════════════════════════
+             BLOQUE 1 · PERFIL DOCENTE
+        ══════════════════════════════════ -->
+        <div class="q-section active" id="section-A">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--A">1</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu perfil como docente de ELE</p>
+              <p class="q-section__desc">Cuéntanos quién eres y cómo trabajas</p>
+            </div>
+          </div>
+
+          <!-- Datos personales -->
+          <div class="q-block">
+            <p class="q-block__num">Datos de contacto</p>
+            <div class="datos-grid">
+              <div class="form-group">
+                <label for="nombre">Nombre y apellidos</label>
+                <input class="form-input" type="text" id="nombre" name="nombre" placeholder="Tu nombre completo">
+              </div>
+              <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input class="form-input" type="email" id="email" name="email" placeholder="tu@correo.com">
+              </div>
+            </div>
+          </div>
+
+          <!-- P1: Años de experiencia -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 1</p>
+            <p class="q-block__text">¿Cuántos años llevas ejerciendo como docente de ELE?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="anos_exp" value="Menos de 2 años"><span class="q-option__box"></span><span class="q-option__label">Menos de 2 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_exp" value="2-5 años"><span class="q-option__box"></span><span class="q-option__label">Entre 2 y 5 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_exp" value="6-15 años"><span class="q-option__box"></span><span class="q-option__label">Entre 6 y 15 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_exp" value="Más de 15 años"><span class="q-option__box"></span><span class="q-option__label">Más de 15 años</span></label>
+            </div>
+          </div>
+
+          <!-- P2: Niveles habituales -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 2</p>
+            <p class="q-block__text">¿Con qué niveles del MCER trabajas habitualmente en el CLM?</p>
+            <p class="q-block__note">(Puedes marcar más de uno)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="niveles_mcer" value="A1-A2"><span class="q-option__box"></span><span class="q-option__label">A1-A2 · Básico</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="niveles_mcer" value="B1-B2"><span class="q-option__box"></span><span class="q-option__label">B1-B2 · Intermedio</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="niveles_mcer" value="C1-C2"><span class="q-option__box"></span><span class="q-option__label">C1-C2 · Avanzado</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="niveles_mcer" value="Todos los niveles"><span class="q-option__box"></span><span class="q-option__label">Todos los niveles</span></label>
+            </div>
+          </div>
+
+          <!-- P3: Tipo de programas -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 3</p>
+            <p class="q-block__text">¿En qué tipo de programas impartes clase en el CLM?</p>
+            <p class="q-block__note">(Puedes marcar más de uno)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="CEH"><span class="q-option__box"></span><span class="q-option__label">CEH · Estudios Hispánicos</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="CLCE"><span class="q-option__box"></span><span class="q-option__label">CLCE · Lengua y Cultura Española</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="CILE"><span class="q-option__box"></span><span class="q-option__label">CILE · Intensivos</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="CELE"><span class="q-option__box"></span><span class="q-option__label">CELE · ELE</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="Formación profesores"><span class="q-option__box"></span><span class="q-option__label">Formación de profesores</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="Study Abroad"><span class="q-option__box"></span><span class="q-option__label">Study Abroad</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="Cursos especial diseño"><span class="q-option__box"></span><span class="q-option__label">Cursos de especial diseño</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="programas" value="Exámenes acreditación"><span class="q-option__box"></span><span class="q-option__label">Preparación exámenes de acreditación</span></label>
+            </div>
+          </div>
+
+          <!-- P4: Modalidad -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 4</p>
+            <p class="q-block__text">¿Cuál es tu modalidad de enseñanza predominante?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="modalidad" value="Presencial"><span class="q-option__box"></span><span class="q-option__label">Presencial</span></label>
+              <label class="q-option"><input type="radio" name="modalidad" value="Semipresencial"><span class="q-option__box"></span><span class="q-option__label">Semipresencial (blended)</span></label>
+              <label class="q-option"><input type="radio" name="modalidad" value="En línea"><span class="q-option__box"></span><span class="q-option__label">Totalmente en línea</span></label>
+              <label class="q-option"><input type="radio" name="modalidad" value="Combinada"><span class="q-option__box"></span><span class="q-option__label">Depende del programa y el grupo</span></label>
+            </div>
+          </div>
+
+          <div class="q-nav">
+            <span class="q-nav__info">Bloque 1 de 4</span>
+            <button type="button" class="btn btn--primary" id="btnNext">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+             BLOQUE 2 · PRÁCTICA DOCENTE ACTUAL
+        ══════════════════════════════════ -->
+        <div class="q-section" id="section-B">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--B">2</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu práctica docente actual</p>
+              <p class="q-section__desc">Cómo planificas, creas materiales y usas la tecnología ahora mismo</p>
+            </div>
+          </div>
+
+          <!-- P5: Tiempo planificación -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 5</p>
+            <p class="q-block__text">¿Cuánto tiempo dedicas aproximadamente a preparar una clase de 90 minutos?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="tiempo_prep" value="Menos de 30 min"><span class="q-option__box"></span><span class="q-option__label">Menos de 30 minutos (ya tengo todo muy sistematizado)</span></label>
+              <label class="q-option"><input type="radio" name="tiempo_prep" value="30-60 min"><span class="q-option__box"></span><span class="q-option__label">Entre 30 y 60 minutos</span></label>
+              <label class="q-option"><input type="radio" name="tiempo_prep" value="1-2 horas"><span class="q-option__box"></span><span class="q-option__label">Entre 1 y 2 horas</span></label>
+              <label class="q-option"><input type="radio" name="tiempo_prep" value="Más de 2 horas"><span class="q-option__box"></span><span class="q-option__label">Más de 2 horas</span></label>
+            </div>
+          </div>
+
+          <!-- P6: Fuentes de materiales -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 6</p>
+            <p class="q-block__text">¿De dónde obtienes habitualmente tus materiales didácticos?</p>
+            <p class="q-block__note">(Puedes marcar más de uno)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="fuentes_mat" value="Manuales ELE"><span class="q-option__box"></span><span class="q-option__label">Manuales de ELE publicados</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="fuentes_mat" value="Elaboración propia"><span class="q-option__box"></span><span class="q-option__label">Elaboración propia desde cero</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="fuentes_mat" value="Adaptación recursos auténticos"><span class="q-option__box"></span><span class="q-option__label">Adaptación de recursos auténticos (prensa, vídeos, podcasts)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="fuentes_mat" value="Repositorios online"><span class="q-option__box"></span><span class="q-option__label">Repositorios online (profedeele, marcoele, todoele…)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="fuentes_mat" value="Materiales compañeros"><span class="q-option__box"></span><span class="q-option__label">Materiales compartidos por compañeros/as del CLM</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="fuentes_mat" value="IA generativa"><span class="q-option__box"></span><span class="q-option__label">IA generativa (ChatGPT, Claude…)</span></label>
+            </div>
+          </div>
+
+          <!-- P7: Herramientas digitales en clase -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 7</p>
+            <p class="q-block__text">¿Qué herramientas digitales usas en tus clases actualmente?</p>
+            <p class="q-block__note">(Puedes marcar más de uno)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Moodle CLM"><span class="q-option__box"></span><span class="q-option__label">Moodle del CLM (La Wikiclase)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Presentaciones digitales"><span class="q-option__box"></span><span class="q-option__label">Presentaciones (PowerPoint, Canva, Google Slides)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Quizlet Kahoot"><span class="q-option__box"></span><span class="q-option__label">Quizlet, Kahoot, Genially o similares</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Vídeos YouTube"><span class="q-option__box"></span><span class="q-option__label">Vídeos (YouTube, clips de series…)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Podcasts audio"><span class="q-option__box"></span><span class="q-option__label">Podcasts o materiales de audio</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Pizarra digital"><span class="q-option__box"></span><span class="q-option__label">Pizarra digital o proyector</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Grabaciones propias"><span class="q-option__box"></span><span class="q-option__label">Grabaciones de audio o vídeo propias</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_dig" value="Ninguna digital"><span class="q-option__box"></span><span class="q-option__label">Principalmente sin herramientas digitales</span></label>
+            </div>
+          </div>
+
+          <!-- P8: Dificultades en planificación -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 8</p>
+            <p class="q-block__text">¿Cuál es tu mayor dificultad a la hora de planificar tus clases de ELE?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="dificultad_plan" value="Falta de tiempo"><span class="q-option__box"></span><span class="q-option__label">Falta de tiempo para preparar materiales de calidad.</span></label>
+              <label class="q-option"><input type="radio" name="dificultad_plan" value="Encontrar recursos auténticos"><span class="q-option__box"></span><span class="q-option__label">Encontrar recursos auténticos adecuados al nivel y al grupo.</span></label>
+              <label class="q-option"><input type="radio" name="dificultad_plan" value="Adaptar al grupo diverso"><span class="q-option__box"></span><span class="q-option__label">Adaptar los materiales a grupos con perfiles muy distintos.</span></label>
+              <label class="q-option"><input type="radio" name="dificultad_plan" value="Alinear con MCER PCIC"><span class="q-option__box"></span><span class="q-option__label">Asegurar la coherencia con los objetivos del MCER y el PCIC.</span></label>
+              <label class="q-option"><input type="radio" name="dificultad_plan" value="Variedad de actividades"><span class="q-option__box"></span><span class="q-option__label">Generar variedad de actividades y evitar la repetición.</span></label>
+              <label class="q-option"><input type="radio" name="dificultad_plan" value="Sin dificultades"><span class="q-option__box"></span><span class="q-option__label">No tengo dificultades significativas en la planificación.</span></label>
+            </div>
+          </div>
+
+          <!-- Likert práctica docente -->
+          <div class="q-block">
+            <p class="q-block__num">Preguntas 9-14 · Valora de 1 (Nada) a 5 (Mucho)</p>
+            <div class="q-likert">
+              <table>
+                <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                  <tr><td>P9. Me resulta fácil diseñar secuencias didácticas coherentes y progresivas.</td>
+                    <td><input type="radio" name="pd1" value="1" id="pd1-1"><label for="pd1-1">1</label></td><td><input type="radio" name="pd1" value="2" id="pd1-2"><label for="pd1-2">2</label></td><td><input type="radio" name="pd1" value="3" id="pd1-3"><label for="pd1-3">3</label></td><td><input type="radio" name="pd1" value="4" id="pd1-4"><label for="pd1-4">4</label></td><td><input type="radio" name="pd1" value="5" id="pd1-5"><label for="pd1-5">5</label></td></tr>
+                  <tr><td>P10. Consulto habitualmente el MCER o el PCIC al diseñar mis materiales.</td>
+                    <td><input type="radio" name="pd2" value="1" id="pd2-1"><label for="pd2-1">1</label></td><td><input type="radio" name="pd2" value="2" id="pd2-2"><label for="pd2-2">2</label></td><td><input type="radio" name="pd2" value="3" id="pd2-3"><label for="pd2-3">3</label></td><td><input type="radio" name="pd2" value="4" id="pd2-4"><label for="pd2-4">4</label></td><td><input type="radio" name="pd2" value="5" id="pd2-5"><label for="pd2-5">5</label></td></tr>
+                  <tr><td>P11. Integro con fluidez componentes culturales en mis clases de ELE.</td>
+                    <td><input type="radio" name="pd3" value="1" id="pd3-1"><label for="pd3-1">1</label></td><td><input type="radio" name="pd3" value="2" id="pd3-2"><label for="pd3-2">2</label></td><td><input type="radio" name="pd3" value="3" id="pd3-3"><label for="pd3-3">3</label></td><td><input type="radio" name="pd3" value="4" id="pd3-4"><label for="pd3-4">4</label></td><td><input type="radio" name="pd3" value="5" id="pd3-5"><label for="pd3-5">5</label></td></tr>
+                  <tr><td>P12. Adapto fácilmente mis materiales a grupos con distintos perfiles culturales y lingüísticos.</td>
+                    <td><input type="radio" name="pd4" value="1" id="pd4-1"><label for="pd4-1">1</label></td><td><input type="radio" name="pd4" value="2" id="pd4-2"><label for="pd4-2">2</label></td><td><input type="radio" name="pd4" value="3" id="pd4-3"><label for="pd4-3">3</label></td><td><input type="radio" name="pd4" value="4" id="pd4-4"><label for="pd4-4">4</label></td><td><input type="radio" name="pd4" value="5" id="pd4-5"><label for="pd4-5">5</label></td></tr>
+                  <tr><td>P13. Genero actividades variadas que trabajan las distintas destrezas comunicativas.</td>
+                    <td><input type="radio" name="pd5" value="1" id="pd5-1"><label for="pd5-1">1</label></td><td><input type="radio" name="pd5" value="2" id="pd5-2"><label for="pd5-2">2</label></td><td><input type="radio" name="pd5" value="3" id="pd5-3"><label for="pd5-3">3</label></td><td><input type="radio" name="pd5" value="4" id="pd5-4"><label for="pd5-4">4</label></td><td><input type="radio" name="pd5" value="5" id="pd5-5"><label for="pd5-5">5</label></td></tr>
+                  <tr><td>P14. Creo y uso recursos multimodales (imagen, audio, vídeo) en mis clases con regularidad.</td>
+                    <td><input type="radio" name="pd6" value="1" id="pd6-1"><label for="pd6-1">1</label></td><td><input type="radio" name="pd6" value="2" id="pd6-2"><label for="pd6-2">2</label></td><td><input type="radio" name="pd6" value="3" id="pd6-3"><label for="pd6-3">3</label></td><td><input type="radio" name="pd6" value="4" id="pd6-4"><label for="pd6-4">4</label></td><td><input type="radio" name="pd6" value="5" id="pd6-5"><label for="pd6-5">5</label></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="q-nav">
+            <button type="button" class="btn btn--outline" id="btnPrevB">← Anterior</button>
+            <span class="q-nav__info">Bloque 2 de 4</span>
+            <button type="button" class="btn btn--primary" id="btnNextB">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+             BLOQUE 3 · IA EN ELE
+        ══════════════════════════════════ -->
+        <div class="q-section" id="section-C">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--C">3</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu relación actual con la IA en ELE</p>
+              <p class="q-section__desc">Qué sabes, qué has probado y qué te preocupa</p>
+            </div>
+          </div>
+
+          <!-- P15: Frecuencia uso IA -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 15</p>
+            <p class="q-block__text">¿Con qué frecuencia usas herramientas de IA en tu preparación de clases o creación de materiales?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="freq_ia" value="Nunca"><span class="q-option__box"></span><span class="q-option__label">Nunca las he usado para esto.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="Lo he probado puntualmente"><span class="q-option__box"></span><span class="q-option__label">Lo he probado puntualmente, sin un uso sistemático.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="Ocasionalmente"><span class="q-option__box"></span><span class="q-option__label">Ocasionalmente, cuando me surge una necesidad concreta.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="Habitualmente"><span class="q-option__box"></span><span class="q-option__label">Habitualmente, ya forma parte de mi rutina de preparación.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="A diario"><span class="q-option__box"></span><span class="q-option__label">A diario, es una herramienta central en mi trabajo.</span></label>
+            </div>
+          </div>
+
+          <!-- P16: Para qué ha usado la IA en ELE -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 16</p>
+            <p class="q-block__text">Si has usado IA para tu docencia de ELE, ¿para qué la has usado?</p>
+            <p class="q-block__note">(Puedes marcar más de uno)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="Generar textos actividades"><span class="q-option__box"></span><span class="q-option__label">Generar textos o actividades de comprensión</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="Crear ejercicios gramática"><span class="q-option__box"></span><span class="q-option__label">Crear ejercicios de gramática o vocabulario</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="Diseñar planes de clase"><span class="q-option__box"></span><span class="q-option__label">Diseñar o estructurar planes de clase</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="Generar imágenes"><span class="q-option__box"></span><span class="q-option__label">Generar imágenes para activar conocimientos previos</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="Crear audios"><span class="q-option__box"></span><span class="q-option__label">Crear audios o diálogos para comprensión oral</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="Dar feedback escritura"><span class="q-option__box"></span><span class="q-option__label">Dar feedback o corregir producciones escritas</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="Adaptar nivel"><span class="q-option__box"></span><span class="q-option__label">Adaptar textos a un nivel MCER concreto</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia_ele" value="No la he usado en ELE"><span class="q-option__box"></span><span class="q-option__label">Todavía no la he usado en mi docencia de ELE</span></label>
+            </div>
+          </div>
+
+          <!-- P17: Herramientas IA conocidas -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 17</p>
+            <p class="q-block__text">¿Cuáles de estas herramientas de IA conoces o has usado?</p>
+            <p class="q-block__note">(Marca las que conozcas aunque sea de nombre)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="ChatGPT"><span class="q-option__box"></span><span class="q-option__label">ChatGPT</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="Claude"><span class="q-option__box"></span><span class="q-option__label">Claude (Anthropic)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="Gemini"><span class="q-option__box"></span><span class="q-option__label">Gemini (Google)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="Copilot"><span class="q-option__box"></span><span class="q-option__label">Microsoft Copilot</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="Midjourney DALL-E"><span class="q-option__box"></span><span class="q-option__label">Midjourney / DALL-E (imágenes)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="ElevenLabs"><span class="q-option__box"></span><span class="q-option__label">ElevenLabs (audio y voz)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="Canva IA"><span class="q-option__box"></span><span class="q-option__label">Canva con IA</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herr_ia_conoce" value="Ninguna"><span class="q-option__box"></span><span class="q-option__label">Ninguna de estas</span></label>
+            </div>
+          </div>
+
+          <!-- Likert actitudes hacia IA en ELE -->
+          <div class="q-block">
+            <p class="q-block__num">Preguntas 18-24 · Valora de 1 (Totalmente en desacuerdo) a 5 (Totalmente de acuerdo)</p>
+            <div class="q-likert">
+              <table>
+                <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                  <tr><td>P18. La IA puede ayudarme a ahorrar tiempo en la preparación de mis clases de ELE.</td>
+                    <td><input type="radio" name="ia1" value="1" id="ia1-1"><label for="ia1-1">1</label></td><td><input type="radio" name="ia1" value="2" id="ia1-2"><label for="ia1-2">2</label></td><td><input type="radio" name="ia1" value="3" id="ia1-3"><label for="ia1-3">3</label></td><td><input type="radio" name="ia1" value="4" id="ia1-4"><label for="ia1-4">4</label></td><td><input type="radio" name="ia1" value="5" id="ia1-5"><label for="ia1-5">5</label></td></tr>
+                  <tr><td>P19. Los materiales generados por IA pueden carecer de autenticidad cultural y lingüística en español.</td>
+                    <td><input type="radio" name="ia2" value="1" id="ia2-1"><label for="ia2-1">1</label></td><td><input type="radio" name="ia2" value="2" id="ia2-2"><label for="ia2-2">2</label></td><td><input type="radio" name="ia2" value="3" id="ia2-3"><label for="ia2-3">3</label></td><td><input type="radio" name="ia2" value="4" id="ia2-4"><label for="ia2-4">4</label></td><td><input type="radio" name="ia2" value="5" id="ia2-5"><label for="ia2-5">5</label></td></tr>
+                  <tr><td>P20. Creo que soy capaz de supervisar y mejorar críticamente el contenido que genera la IA.</td>
+                    <td><input type="radio" name="ia3" value="1" id="ia3-1"><label for="ia3-1">1</label></td><td><input type="radio" name="ia3" value="2" id="ia3-2"><label for="ia3-2">2</label></td><td><input type="radio" name="ia3" value="3" id="ia3-3"><label for="ia3-3">3</label></td><td><input type="radio" name="ia3" value="4" id="ia3-4"><label for="ia3-4">4</label></td><td><input type="radio" name="ia3" value="5" id="ia3-5"><label for="ia3-5">5</label></td></tr>
+                  <tr><td>P21. Me preocupa que el alumnado use la IA para eludir el proceso real de aprendizaje del español.</td>
+                    <td><input type="radio" name="ia4" value="1" id="ia4-1"><label for="ia4-1">1</label></td><td><input type="radio" name="ia4" value="2" id="ia4-2"><label for="ia4-2">2</label></td><td><input type="radio" name="ia4" value="3" id="ia4-3"><label for="ia4-3">3</label></td><td><input type="radio" name="ia4" value="4" id="ia4-4"><label for="ia4-4">4</label></td><td><input type="radio" name="ia4" value="5" id="ia4-5"><label for="ia4-5">5</label></td></tr>
+                  <tr><td>P22. Estoy dispuesto/a a integrar la IA como herramienta habitual en mi práctica docente de ELE.</td>
+                    <td><input type="radio" name="ia5" value="1" id="ia5-1"><label for="ia5-1">1</label></td><td><input type="radio" name="ia5" value="2" id="ia5-2"><label for="ia5-2">2</label></td><td><input type="radio" name="ia5" value="3" id="ia5-3"><label for="ia5-3">3</label></td><td><input type="radio" name="ia5" value="4" id="ia5-4"><label for="ia5-4">4</label></td><td><input type="radio" name="ia5" value="5" id="ia5-5"><label for="ia5-5">5</label></td></tr>
+                  <tr><td>P23. Me siento preparado/a para usar la IA de forma ética y responsable con mi alumnado.</td>
+                    <td><input type="radio" name="ia6" value="1" id="ia6-1"><label for="ia6-1">1</label></td><td><input type="radio" name="ia6" value="2" id="ia6-2"><label for="ia6-2">2</label></td><td><input type="radio" name="ia6" value="3" id="ia6-3"><label for="ia6-3">3</label></td><td><input type="radio" name="ia6" value="4" id="ia6-4"><label for="ia6-4">4</label></td><td><input type="radio" name="ia6" value="5" id="ia6-5"><label for="ia6-5">5</label></td></tr>
+                  <tr><td>P24. La IA puede ser una herramienta útil para personalizar materiales al nivel y perfil de mi alumnado.</td>
+                    <td><input type="radio" name="ia7" value="1" id="ia7-1"><label for="ia7-1">1</label></td><td><input type="radio" name="ia7" value="2" id="ia7-2"><label for="ia7-2">2</label></td><td><input type="radio" name="ia7" value="3" id="ia7-3"><label for="ia7-3">3</label></td><td><input type="radio" name="ia7" value="4" id="ia7-4"><label for="ia7-4">4</label></td><td><input type="radio" name="ia7" value="5" id="ia7-5"><label for="ia7-5">5</label></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="q-nav">
+            <button type="button" class="btn btn--outline" id="btnPrevC">← Anterior</button>
+            <span class="q-nav__info">Bloque 3 de 4</span>
+            <button type="button" class="btn btn--primary" id="btnNextC">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+             BLOQUE 4 · EXPECTATIVAS
+        ══════════════════════════════════ -->
+        <div class="q-section" id="section-D">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--D">4</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tus expectativas del curso</p>
+              <p class="q-section__desc">Qué esperas llevarte y qué necesitas</p>
+            </div>
+          </div>
+
+          <!-- P25: Objetivo principal -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 25</p>
+            <p class="q-block__text">¿Cuál es tu objetivo principal al hacer este curso?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="objetivo_curso" value="Ahorrar tiempo preparación"><span class="q-option__box"></span><span class="q-option__label">Ahorrar tiempo en la preparación de clases y materiales.</span></label>
+              <label class="q-option"><input type="radio" name="objetivo_curso" value="Mejorar calidad materiales"><span class="q-option__box"></span><span class="q-option__label">Mejorar la calidad y variedad de los materiales que ofrezco.</span></label>
+              <label class="q-option"><input type="radio" name="objetivo_curso" value="Aprender usar IA de forma crítica"><span class="q-option__box"></span><span class="q-option__label">Aprender a usar la IA de forma crítica y responsable.</span></label>
+              <label class="q-option"><input type="radio" name="objetivo_curso" value="Actualizarme profesionalmente"><span class="q-option__box"></span><span class="q-option__label">Actualizarme profesionalmente en un campo emergente.</span></label>
+              <label class="q-option"><input type="radio" name="objetivo_curso" value="Crear recursos multimodales"><span class="q-option__box"></span><span class="q-option__label">Aprender a crear recursos multimodales con IA (imágenes, audios, mapas mentales).</span></label>
+              <label class="q-option"><input type="radio" name="objetivo_curso" value="Diseñar asistentes propios"><span class="q-option__box"></span><span class="q-option__label">Diseñar mis propios asistentes y mini-apps para el aula.</span></label>
+            </div>
+          </div>
+
+          <!-- P26: Módulo más interesante -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 26</p>
+            <p class="q-block__text">¿Qué módulo del curso te genera más expectativa?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="modulo_interes" value="Modulo I"><span class="q-option__box"></span><span class="q-option__label">Módulo I · IA con criterio: ética, equidad y prompts eficaces</span></label>
+              <label class="q-option"><input type="radio" name="modulo_interes" value="Modulo II"><span class="q-option__box"></span><span class="q-option__label">Módulo II · Tu asistente de ELE: chatbots a tu medida</span></label>
+              <label class="q-option"><input type="radio" name="modulo_interes" value="Modulo III"><span class="q-option__box"></span><span class="q-option__label">Módulo III · Planifica con IA: clases alineadas con el MCER</span></label>
+              <label class="q-option"><input type="radio" name="modulo_interes" value="Modulo IV"><span class="q-option__box"></span><span class="q-option__label">Módulo IV · Crea sin límites: recursos multimodales con IA gratuita</span></label>
+            </div>
+          </div>
+
+          <!-- P27: Preocupación principal -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 27</p>
+            <p class="q-block__text">¿Qué aspecto del uso de la IA en ELE te genera más incertidumbre o preocupación?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="preocupacion" value="Calidad lingüística materiales"><span class="q-option__box"></span><span class="q-option__label">La calidad lingüística y cultural de los materiales generados.</span></label>
+              <label class="q-option"><input type="radio" name="preocupacion" value="Uso alumnado trampa"><span class="q-option__box"></span><span class="q-option__label">El uso que hará el alumnado de la IA para evitar el aprendizaje real.</span></label>
+              <label class="q-option"><input type="radio" name="preocupacion" value="Privacidad datos"><span class="q-option__box"></span><span class="q-option__label">La privacidad y protección de los datos del alumnado.</span></label>
+              <label class="q-option"><input type="radio" name="preocupacion" value="Dependencia tecnológica"><span class="q-option__box"></span><span class="q-option__label">La dependencia tecnológica y pérdida de autonomía docente.</span></label>
+              <label class="q-option"><input type="radio" name="preocupacion" value="No saber usarla bien"><span class="q-option__box"></span><span class="q-option__label">No saber usarla con suficiente criterio y terminar generando contenido de baja calidad.</span></label>
+              <label class="q-option"><input type="radio" name="preocupacion" value="Sin preocupaciones"><span class="q-option__box"></span><span class="q-option__label">No me genera preocupaciones significativas.</span></label>
+            </div>
+          </div>
+
+          <!-- P28: Abierta - expectativas libres -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 28 · Abierta</p>
+            <p class="q-block__text">¿Hay algo concreto que quieras poder hacer con la IA al acabar el curso? Descríbelo con la mayor especificidad posible.</p>
+            <textarea class="q-open" name="expectativa_concreta" placeholder="Por ejemplo: quiero generar un banco de actividades de comprensión lectora para B2 listo para usar, o quiero crear un asistente que corrija las producciones escritas de mis estudiantes…" rows="4"></textarea>
+          </div>
+
+          <!-- P29: Abierta - necesidades especiales -->
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 29 · Abierta</p>
+            <p class="q-block__text">¿Hay alguna característica especial de tu grupo o contexto docente que creas que debería tenerse en cuenta para adaptar los contenidos del curso?</p>
+            <textarea class="q-open" name="contexto_especial" placeholder="Escribe libremente…" rows="3"></textarea>
+          </div>
+
+          <div class="q-nav">
+            <button type="button" class="btn btn--outline" id="btnPrevD">← Anterior</button>
+            <span class="q-nav__info">Bloque 4 de 4</span>
+            <button type="submit" class="btn btn--primary" id="btnSubmit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Enviar cuestionario
+            </button>
+          </div>
+        </div>
+
+      </form>
+      </div>
+
+      <div id="thankYou"><div id="resultados"></div></div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Nav + progress + secciones ── */
+const SECTIONS = ['A','B','C','D'];
+let currentSection = 0;
+const progressFill = document.getElementById('progressFill');
+const progressPct  = document.getElementById('progressPct');
+
+function updateProgress() {
+  const pct = Math.round((currentSection / SECTIONS.length) * 100);
+  if (progressFill) progressFill.style.width = pct + '%';
+  if (progressPct)  progressPct.textContent  = pct + '%';
+}
+function showSection(idx) {
+  document.querySelectorAll('.q-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.q-section-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + SECTIONS[idx])?.classList.add('active');
+  document.getElementById('tab-' + SECTIONS[idx])?.classList.add('active');
+  currentSection = idx;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function nextSection() {
+  if (currentSection < SECTIONS.length - 1) {
+    document.getElementById('tab-' + SECTIONS[currentSection])?.classList.add('done');
+    showSection(currentSection + 1);
+  }
+}
+function prevSection() { if (currentSection > 0) showSection(currentSection - 1); }
+
+SECTIONS.forEach((s,i) => document.getElementById('tab-'+s)?.addEventListener('click', () => showSection(i)));
+document.getElementById('btnNext')?.addEventListener('click', nextSection);
+document.getElementById('btnPrevB')?.addEventListener('click', prevSection);
+document.getElementById('btnNextB')?.addEventListener('click', nextSection);
+document.getElementById('btnPrevC')?.addEventListener('click', prevSection);
+document.getElementById('btnNextC')?.addEventListener('click', nextSection);
+document.getElementById('btnPrevD')?.addEventListener('click', prevSection);
+updateProgress();
+
+/* ── Motor de diagnóstico docente ── */
+function getVals(form) {
+  const fd = new FormData(form), vals = {};
+  for (const [k,v] of fd.entries()) {
+    vals[k] = vals[k] ? (Array.isArray(vals[k]) ? [...vals[k],v] : [vals[k],v]) : v;
+  }
+  return vals;
+}
+
+function calcPerfil(vals) {
+  /* Dimensión 1: Experiencia y práctica docente (pd1-pd6, 0-100) */
+  const pdKeys = ['pd1','pd2','pd3','pd4','pd5','pd6'];
+  let pdSum = 0, pdCount = 0;
+  pdKeys.forEach(k => { if (vals[k]) { pdSum += parseInt(vals[k]); pdCount++; } });
+  const pdPct = pdCount > 0 ? Math.round(((pdSum/pdCount)-1)/4*100) : 0;
+
+  /* Dimensión 2: Actitud e integración IA en ELE (ia1-ia7, 0-100) */
+  const iaKeys = ['ia1','ia2','ia3','ia4','ia5','ia6','ia7'];
+  let iaSum = 0, iaCount = 0;
+  iaKeys.forEach(k => { if (vals[k]) { iaSum += parseInt(vals[k]); iaCount++; } });
+  const iaPct = iaCount > 0 ? Math.round(((iaSum/iaCount)-1)/4*100) : 0;
+
+  /* Dimensión 3: Uso real de IA en docencia (frecuencia + para qué) */
+  const freqMap = {'Nunca':0,'Lo he probado puntualmente':1,'Ocasionalmente':2,'Habitualmente':3,'A diario':4};
+  const freqScore = freqMap[vals.freq_ia] || 0;
+  const usoArr = Array.isArray(vals.uso_ia_ele) ? vals.uso_ia_ele : (vals.uso_ia_ele ? [vals.uso_ia_ele] : []);
+  const usoScore = usoArr.includes('No la he usado en ELE') ? 0 : Math.min(usoArr.length, 6);
+  const usoPct = Math.round(((freqScore/4)*50) + ((usoScore/6)*50));
+
+  /* Puntuación global */
+  const total = Math.round((pdPct * 0.40) + (iaPct * 0.30) + (usoPct * 0.30));
+
+  /* Perfil docente */
+  let perfil;
+  if (total < 30)       perfil = 'A';  // Docente digital en transición
+  else if (total < 55)  perfil = 'B';  // Explorador/a de la IA en ELE
+  else if (total < 75)  perfil = 'C';  // Integrador/a activo/a
+  else                  perfil = 'D';  // Docente innovador/a
+
+  return { perfil, total, pdPct, iaPct, usoPct,
+           objetivo: vals.objetivo_curso || '',
+           modulo: vals.modulo_interes || '',
+           preocupacion: vals.preocupacion || '' };
+}
+
+const PERFILES_CURSO = {
+  A: {
+    nombre: 'Docente digital en transición',
+    emoji: '🌱',
+    color: '#2E7D5E',
+    colorLight: '#e8f5f0',
+    desc: 'Tienes una práctica docente sólida y consolidada, pero hasta ahora la IA ha sido ajena a tu rutina. Esto es una ventaja: llegas al curso sin hábitos incorrectos y con toda la curva de aprendizaje por delante. En cuatro semanas puedes transformar significativamente tu forma de preparar clases.',
+    fortalezas: ['Práctica docente consolidada en ELE', 'Conocimiento profundo del MCER y el PCIC', 'Base pedagógica sólida sobre la que construir'],
+    recomendaciones: [
+      { icono:'🎯', titulo:'Empieza por el Módulo I sin prisa', desc:'La ingeniería de prompts es la clave de todo lo demás. Dedica tiempo a entenderla bien antes de avanzar: un buen prompt multiplica la calidad de todo lo que viene después.' },
+      { icono:'📝', titulo:'Trae a clase ejemplos de tus grupos reales', desc:'El curso funciona mejor si trabajas con tus estudiantes reales en mente: sus niveles, sus perfiles culturales, sus necesidades comunicativas. No hagas actividades genéricas.' },
+      { icono:'🔍', titulo:'Evalúa siempre lo que genera la IA', desc:'Tu experiencia como docente de ELE es exactamente lo que te permite detectar cuando la IA comete errores lingüísticos, culturales o didácticos. Ese criterio es tu mayor activo.' },
+      { icono:'⏱️', titulo:'Empieza con UNA tarea concreta', desc:'No intentes cambiar todo a la vez. Elige una tarea repetitiva (generar textos de comprensión lectora, crear ejercicios de vocabulario) y domínala bien antes de pasar a la siguiente.' },
+    ],
+    modulos_clave: ['Módulo I: la base que necesitas', 'Módulo III: el que más te ahorrará tiempo'],
+    expectativa: 'Al final del curso serás capaz de generar materiales básicos de ELE con IA, revisar su calidad con criterio docente y empezar a integrarlos en tu rutina de preparación.'
+  },
+  B: {
+    nombre: 'Explorador/a de la IA en ELE',
+    emoji: '🚀',
+    color: '#1A4A8A',
+    colorLight: '#D6E8F7',
+    desc: 'Has dado los primeros pasos con la IA y has visto sus posibilidades, pero tu uso todavía es intuitivo y sin método sistemático. Este curso te dará exactamente lo que te falta: criterio, estructura y práctica deliberada aplicada a ELE.',
+    fortalezas: ['Familiaridad con herramientas básicas de IA', 'Motivación y curiosidad demostradas', 'Competencia digital activa en tu docencia'],
+    recomendaciones: [
+      { icono:'⚙️', titulo:'Profundiza en la estructura de los prompts', desc:'Probablemente ya escribes prompts de forma intuitiva. El Módulo I te enseñará a estructurarlos con rol, contexto, formato y restricciones. La diferencia en calidad es enorme.' },
+      { icono:'🤖', titulo:'El Módulo II es el que más te va a sorprender', desc:'Crear tu propio asistente especializado en tu nivel y tipo de clase cambia completamente la relación con la herramienta: dejas de ser usuario/a para ser creador/a.' },
+      { icono:'📊', titulo:'Trabaja la alineación con el MCER', desc:'Es el punto donde más docentes fallan al usar IA: generar materiales bonitos pero desalineados con los objetivos comunicativos del nivel. El Módulo III lo aborda específicamente.' },
+      { icono:'🌐', titulo:'Comparte en el foro lo que ya has probado', desc:'Tu experiencia previa es un recurso valioso para el grupo. Comparte qué has intentado, qué ha funcionado y qué no: aprenderéis todos más rápido.' },
+    ],
+    modulos_clave: ['Módulo II: donde darás el mayor salto', 'Módulo III: donde sistematizarás tu práctica'],
+    expectativa: 'Al final del curso tendrás un método claro, asistentes propios y un banco de prompts reutilizables para tus clases de ELE en el CLM.'
+  },
+  C: {
+    nombre: 'Integrador/a activo/a',
+    emoji: '⚡',
+    color: '#E8532B',
+    colorLight: '#FBE9E3',
+    desc: 'Usas la IA con regularidad en tu docencia y ya has visto resultados concretos. Tu reto ahora es ir más allá: sistematizar, crear herramientas propias y desarrollar recursos multimodales de calidad que enriquezcan tus clases de ELE.',
+    fortalezas: ['Uso regular y sistemático de IA en ELE', 'Criterio desarrollado para evaluar resultados', 'Competencia digital y docente combinadas'],
+    recomendaciones: [
+      { icono:'🛠️', titulo:'Céntrate en crear, no solo en usar', desc:'Ya sabes usar ChatGPT o Claude. El salto es diseñar herramientas que otros también puedan usar: asistentes configurados, plantillas de prompts, mini-apps. Módulo II y III.' },
+      { icono:'🎬', titulo:'El Módulo IV es donde más puedes crecer', desc:'Los recursos multimodales (audio, imagen, mapa mental integrados en una secuencia) son donde la mayoría de docentes todavía no han llegado. Aquí puedes destacar.' },
+      { icono:'🧭', titulo:'Revisa tu marco ético', desc:'Con uso más frecuente llega más responsabilidad. El Módulo I te ayudará a formalizar los criterios éticos que probablemente ya aplicas de forma intuitiva.' },
+      { icono:'👥', titulo:'Considera el rol de referente en el CLM', desc:'Con tu nivel, este curso puede ser el punto de partida para convertirte en el/la referente de IA del departamento de español. Hay 41 docentes que podrían aprender de tu experiencia.' },
+    ],
+    modulos_clave: ['Módulo IV: tu mayor oportunidad de crecimiento', 'Módulo II: para pasar de usuario/a a creador/a'],
+    expectativa: 'Al final del curso tendrás un portfolio de recursos multimodales propios y la capacidad de crear herramientas que otros docentes del CLM puedan utilizar.'
+  },
+  D: {
+    nombre: 'Docente innovador/a',
+    emoji: '🏆',
+    color: '#6C3483',
+    colorLight: '#f3e8fa',
+    desc: 'Tienes un dominio notable de la IA aplicada a ELE y una práctica docente muy consolidada. Ya integras herramientas con criterio y creatividad. Tu reto es llevar eso al siguiente nivel: crear sistemas reutilizables, liderar la innovación en el CLM y compartir tu conocimiento.',
+    fortalezas: ['Dominio técnico y pedagógico combinado', 'Práctica innovadora ya consolidada', 'Capacidad de liderar el cambio en el CLM'],
+    recomendaciones: [
+      { icono:'🎓', titulo:'Este curso es también una oportunidad para enseñar', desc:'Con tu nivel, las sesiones colaborativas de las videotutorías serán más ricas si compartes tu experiencia, tus errores y tus hallazgos. El grupo aprenderá contigo.' },
+      { icono:'📐', titulo:'Diseña herramientas para tus compañeros/as', desc:'Piensa en cada actividad del curso como algo que podrías compartir con los otros 40 docentes de español del CLM. Escala tu impacto más allá del aula.' },
+      { icono:'🔬', titulo:'Profundiza en los límites de la IA en ELE', desc:'¿Dónde falla la IA en la enseñanza del español? Explora los casos límite: variedad dialectal, pragmática, humor, registros. Desarrolla criterio sobre sus puntos ciegos.' },
+      { icono:'📜', titulo:'Propón una política de uso de IA para el CLM', desc:'Tu experiencia te pone en posición ideal para proponer a la dirección un marco de uso ético de la IA para el departamento de español: qué sí, qué no, cómo comunicarlo al alumnado.' },
+    ],
+    modulos_clave: ['Módulo II: diseñar asistentes a escala CLM', 'Módulo IV: recursos multimodales avanzados'],
+    expectativa: 'Al final del curso tendrás las herramientas y el marco conceptual para liderar la integración de la IA en el departamento de español del CLM.'
+  }
+};
+
+/* ── Render resultados del curso ── */
+function renderResultadosCurso({ perfil, total, pdPct, iaPct, usoPct, objetivo, modulo, preocupacion }) {
+  const p = PERFILES_CURSO[perfil];
+  const container = document.getElementById('resultados');
+  if (!container) return;
+
+  const moduloDestacado = modulo ? `<div class="res-curso" style="border-left:4px solid ${p.color};background:${p.colorLight};margin:0"><h3 class="res-section-title" style="color:${p.color}">Tu módulo favorito: ${modulo}</h3><p class="res-curso__text">Has indicado que este módulo te genera más expectativa. Lo tendremos en cuenta para enriquecer las sesiones de videotutoría.</p></div>` : '';
+
+  const preocupacionBloque = preocupacion && preocupacion !== 'Sin preocupaciones' ? `<div class="res-curso" style="border-left:4px solid #E8532B;background:#FBE9E3;margin:0"><h3 class="res-section-title" style="color:#E8532B">Tu preocupación principal</h3><p class="res-curso__text">Has señalado: <strong>${preocupacion}</strong>. Abordaremos esto directamente en el curso, especialmente en el Módulo I.</p></div>` : '';
+
+  container.innerHTML = `
+    <div class="res-hero" style="background:linear-gradient(135deg,${p.color},${p.color}cc)">
+      <div class="res-hero__inner">
+        <div class="res-hero__emoji">${p.emoji}</div>
+        <div>
+          <p class="res-hero__tag">🇪🇸 Docente de ELE · CLM · Curso de abril 2027</p>
+          <h2 class="res-hero__nivel">Perfil · ${p.nombre}</h2>
+          <p class="res-hero__desc">${p.desc}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="res-scores">
+      <div class="res-score-card">
+        <div class="res-score-card__label">Práctica docente ELE</div>
+        <div class="res-score-card__bar"><div class="res-score-card__fill" style="width:0%;background:${p.color}" data-target="${pdPct}"></div></div>
+        <div class="res-score-card__num">${pdPct}<span>/100</span></div>
+      </div>
+      <div class="res-score-card">
+        <div class="res-score-card__label">Actitud ante la IA</div>
+        <div class="res-score-card__bar"><div class="res-score-card__fill" style="width:0%;background:${p.color}" data-target="${iaPct}"></div></div>
+        <div class="res-score-card__num">${iaPct}<span>/100</span></div>
+      </div>
+      <div class="res-score-card">
+        <div class="res-score-card__label">Uso real de IA en ELE</div>
+        <div class="res-score-card__bar"><div class="res-score-card__fill" style="width:0%;background:${p.color}" data-target="${usoPct}"></div></div>
+        <div class="res-score-card__num">${usoPct}<span>/100</span></div>
+      </div>
+      <div class="res-score-card res-score-card--total">
+        <div class="res-score-card__label">Índice global</div>
+        <div class="res-score-card__total" style="color:${p.color}">${total}<span style="font-size:1.2rem;font-weight:400;color:#6B7A8D">/100</span></div>
+      </div>
+    </div>
+
+    <div class="res-fortalezas">
+      <h3 class="res-section-title">Tus puntos fuertes como docente</h3>
+      <div class="res-fortalezas__list">
+        ${p.fortalezas.map(f=>`<div class="res-fortaleza"><span style="color:${p.color}">✓</span> ${f}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="res-ruta">
+      <h3 class="res-section-title">Recomendaciones personalizadas para este curso</h3>
+      <div class="res-ruta__steps">
+        ${p.recomendaciones.map((r,i)=>`
+          <div class="res-step">
+            <div class="res-step__num" style="background:${p.color}">${i+1}</div>
+            <div class="res-step__body">
+              <div class="res-step__header">
+                <span class="res-step__icon">${r.icono}</span>
+                <h4 class="res-step__titulo">${r.titulo}</h4>
+              </div>
+              <p class="res-step__desc">${r.desc}</p>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="res-curso" style="border-left:4px solid ${p.color};background:${p.colorLight}">
+      <h3 class="res-section-title" style="color:${p.color}">Módulos clave para tu perfil</h3>
+      <p class="res-curso__text">${p.modulos_clave.map(m=>`<strong>${m}</strong>`).join(' · ')}</p>
+      <p class="res-curso__text" style="margin-top:.5rem">${p.expectativa}</p>
+    </div>
+
+    ${moduloDestacado}
+    ${preocupacionBloque}
+
+    <div class="res-actions">
+      <a href="programa.html" class="btn btn--primary">Ver programa del curso</a>
+      <a href="calendario.html" class="btn btn--outline">Ver calendario</a>
+      <button onclick="window.print()" class="btn btn--outline">🖨 Imprimir resultados</button>
+    </div>
+  `;
+
+  setTimeout(() => {
+    container.querySelectorAll('.res-score-card__fill').forEach(bar => {
+      bar.style.transition = 'width 1.2s ease';
+      bar.style.width = bar.dataset.target + '%';
+    });
+  }, 200);
+}
+
+/* ── Submit ── */
+const form = document.getElementById('cursoForm');
+const thankYou = document.getElementById('thankYou');
+const formWrapper = document.getElementById('formWrapper');
+
+form?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true; btn.textContent = 'Analizando…';
+
+  const vals = getVals(form);
+  const diagnostico = calcPerfil(vals);
+  const pInfo = PERFILES_CURSO[diagnostico.perfil];
+
+  const fd = new FormData(form);
+  fd.append('_perfil_docente', pInfo.nombre);
+  fd.append('_puntuacion_global', diagnostico.total + '/100');
+  fd.append('_practica_docente', diagnostico.pdPct + '/100');
+  fd.append('_actitud_ia', diagnostico.iaPct + '/100');
+  fd.append('_uso_ia_ele', diagnostico.usoPct + '/100');
+
+  try {
+    await fetch(form.action, { method:'POST', body:fd, headers:{'Accept':'application/json'} });
+  } catch {}
+
+  if (progressFill) progressFill.style.width = '100%';
+  if (progressPct)  progressPct.textContent  = '100%';
+  document.querySelectorAll('.q-section-tab').forEach(t => t.classList.add('done'));
+  formWrapper.style.display = 'none';
+  thankYou.style.display = 'block';
+  renderResultadosCurso(diagnostico);
+  thankYou.scrollIntoView({ behavior:'smooth', block:'start' });
+});
+</script>
+</body>
+</html>
