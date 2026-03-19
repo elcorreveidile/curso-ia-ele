@@ -5,12 +5,12 @@
 
 ## 📋 ÍNDICE
 
-- **A-C:** AGI, Alucinación, Ambiente, API, Aprendizaje automático
-- **D-F:** Deepfake, Dialogue, Escritura, Fine-tuning, Frame
-- **I-L:** Ingeniería de prompts, Input, LLM, Learning
-- **M-P:** MCER, Modelo, Multimodal, Parámetro, Prompt
-- **R-S:** Rúbrica, Salida, Sesgo, System prompt
-- **T-V:** Temperatura, Token, Training, Voice cloning
+- **A-C:** AGI, Alucinación, Ambiente, API, Aprendizaje automático, Chatbot, Contexto
+- **D-F:** Deepfake, Dialogue, Escritura, Frame
+- **I-L:** Ingeniería de prompts, Input, Iteración, LLM, Learning
+- **M-P:** MCER, Modelo, Multimodal, Parámetro, PCIC, Prompt
+- **R-S:** Response time, Role, Rúbrica, Salida, Sesgo, Subjuntivo, System prompt
+- **T-V:** Temperatura, Token, Training, Translation, Voice cloning
 - **Otros términos importantes**
 
 ---
@@ -205,9 +205,6 @@ Herramienta de generación de voz con IA. Voces muy naturales.
 ### **ELE**
 Español como Lengua Extranjera. Campo de especialización de este curso.
 
-### **Fine-tuning**
-Ver **Fine-tuning** arriba.
-
 ### **Generative AI (IA generativa)**
 Tipo de IA que puede crear contenido nuevo (texto, imágenes, audio, etc.) en lugar de solo analizar contenido existente.
 
@@ -217,35 +214,14 @@ Nivel de detalle o especificación. En prompts, mayor granularidad = más detall
 ### **Grounding (Anclaje)**
 Proceso de conectar la respuesta de la IA con fuentes verificables o hechos reales.
 
-### **Halucination**
-Ver **Alucinación** arriba.
-
-### **MCER**
-Ver **MCER** arriba.
-
-### **Multimodal**
-Ver **Multimodal** arriba.
-
 ### **Natural Language Processing (NLP)**
 Procesamiento de lenguaje natural. Campo de la IA que se enfoca en la interacción entre computadoras y lenguaje humano.
 
 ### **OpenAI**
 Empresa que desarrolla ChatGPT, GPT-4, DALL-E, y otros modelos de IA.
 
-### **PCIC**
-Ver **PCIC** arriba.
-
-### **Prompt**
-Ver **Prompt** arriba.
-
-### **Refinement (Refinamiento)**
-Ver **Iteración** arriba. Proceso de mejorar un resultado con prompts específicos.
-
 ### **Role-play**
 Ejercicio dramático donde el alumnado interpreta un personaje o situación. La IA puede generar guiones de role-play.
-
-### **System prompt**
-Ver **Ambiente** arriba.
 
 ---
 
