@@ -1345,13 +1345,15 @@ footer strong { color: var(--white); }
   background: var(--white); border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
 }
-.area-option__info { flex: 1; }
+.area-option__info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .area-option__label {
+  display: block;
   font-size: .9rem; font-weight: 600;
-  color: var(--ink); line-height: 1.2;
+  color: var(--ink); line-height: 1.3;
 }
 .area-option__desc {
-  font-size: .75rem; color: var(--ink-muted); margin-top: 1px;
+  display: block;
+  font-size: .75rem; color: var(--ink-muted); line-height: 1.3;
 }
 .area-option input:checked ~ .area-option__icon { background: var(--blue-light); }
 .area-option input:checked ~ .area-option__info .area-option__label { color: var(--blue); }
