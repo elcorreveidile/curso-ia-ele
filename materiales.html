@@ -29,6 +29,34 @@
       height: 3px;
       background: linear-gradient(90deg, var(--clm-red), transparent);
     }
+    .home-top {
+      padding: 2rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      position: relative; z-index: 1;
+    }
+    .home-logo {
+      font-family: var(--font-display);
+      font-weight: 800; font-size: 1.1rem;
+      color: var(--white);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .home-logo span {
+      background: var(--clm-red); color: var(--white);
+      padding: 2px 8px; border-radius: var(--r-sm); font-size: .8rem;
+    }
+    .home-nav { display: flex; gap: 1.5rem; }
+    .home-nav a {
+      color: rgba(255,255,255,.6); font-size: .875rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .home-nav a:hover { color: var(--white); }
+    .home-body {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+      align-items: center; text-align: center;
+      padding: 2rem 2.5rem 4rem;
+      position: relative; z-index: 1;
+      max-width: 960px; margin: 0 auto; width: 100%;
+    }
     .materials-content {
       max-width: 1200px; margin: 0 auto;
       padding: 4rem 2.5rem;
