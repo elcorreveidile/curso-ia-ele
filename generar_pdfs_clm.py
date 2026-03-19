@@ -129,6 +129,24 @@ PDF_CSS = CSS(string="""
     p {
         margin: 5px 0;
         line-height: 1.4;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    pre {
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 9pt;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-x: auto;
+        line-height: 1.3;
+    }
+
+    code {
+        font-family: 'Courier New', monospace;
+        font-size: 9pt;
     }
 """)
 
@@ -139,6 +157,8 @@ def markdown_to_html(markdown_content):
     lines = markdown_content.split('\n')
     i = 0
     section_num = 0
+    in_code_block = False
+    code_lines = []
 
     # Extraer título
     title = "IA para la enseñanza de ELE"
@@ -171,6 +191,24 @@ def markdown_to_html(markdown_content):
         line = lines[i].rstrip()
 
         if not line:
+            i += 1
+            continue
+
+        # Bloques de código
+        if line.strip().startswith('```'):
+            if not in_code_block:
+                in_code_block = True
+                code_lines = []
+            else:
+                # Cerrar bloque de código
+                code_content = '\n'.join(code_lines)
+                html_lines.append(f'<pre><code>{code_content}</code></pre>')
+                in_code_block = False
+            i += 1
+            continue
+
+        if in_code_block:
+            code_lines.append(line)
             i += 1
             continue
 
