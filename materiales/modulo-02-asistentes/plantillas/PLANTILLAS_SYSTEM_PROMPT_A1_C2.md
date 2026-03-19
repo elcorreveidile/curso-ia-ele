@@ -502,5 +502,5 @@ Antes de usar tu system prompt, verifica que incluye:
 
 ---
 
-**Plantillas creadas para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Plantillas creadas para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026

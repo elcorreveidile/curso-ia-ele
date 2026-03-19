@@ -78,10 +78,10 @@
 
 ```
 Nombre completo: IA para la enseñanza de ELE: planificación de clases y creación de materiales
-Nombre corto: IA-ELE-2027
+Nombre corto: IA-ELE-2026
 Categoría: Formación del profesorado
-Fecha de inicio: 07/04/2027
-Fecha de fin: 04/05/2027
+Fecha de inicio: 07/04/2026
+Fecha de fin: 04/05/2026
 Formato del curso: Formato de temas
 Número de secciones: 6
 ```
@@ -274,7 +274,7 @@ Ver rúbrica de evaluación en [enlace]
 Nombre: Videotutoría 1 - Módulos I y II
 Descripción: "Presentación del curso, reflexión ética y prompts básicos"
 
-Fecha y hora de apertura: 13/04/2027 14:45 h
+Fecha y hora de apertura: 13/04/2026 14:45 h
 Duración: 90 minutos (15 min antes del inicio)
 
 Grabación de la sesión: Sí
@@ -291,11 +291,11 @@ Participantes: Todos los participantes del curso
 3. Configurar:
 
 ```
-Nombre: Videotutoría 1 - 13 abril 2027
+Nombre: Videotutoría 1 - 13 abril 2026
 URL: [Enlace Zoom/Meet]
 Descripción: "Sesión 1: Módulos I y II
 
-📅 Fecha: 13 de abril 2027
+📅 Fecha: 13 de abril 2026
 ⏰ Hora: 15:00-16:30 (GMT+2)
 
 Contenido:
@@ -415,5 +415,5 @@ CALIFICACIÓN SOBRESALIENTE: ≥ 90 puntos
 
 ---
 
-**Guía creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Guía creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026

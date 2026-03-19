@@ -337,5 +337,5 @@ Ahora que has leído sobre FRAME y prompts plantilla, practica:
 
 ---
 
-**Lectura creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Lectura creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026

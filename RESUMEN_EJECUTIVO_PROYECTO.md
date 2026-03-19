@@ -8,7 +8,7 @@
 **Institución:** Centro de Lenguas Modernas (CLM) - Universidad de Granada
 **Fecha:** Marzo 2026
 **Responsable:** [Nombre de la formadora]
-**Duración del curso:** 20 horas en 4 semanas (abril 2027)
+**Duración del curso:** 20 horas en 4 semanas (abril 2026)
 **Destinatarios:** ~41 docentes de ELE del CLM
 
 ---
@@ -99,7 +99,7 @@ curso-ia-ele/
 
 ## 3. RECOMENDACIONS DE USO
 
-### 3.1 Antes de la primera edición (abril 2027)
+### 3.1 Antes de la primera edición (abril 2026)
 
 **Revisar y ajustar:**
 - [ ] Verificar que todos los enlaces de GitHub Pages funcionan
@@ -145,7 +145,7 @@ curso-ia-ele/
 
 ## 4. PRÓXIMOS PASOS
 
-### Inmediatos (antes de abril 2027)
+### Inmediatos (antes de abril 2026)
 
 1. **Probar materiales con grupo piloto**
    - Seleccionar 3-5 docentes del CLM
@@ -168,17 +168,17 @@ curso-ia-ele/
    - Crear todas las secciones
    - Configurar foros y tareas
 
-### A medio plazo (durante 2027)
+### A medio plazo (durante 2026)
 
 5. **Primera edición completa**
-   - Abril 2027: 41 docentes
+   - Abril 2026: 41 docentes
    - Recopilar feedback completo
    - Documentar lecciones aprendidas
 
 6. **Segunda edición mejorada**
    - Ajustar según feedback
    - Mejorar videos y materiales
-   - Octubre 2027 o enero 2028
+   - Octubre 2026 o enero 2028
 
 7. **Versión en inglés**
    - Traducir materiales clave
@@ -243,7 +243,7 @@ curso-ia-ele/
 
 ## 6. PRESUPUESTO ESTIMADO
 
-### Para primera edición (abril 2027)
+### Para primera edición (abril 2026)
 
 | Concepto | Costo |
 |----------|-------|
@@ -270,11 +270,11 @@ curso-ia-ele/
 
 | Riesgo | Probabilidad | Impacto | Mitigación |
 |--------|-------------|---------|------------|
-| Tecnología obsoleta antes de 2027 | Media | Alto | Usar herramientas API estables |
+| Tecnología obsoleta antes de 2026 | Media | Alto | Usar herramientas API estables |
 | Resistencia docente a IA | Alta | Medio | Enfoque ético y crítico |
 | Baja participación en foros | Media | Medio | Hacer foros evaluables |
 | Problemas técnicos en videollamadas | Baja | Alto | Tener alternativa pregrabada |
-| Saturación de IA en 2027 | Alta | Medio | Enfoque práctico, no teórico |
+| Saturación de IA en 2026 | Alta | Medio | Enfoque práctico, no teórico |
 
 ### Plan de contingencia
 
@@ -339,7 +339,7 @@ Este proyecto fue posible gracias a:
 
 ---
 
-**Resumen ejecutivo creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Resumen ejecutivo creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026
 **Estado:** COMPLETO ✅
 
@@ -384,7 +384,7 @@ Este proyecto fue posible gracias a:
 
 ## ✅ PROYECTO COMPLETO
 
-Todos los materiales necesarios para impartir el curso "IA para la enseñanza de ELE" han sido creados, organizados y están listos para ser implementados en Moodle CLM-UGR en abril 2027.
+Todos los materiales necesarios para impartir el curso "IA para la enseñanza de ELE" han sido creados, organizados y están listos para ser implementados en Moodle CLM-UGR en abril 2026.
 
 **Estado: LISTO PARA IMPLEMENTACIÓN** 🎉
 

@@ -98,7 +98,7 @@
 > Mi compromiso: cada actividad que hagas te servirá en tu práctica docente real. No es teoría abstracta: es material que podrás usar el próximo día en clase."
 
 **Visual:**
-- Calendario: 13, 23, 30 abril 2027
+- Calendario: 13, 23, 30 abril 2026
 - Icono: 15:00-16:30 (GMT+2)
 - Texto: "Moodle + 3 sesiones en directo"
 
@@ -169,7 +169,7 @@
 | 0:00 | Nombre de la formadora + "Profesora de ELE - CLM UGR" | 5 seg |
 | 0:30 | "IA para la enseñanza de ELE" (título del curso) | 4 seg |
 | 1:00 | "4 Módulos en 4 semanas" | 3 seg |
-| 1:30 | "13, 23, 30 abril 2027 | 15:00-16:30 (GMT+2)" | 5 seg |
+| 1:30 | "13, 23, 30 abril 2026 | 15:00-16:30 (GMT+2)" | 5 seg |
 | 2:00 | "4 Productos para tu práctica docente" | 4 seg |
 | 2:30 | "Paso 1: Cuestionario diagnóstico" | 3 seg |
 | 2:32 | "Paso 2: Foro de presentación" | 3 seg |
@@ -284,5 +284,5 @@ Si deseas personalizar, puedes añadir:
 
 ---
 
-**Guion creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Guion creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026

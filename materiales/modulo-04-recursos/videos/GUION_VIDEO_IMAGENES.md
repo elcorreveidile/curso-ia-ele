@@ -52,4 +52,4 @@ Mostrar cómo usar imagen generada en clase:
 
 ---
 
-**Guion creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Guion creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**

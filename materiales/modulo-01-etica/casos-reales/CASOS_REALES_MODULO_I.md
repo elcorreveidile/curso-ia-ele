@@ -380,7 +380,7 @@ Para tu actividad de este módulo, te pido que:
 
 ---
 
-**Casos reales creados para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Casos reales creados para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026
 
 > **Nota:** Los casos están basados en situaciones reales pero los nombres y detalles específicos han sido modificados para proteger la privacidad.

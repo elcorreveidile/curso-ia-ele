@@ -140,9 +140,9 @@ El curso incluye **3 sesiones síncronas en directo**:
 ### Fechas y horarios:
 | Sesión | Fecha | Horario | Tema |
 |--------|-------|---------|------|
-| 1 | 13 abril 2027 | 15:00-16:30 (GMT+2) | Módulos I y II: Ética y asistentes |
-| 2 | 23 abril 2027 | 15:00-16:30 (GMT+2) | Módulo III: Planificación con IA |
-| 3 | 30 abril 2027 | 15:00-16:30 (GMT+2) | Módulo IV: Recursos multimodales + Cierre |
+| 1 | 13 abril 2026 | 15:00-16:30 (GMT+2) | Módulos I y II: Ética y asistentes |
+| 2 | 23 abril 2026 | 15:00-16:30 (GMT+2) | Módulo III: Planificación con IA |
+| 3 | 30 abril 2026 | 15:00-16:30 (GMT+2) | Módulo IV: Recursos multimodales + Cierre |
 
 ### Cómo unirse a una sesión:
 
@@ -329,9 +329,9 @@ Si has llegado hasta aquí y has completado el checklist, estás listo/a para co
 
 **[Nombre de la formadora]**
 **Centro de Lenguas Modernas - Universidad de Granada**
-**Marzo 2027**
+**Marzo 2026**
 
 ---
 
-**Guía creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Guía creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026

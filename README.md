@@ -64,7 +64,7 @@ claude
 
 ## Personalización rápida
 
-- **Fechas del curso**: busca `abril 2027` en `index.html` y cambia por las definitivas
+- **Fechas del curso**: busca `abril 2026` en `index.html` y cambia por las definitivas
 - **Colores**: edita las variables CSS en la raíz de `style.css` (`:root { ... }`)
 - **Logo/nombre**: busca `IA<span>ELE</span>` en el nav y personaliza
 - **Correo de destino**: solo necesitas cambiarlo en Formspree (no en el código)

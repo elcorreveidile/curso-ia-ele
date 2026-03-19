@@ -28,7 +28,7 @@ Este proyecto comprende **dos productos digitales distintos pero interconectados
 - **Destinatarios:** Docentes de ELE del CLM (aproximadamente 41 profesores)
 - **Duración:** 20 horas en 4 semanas
 - **Modalidad:** Semipresencial — Moodle + 3 videotutorías en directo
-- **Fechas (primera edición):** Abril 2027
+- **Fechas (primera edición):** Abril 2026
 - **Videotutorías:** 13, 23 y 30 de abril · 15:00–16:30 h (GMT+2)
 
 ### B) Sistema de diagnóstico de IA para todo el CLM
@@ -353,10 +353,10 @@ Para añadir o modificar rutas de aprendizaje por área, edita el objeto `RUTAS_
 1. Ve a **Administración del curso → Editar ajustes**
 2. Configura:
    - **Nombre completo:** `IA para la enseñanza de ELE: planificación de clases y creación de materiales`
-   - **Nombre corto:** `IA-ELE-2027`
+   - **Nombre corto:** `IA-ELE-2026`
    - **Categoría:** Formación del profesorado
-   - **Fecha de inicio:** 07/04/2027
-   - **Fecha de fin:** 04/05/2027
+   - **Fecha de inicio:** 07/04/2026
+   - **Fecha de fin:** 04/05/2026
    - **Formato del curso:** Formato de temas
    - **Número de secciones:** 6 (bienvenida + 4 módulos + cierre)
 
@@ -428,9 +428,9 @@ Para añadir o modificar rutas de aprendizaje por área, edita el objeto `RUTAS_
 
 1. Añade la actividad **BigBlueButton**
 2. Configura:
-   - **Nombre:** Videotutoría 1 — 13 de abril de 2027
+   - **Nombre:** Videotutoría 1 — 13 de abril de 2026
    - **Descripción:** Presentación del curso, primeras reflexiones éticas e introducción a los prompts
-   - **Fecha y hora de apertura:** 13/04/2027 14:45 h (15 min antes del inicio)
+   - **Fecha y hora de apertura:** 13/04/2026 14:45 h (15 min antes del inicio)
    - **Duración:** 90 minutos
    - **Grabación:** Activar grabación automática
 3. Repite para las sesiones 2 (23 abril) y 3 (30 abril)
@@ -529,7 +529,7 @@ Si superas los 50 envíos/mes (muy probable con 110 trabajadores), actualiza a *
 
 ### Cómo cambiar las fechas del curso
 
-Las fechas aparecen en varios sitios. Busca y reemplaza `abril 2027` en:
+Las fechas aparecen en varios sitios. Busca y reemplaza `abril 2026` en:
 - `index.html`
 - `calendario.html`
 - `cuestionario-curso.html`

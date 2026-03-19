@@ -217,5 +217,5 @@ Un plan excelente suele incluir:
 
 ---
 
-**Rúbrica creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2027**
+**Rúbrica creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
 **Versión:** 1.0 | **Fecha:** Marzo 2026

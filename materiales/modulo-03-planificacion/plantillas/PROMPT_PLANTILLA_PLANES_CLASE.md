@@ -310,4 +310,4 @@ Cuando uses este prompt correctamente, deberías obtener:
 
 **¿Listo para crear tu primer plan de clase con IA?** ¡Copia, rellena y genera!
 
-*Documento creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2027*
+*Documento creado para el curso "IA para la enseñanza de ELE" - CLM UGR 2026*
