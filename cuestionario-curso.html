@@ -473,6 +473,13 @@
 </div>
 
 <script>
+/* ── Activate reveal animations ── */
+document.querySelectorAll('.reveal').forEach(el => {
+  new IntersectionObserver(([e], obs) => {
+    if (e.isIntersecting) { el.classList.add('visible'); obs.unobserve(el); }
+  }, { threshold: 0.05 }).observe(el);
+});
+
 /* ── Nav + progress + secciones ── */
 const SECTIONS = ['A','B','C','D'];
 let currentSection = 0;
