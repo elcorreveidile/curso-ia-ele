@@ -744,18 +744,31 @@ const form        = document.getElementById('diagnosticoForm');
 const thankYou    = document.getElementById('thankYou');
 const formWrapper = document.getElementById('formWrapper');
 
-form?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById('btnSubmit');
-  btn.disabled = true;
-  btn.textContent = 'Analizando…';
-
-  const vals = getFormValues(form);
-  const diagnostico = calcDiagnostico(vals);
-  const perfil = PERFILES[diagnostico.nivel];
+function showResults(diagnostico) {
+  const perfil   = PERFILES[diagnostico.nivel];
   const areaInfo = RUTAS_AREA[diagnostico.area] || RUTAS_AREA['general'];
 
-  /* Enriquecer FormData con resultados para que lleguen al correo */
+  // Actualizar barra de progreso
+  if (progressFill) progressFill.style.width = '100%';
+  if (progressPct)  progressPct.textContent  = '100%';
+  document.querySelectorAll('.q-section-tab').forEach(t => t.classList.add('done'));
+
+  // Ocultar formulario, mostrar resultados con !important para vencer el CSS
+  if (formWrapper) formWrapper.style.cssText = 'display:none!important';
+  if (thankYou) {
+    thankYou.style.cssText = 'display:block!important;padding:0!important;background:none!important;box-shadow:none!important;border-radius:0!important';
+  }
+
+  // Renderizar resultados
+  renderResultados(diagnostico);
+
+  // Scroll suave al resultado
+  setTimeout(() => {
+    const r = document.getElementById('resultados');
+    if (r) r.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+
+  // Enviar a Formspree en segundo plano (sin bloquear la UI)
   const fd = new FormData(form);
   fd.append('_resultado_nivel', `Nivel ${diagnostico.nivel} · ${perfil.nombre}`);
   fd.append('_resultado_area', areaInfo.label);
@@ -763,23 +776,22 @@ form?.addEventListener('submit', async (e) => {
   fd.append('_conocimiento_objetivo', diagnostico.knowPct + '/100');
   fd.append('_competencia_digital', diagnostico.digPct + '/100');
   fd.append('_herramientas_digitales', diagnostico.elePct + '/100');
+  fetch(form.action, {
+    method: 'POST', body: fd,
+    headers: { 'Accept': 'application/json' }
+  }).catch(() => console.warn('Formspree: envío en segundo plano fallido.'));
+}
 
-  try {
-    const res = await fetch(form.action, {
-      method: 'POST', body: fd,
-      headers: { 'Accept': 'application/json' }
-    });
-    if (!res.ok) console.warn('Formspree: error de envío, pero mostramos resultados.');
-  } catch { console.warn('Error de red, mostramos resultados igualmente.'); }
+form?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btnSubmit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Analizando…'; }
 
-  /* Mostrar resultados siempre, independientemente del envío */
-  if (progressFill) progressFill.style.width = '100%';
-  if (progressPct)  progressPct.textContent  = '100%';
-  document.querySelectorAll('.q-section-tab').forEach(t => t.classList.add('done'));
-  formWrapper.style.display = 'none';
-  thankYou.style.display = 'block';
-  renderResultados(diagnostico);
-  thankYou.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const vals       = getFormValues(form);
+  const diagnostico = calcDiagnostico(vals);
+
+  // Mostrar resultados inmediatamente, sin esperar respuesta de red
+  showResults(diagnostico);
 });
 
 updateProgress();

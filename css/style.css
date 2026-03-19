@@ -1180,7 +1180,7 @@ footer strong { color: var(--white); }
 /* ═══════════════════════════════════════════════════════
    PÁGINA DE RESULTADOS
 ═══════════════════════════════════════════════════════ */
-#thankYou { display: none; padding: 0 !important; background: none !important; box-shadow: none !important; border-radius: 0 !important; }
+#thankYou { display: none; padding: 0; background: none; box-shadow: none; border-radius: 0; }
 
 #resultados { margin-top: 0; }
 
