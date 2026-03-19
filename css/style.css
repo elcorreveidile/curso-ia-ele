@@ -1312,3 +1312,51 @@ footer strong { color: var(--white); }
 @media (max-width: 600px) {
   .res-scores { grid-template-columns: 1fr; }
 }
+
+/* Contexto de área en resultados */
+.res-hero__contexto {
+  font-size: .875rem; line-height: 1.6;
+  color: rgba(255,255,255,.7);
+  margin-top: .5rem;
+  max-width: 620px;
+  font-style: italic;
+}
+
+/* Selector de área de trabajo */
+.area-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .6rem;
+}
+.area-option {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .85rem 1rem;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--canvas-alt);
+  cursor: pointer;
+  transition: all .15s;
+  background: var(--canvas);
+}
+.area-option:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+.area-option input { display: none; }
+.area-option__icon {
+  font-size: 1.3rem; flex-shrink: 0;
+  width: 36px; height: 36px;
+  background: var(--white); border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+}
+.area-option__info { flex: 1; }
+.area-option__label {
+  font-size: .9rem; font-weight: 600;
+  color: var(--ink); line-height: 1.2;
+}
+.area-option__desc {
+  font-size: .75rem; color: var(--ink-muted); margin-top: 1px;
+}
+.area-option input:checked ~ .area-option__icon { background: var(--blue-light); }
+.area-option input:checked ~ .area-option__info .area-option__label { color: var(--blue); }
+.area-option:has(input:checked) {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+@media (max-width: 600px) { .area-grid { grid-template-columns: 1fr; } }
