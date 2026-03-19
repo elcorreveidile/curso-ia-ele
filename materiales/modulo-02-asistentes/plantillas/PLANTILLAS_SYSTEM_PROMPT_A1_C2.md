@@ -1,19 +1,22 @@
+# ÍNDICE
+
+
+1. Plantilla Genérica
+2. Nivel A1 - Sistema Inicial
+3. Nivel A2 - Sistema de Conversación
+4. Nivel B1 - Sistema de Narración
+5. Nivel B2 - Sistema de Debate
+6. Nivel C1 - Sistema de Análisis
+7. Nivel C2 - Sistema de Especialización
+
+
+\newpage
+
 # PLANTILLAS SYSTEM PROMPT PARA ASISTENTES ELE (A1-C2)
 ### System prompts listos para usar y adaptar a tu contexto
 
 ---
 
-## 📋 ÍNDICE
-
-1. [Plantilla Genérica](#plantilla-generica)
-2. [Nivel A1 - Sistema Inicial](#nivel-a1)
-3. [Nivel A2 - Sistema de Conversación](#nivel-a2)
-4. [Nivel B1 - Sistema de Narración](#nivel-b1)
-5. [Nivel B2 - Sistema de Debate](#nivel-b2)
-6. [Nivel C1 - Sistema de Análisis](#nivel-c1)
-7. [Nivel C2 - Sistema de Especialización](#nivel-c2)
-
----
 
 ## PLANTILLA GENÉRICA
 

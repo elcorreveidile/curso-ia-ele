@@ -1,18 +1,21 @@
+# ÍNDICE
+
+
+1. Introducción: Por qué la ética importa en ELE
+2. 5 Principios éticos para docentes de ELE
+3. Casos de sesgos comunes en ELE
+4. Guía de decisiones éticas
+5. Conclusión: Tu turno
+6. Recursos adicionales
+
+
+\newpage
+
 # LECTURA 1: ÉTICA DE LA IA EN EDUCACIÓN ELE
 ### Por qué la ética importa específicamente en la enseñanza de Español como Lengua Extranjera
 
 ---
 
-## 📋 ÍNDICE
-
-1. [Introducción: Por qué la ética importa en ELE](#1-introducción)
-2. [5 Principios éticos para docentes de ELE](#2-5-principios-eticos)
-3. [Casos de sesgos comunes en ELE](#3-casos-de-sesgos)
-4. [Guía de decisiones éticas](#4-guia-de-decisiones)
-5. [Conclusión: Tu turno](#5-conclusion)
-6. [Recursos adicionales](#6-recursos)
-
----
 
 ## 1. INTRODUCCIÓN: POR QUÉ LA ÉTICA IMPORTA EN ELE
 

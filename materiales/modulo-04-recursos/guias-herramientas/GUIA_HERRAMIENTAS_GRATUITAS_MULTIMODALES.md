@@ -1,16 +1,19 @@
+# ÍNDICE
+
+
+1. Imágenes: Generación visual
+2. Audio: Voz y sonido
+3. Mapas Mentales: Organización visual
+4. Integración de recursos
+
+
+\newpage
+
 # GUÍA DE HERRAMIENTAS GRATUITAS PARA RECURSOS MULTIMODALES EN ELE
 ### Imágenes, Audio y Mapas Mentales con IA
 
 ---
 
-## 📋 ÍNDICE
-
-1. [Imágenes: Generación visual](#1-imágenes)
-2. [Audio: Voz y sonido](#2-audio)
-3. [Mapas Mentales: Organización visual](#3-mapas-mentales)
-4. [Integración de recursos](#4-integración)
-
----
 
 ## 1. IMÁGENES
 

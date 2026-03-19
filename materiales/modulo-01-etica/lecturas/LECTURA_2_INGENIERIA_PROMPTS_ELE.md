@@ -1,17 +1,20 @@
+# ÍNDICE
+
+
+1. Introducción: ¿Qué es prompt engineering?
+2. Marco FRAME para prompts ELE
+3. Prompts plantilla por género textual
+4. Iteración y refinamiento
+5. Checklist de calidad
+
+
+\newpage
+
 # LECTURA 2: GUÍA DE INGENIERÍA DE PROMPTS PARA ELE
 ### Cómo obtener resultados excelentes de IA en la enseñanza de Español como Lengua Extranjera
 
 ---
 
-## 📋 ÍNDICE
-
-1. [Introducción: ¿Qué es prompt engineering?](#1-introduccion)
-2. [Marco FRAME para prompts ELE](#2-marco-frame)
-3. [Prompts plantilla por género textual](#3-prompts-plantilla)
-4. [Iteración y refinamiento](#4-iteracion)
-5. [Checklist de calidad](#5-checklist)
-
----
 
 ## 1. INTRODUCCIÓN: ¿QUÉ ES PROMPT ENGINEERING?
 

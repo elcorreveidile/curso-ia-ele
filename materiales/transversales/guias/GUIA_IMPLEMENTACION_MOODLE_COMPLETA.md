@@ -1,20 +1,23 @@
+# ÍNDICE
+
+
+1. Estructura del curso en Moodle
+2. Configuración del curso
+3. Creación de secciones y recursos
+4. Configuración de foros
+5. Configuración de tareas
+6. Videotutorías en directo
+7. Evaluación y calificaciones
+8. Certificados
+
+
+\newpage
+
 # GUÍA DE IMPLEMENTACIÓN EN MOODLE
 ### Cómo trasladar todos los contenidos del curso a la plataforma Moodle
 
 ---
 
-## 📋 ÍNDICE
-
-1. [Estructura del curso en Moodle](#1-estructura)
-2. [Configuración del curso](#2-configuracion)
-3. [Creación de secciones y recursos](#3-creacion-recursos)
-4. [Configuración de foros](#4-foros)
-5. [Configuración de tareas](#5-tareas)
-6. [Videotutorías en directo](#6-videotutorias)
-7. [Evaluación y calificaciones](#7-evaluacion)
-8. [Certificados](#8-certificados)
-
----
 
 ## 1. ESTRUCTURA DEL CURSO EN MOODLE
 
