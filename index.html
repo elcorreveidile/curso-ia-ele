@@ -9,16 +9,25 @@
   <style>
     .home-hero {
       min-height: 100vh;
-      background: var(--ink);
+      background: linear-gradient(160deg, #0D1117 0%, #1A0A0F 50%, #0D1117 100%);
       display: flex; flex-direction: column;
       position: relative; overflow: hidden;
     }
     .home-hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 80% 20%, rgba(46,109,164,.3) 0%, transparent 55%),
-                  radial-gradient(ellipse at 10% 80%, rgba(232,83,43,.18) 0%, transparent 45%);
+      background:
+        radial-gradient(ellipse at 90% 10%, rgba(200,16,46,.22) 0%, transparent 45%),
+        radial-gradient(ellipse at 5% 90%, rgba(200,16,46,.12) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, rgba(26,58,107,.15) 0%, transparent 60%);
       pointer-events: none;
+    }
+    /* Línea roja CLM en el top */
+    .home-hero::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--clm-red), transparent);
     }
     .home-top {
       padding: 2rem 2.5rem;
@@ -32,7 +41,7 @@
       display: flex; align-items: center; gap: .5rem;
     }
     .home-logo span {
-      background: var(--orange); color: var(--white);
+      background: var(--clm-red); color: var(--white);
       padding: 2px 8px; border-radius: var(--r-sm); font-size: .8rem;
     }
     .home-nav { display: flex; gap: 1.5rem; }
@@ -82,9 +91,10 @@
       gap: 1rem;
     }
     .test-card:hover {
-      background: rgba(255,255,255,.1);
-      border-color: rgba(255,255,255,.25);
+      background: rgba(255,255,255,.09);
+      border-color: rgba(200,16,46,.4);
       transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(200,16,46,.15);
     }
     .test-card__badge {
       display: inline-flex; align-items: center; gap: .4rem;
@@ -92,8 +102,8 @@
       text-transform: uppercase; letter-spacing: .08em;
       padding: .3rem .8rem; border-radius: 100px;
     }
-    .test-card__badge--general { background: rgba(46,109,164,.3); color: #7BB8E8; }
-    .test-card__badge--curso   { background: rgba(232,83,43,.3);  color: #F08060; }
+    .test-card__badge--general { background: rgba(26,58,107,.4); color: #7BB8E8; }
+    .test-card__badge--curso   { background: rgba(200,16,46,.3);  color: #F08080; }
     .test-card__icon { font-size: 2.5rem; line-height: 1; }
     .test-card__title {
       font-family: var(--font-display);
@@ -121,8 +131,8 @@
       margin-top: .25rem; align-self: flex-start;
     }
     .test-card__btn:hover { opacity: .88; transform: translateX(3px); }
-    .test-card__btn--general { background: var(--blue-mid); color: var(--white); }
-    .test-card__btn--curso   { background: var(--orange); color: var(--white); }
+    .test-card__btn--general { background: var(--blue); color: var(--white); }
+    .test-card__btn--curso   { background: var(--clm-red); color: var(--white); }
 
     .home-divider {
       margin-top: 3rem;
@@ -163,7 +173,13 @@
   </div>
 
   <div class="home-body">
-    <p class="home-eyebrow">Centro de Lenguas Modernas · Universidad de Granada</p>
+    <div style="display:flex;align-items:center;gap:.75rem;justify-content:center;margin-bottom:1.5rem;opacity:.7">
+      <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+        <path d="M50 5 L95 28 L95 72 L50 95 L5 72 L5 28 Z" fill="none" stroke="rgba(200,16,46,.6)" stroke-width="2"/>
+        <text x="50" y="58" text-anchor="middle" font-family="serif" font-size="26" fill="rgba(255,255,255,.5)" font-weight="700">CLM</text>
+      </svg>
+      <span style="font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45)">Centro de Lenguas Modernas · Universidad de Granada</span>
+    </div>
     <h1 class="home-title">
       <em>Inteligencia Artificial</em><br>
       para el CLM
