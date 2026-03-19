@@ -31,8 +31,6 @@ find "$MATERIALES_DIR" -name "*.md" -type f | sort | while read md_file; do
         -V colorlinks=true \
         -V linkcolor=blue \
         -V urlcolor=blue \
-        --toc \
-        --toc-depth=3 \
         --highlight-style=tango \
         -M title="IA para la enseñanza de ELE" \
         -M author="Javier Benítez Láinez" \
