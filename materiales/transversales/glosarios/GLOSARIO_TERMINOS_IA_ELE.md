@@ -1,9 +1,6 @@
-# GLOSARIO DE TÉRMINOS DE IA PARA DOCENTES DE ELE
-### 50 términos clave definidos y contextualizados para la enseñanza de Español como Lengua Extranjera
+# ÍNDICE
 
----
-
-## 📋 ÍNDICE
+## 📋 CONTENIDO DEL GLOSARIO
 
 - **A-C:** AGI, Alucinación, Ambiente, API, Aprendizaje automático, Chatbot, Contexto
 - **D-F:** Deepfake, Dialogue, Escritura, Frame
@@ -13,7 +10,10 @@
 - **T-V:** Temperatura, Token, Training, Translation, Voice cloning
 - **Otros términos importantes**
 
----
+\newpage
+
+# GLOSARIO DE TÉRMINOS DE IA PARA DOCENTES DE ELE
+### 50 términos clave definidos y contextualizados para la enseñanza de Español como Lengua Extranjera
 
 ## A-C
 
