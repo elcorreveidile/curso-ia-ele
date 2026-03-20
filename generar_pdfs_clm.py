@@ -75,7 +75,12 @@ PDF_CSS = CSS(string="""
 
     .section {
         margin: 15px 0;
+        page-break-before: always;
         page-break-inside: avoid;
+    }
+
+    .section:first-of-type {
+        page-break-before: auto;
     }
 
     .section-title {
@@ -111,7 +116,10 @@ PDF_CSS = CSS(string="""
     h3 {
         font-size: 11pt;
         font-weight: bold;
-        margin: 10px 0 6px 0;
+        margin: 12px 0 6px 0;
+        padding: 5px 10px;
+        background-color: #f2f2f2;
+        border-left: 4px solid #000;
         page-break-after: avoid;
     }
 
@@ -165,6 +173,55 @@ PDF_CSS = CSS(string="""
         font-style: italic;
         page-break-inside: avoid;
     }
+
+    h4 {
+        font-size: 10.5pt;
+        font-weight: bold;
+        margin: 8px 0 4px 0;
+        padding: 3px 8px;
+        border-left: 2px solid #666;
+        color: #333;
+        page-break-after: avoid;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+        font-size: 9pt;
+        page-break-inside: avoid;
+    }
+
+    th {
+        background-color: #000;
+        color: white;
+        padding: 5px 8px;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    td {
+        padding: 4px 8px;
+        border: 1px solid #ccc;
+        vertical-align: top;
+    }
+
+    tr:nth-child(even) td {
+        background-color: #f5f5f5;
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+    .subtitle {
+        font-size: 10.5pt;
+        font-style: italic;
+        color: #444;
+        text-align: center;
+        margin: -6px 0 15px 0;
+        font-weight: normal;
+    }
 """)
 
 
@@ -177,19 +234,30 @@ def markdown_to_html(markdown_content):
     in_code_block = False
     code_lines = []
 
-    # Extraer título
+    # Extraer título: usar el último # en las primeras 15 líneas
     title = "IA para la enseñanza de ELE"
-    for line in lines[:15]:
+    title_idx = -1
+    for idx, line in enumerate(lines[:15]):
         if line.startswith('# '):
-            title = line[2:].strip()
-            lines = lines[lines.index(line)+1:]
-            break
-        elif line.startswith('## '):
-            title = line[3:].strip()
-            lines = lines[lines.index(line)+1:]
-            break
+            title_idx = idx
+    if title_idx >= 0:
+        line = lines[title_idx]
+        title = line[2:].strip()
+        lines = lines[title_idx + 1:]
+
+    # Extraer subtítulo opcional: ### inmediatamente tras el título
+    subtitle = ""
+    for j, line in enumerate(lines[:5]):
+        stripped = line.strip()
+        if not stripped or stripped == r'\newpage' or stripped == '---':
+            continue
+        if line.startswith('### '):
+            subtitle = line[4:].strip()
+            lines = lines[j + 1:]
+        break
 
     # Construir HTML con header CLM
+    subtitle_html = f'<p class="subtitle">{subtitle}</p>' if subtitle else ''
     header_html = f"""
     <div class="header">
         <img src="clm-rojo.png" class="logo" alt="Logo CLM">
@@ -197,17 +265,33 @@ def markdown_to_html(markdown_content):
         <p class="curso-title">IA para la enseñanza de ELE: planificación de clases y creación de materiales</p>
         <table class="info-table">
             <tr><td class="info-label">Curso:</td><td>Formación del profesorado (Abril 2026)</td></tr>
-            <tr><td class="info-label">Profesor:</td><td>Javier Benítez Lainez</td></tr>
+            <tr><td class="info-label">Profesor:</td><td>Javier Benítez Láinez</td></tr>
             <tr><td class="info-label">Email:</td><td>benitezl@go.ugr.es</td></tr>
         </table>
     </div>
     <h1 class="main-title">{title}</h1>
+    {subtitle_html}
     """
 
     while i < len(lines):
         line = lines[i].rstrip()
 
         if not line:
+            i += 1
+            continue
+
+        # Separadores horizontales y # sueltas → ignorar
+        if line.strip() == '---' or line.strip() == '***' or line.strip() == '___':
+            i += 1
+            continue
+
+        # \newpage → salto de página real; # sueltas ya extraídas como título
+        if line.strip() == r'\newpage':
+            html_lines.append('<div class="page-break"></div>')
+            i += 1
+            continue
+
+        if line.startswith('# '):
             i += 1
             continue
 
@@ -256,6 +340,34 @@ def markdown_to_html(markdown_content):
             text = re.sub(r'^\d+\.?\s*', '', text)
             html_lines.append(f'<h3>{text}</h3>')
             i += 1
+
+        elif line.startswith('#### '):
+            text = line[5:].strip()
+            html_lines.append(f'<h4>{text}</h4>')
+            i += 1
+
+        elif line.startswith('|'):
+            # Tabla markdown
+            html_lines.append('<table>')
+            headers = [c.strip() for c in line.split('|')[1:-1]]
+            html_lines.append('<thead><tr>')
+            for h in headers:
+                h = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', h)
+                html_lines.append(f'<th>{h}</th>')
+            html_lines.append('</tr></thead><tbody>')
+            i += 1
+            # Saltar fila separadora (|---|---|...)
+            if i < len(lines) and lines[i].strip().startswith('|') and '---' in lines[i]:
+                i += 1
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                cells = [c.strip() for c in lines[i].split('|')[1:-1]]
+                html_lines.append('<tr>')
+                for cell in cells:
+                    cell = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', cell)
+                    html_lines.append(f'<td>{cell}</td>')
+                html_lines.append('</tr>')
+                i += 1
+            html_lines.append('</tbody></table>')
 
         elif line.startswith('- '):
             html_lines.append('<ul>')

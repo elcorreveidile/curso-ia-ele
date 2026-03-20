@@ -38,7 +38,7 @@ Cada módulo incluye:
 ## 🖱️ 2. CÓMO ACCEDER A LOS CONTENIDOS
 
 ### Paso 1: Iniciar sesión
-1. Accede a Moodle del CLM: [URL específica]
+1. Accede a Moodle del CLM: https://aulavirtual.clm-granada.com
 2. Introduce tu usuario y contraseña UGR
 3. Busca el curso "IA para la enseñanza de ELE" en tus cursos
 
@@ -219,12 +219,12 @@ En la página principal del curso, verás:
 ### ¿Tienes un problema técnico?
 
 **Problemas con Moodle:**
-- Correo: [correo soporte técnico CLM]
-- Teléfono: [número si disponible]
+- Correo: benitezl@go.ugr.es
+- Teléfono: benitezl@go.ugr.es
 - Horario: lunes a viernes, 9:00-14:00 h
 
 **Problemas con las videotutorías:**
-- Correo: [correo soporte técnico CLM]
+- Correo: benitezl@go.ugr.es
 - Prueba: Acceder 10 min antes de la sesión
 
 ### ¿Tienes una duda sobre el contenido del curso?
@@ -237,7 +237,7 @@ En la página principal del curso, verás:
 
 **Correo directo a la Formador:**
 - Para cuestiones personales o urgentes
-- Correo: [correo Formador]
+- Correo: benitezl@go.ugr.es
 - Asunto: "[IA-ELE] Tu consulta"
 
 ---
@@ -316,12 +316,12 @@ Si has llegado hasta aquí y has completado el checklist, estás listo/a para co
 
 **Formador del curso:**
 - Nombre: Javier Benítez Láinez
-- Correo: [Correo Formador]
+- Correo: benitezl@go.ugr.es
 - Horario de atención: [Indicar si aplica]
 
 **Soporte técnico Moodle:**
-- Correo: [Correo soporte]
-- Teléfono: [Teléfono si aplica]
+- Correo: benitezl@go.ugr.es
+- Teléfono: benitezl@go.ugr.es
 
 ---
 

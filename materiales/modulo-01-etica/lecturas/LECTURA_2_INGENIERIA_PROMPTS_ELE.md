@@ -16,9 +16,9 @@
 ---
 
 
-## 1. INTRODUCCIÓN: ¿QUÉ ES PROMPT ENGINEERING?
+## 1. INTRODUCCIÓN: ¿QUÉ ES LA INGENIERÍA DE PROMPTS?
 
-**Prompt engineering** es el arte y ciencia de diseñar instrucciones (prompts) efectivas para obtener los mejores resultados posibles de modelos de lenguaje como ChatGPT, Claude o Gemini.
+La **ingeniería de prompts** (*prompt engineering*) es el arte y la ciencia de diseñar instrucciones efectivas para obtener los mejores resultados posibles de modelos de lenguaje como ChatGPT, Claude o Gemini.
 
 ### Por qué importa en ELE
 
@@ -30,13 +30,13 @@ Un mal prompt = 5-10 intentos frustrantes + resultados mediocres
 **Prompt malo:** "Crea un ejercicio de gramática"
 **Prompt bueno:** "Actúa como profesor de español B2. Crea un ejercicio de 10 frases para completar con pretérito imperfecto vs indefinido. Alumnado: universitarios estadounidenses en Granada. Tema: viajes pasados. Incluye instrucciones y solucionario."
 
-La diferencia es obvia. El segundo prompt produce exactamente lo que necesitas. El primero produce... algo.
+La diferencia es evidente. El segundo prompt produce exactamente lo que necesitas; el primero, un resultado genérico e impredecible.
 
 ---
 
 ## 2. MARCO FRAME PARA PROMPTS ELE
 
-FRAME es un acrónimo que te ayudará a recordar los 6 elementos esenciales de un prompt efectivo para ELE.
+FRAME es una herramienta nemotécnica con 6 componentes esenciales para construir prompts efectivos en ELE. Las dos últimas letras comparten la inicial E: Especificaciones y Ejemplo.
 
 ### F - FORMATO
 ¿Qué tipo de material quieres generar?
@@ -67,11 +67,11 @@ FRAME es un acrónimo que te ayudará a recordar los 6 elementos esenciales de u
 **Especifica:**
 - Nivel MCER (A1-C2)
 - Edad
-- Contexto (estudiantes, adultos, profesionales)
-- Nacionalidad o背景 cultural
+- Contexto (alumnado, adultos, profesionales)
+- Nacionalidad u origen cultural
 - Objetivos de aprendizaje
 
-**Error común:** "Para estudiantes" → Demasiado vago
+**Error común:** «Para alumnado» → Demasiado vago
 
 ### M - META
 ¿Cuál es el objetivo de aprendizaje?
@@ -130,7 +130,7 @@ META: El alumnado será capaz de leer y comprender narraciones personales usando
 
 ESPECIFICACIONES:
 - Título atractivo
-- 150-200 palabras exactas
+- Entre 150 y 200 palabras
 - Vocabulario [nivel] (no más C1/C2 sin explicación)
 - Usar [tiempos verbales específicos]
 - Incluir 3-4 expresiones idiomáticas o culturales

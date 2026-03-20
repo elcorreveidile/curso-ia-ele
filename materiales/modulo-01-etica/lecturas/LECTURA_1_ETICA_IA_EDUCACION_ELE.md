@@ -72,6 +72,8 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 
 ---
 
+\newpage
+
 ### Principio 2: VERIFICACIÓN
 
 **Nunca confiar ciegamente en el contenido generado**
@@ -132,6 +134,8 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 > ```
 
 ---
+
+\newpage
 
 ### Principio 4: PRIVACIDAD
 
@@ -242,6 +246,8 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 
 ---
 
+\newpage
+
 ### Sesgo 3: Nombres y personas estereotipados
 
 **Problema:** La IA tiende a generar nombres tradicionales europeos (Juan, María, José) y rara vez nombres diversos.
@@ -277,6 +283,8 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 > - En la revisión: "¿Qué variaciones lingüísticas puedo enseñar aquí?"
 
 ---
+
+\newpage
 
 ### Sesgo 5: Clase social y contexto económico
 

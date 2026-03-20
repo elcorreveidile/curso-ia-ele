@@ -162,6 +162,8 @@ La IA generó las 9 variaciones restantes consistentemente.
 
 5. **Ahorro de tiempo significativo:** 23 min vs 2+ horas = 80%+ de ahorro
 
+\newpage
+
 **Principios éticos aplicados:**
 
 ✅ **Transparencia:** Carmen indicó a sus colegas que había usado IA para generar los ejercicios
@@ -273,7 +275,7 @@ Algunas frases del diálogo eran A2, pero otras eran B1 o incluso B2:
 **Problema 5: Error gramatical**
 
 La IA inventó una palabra:
-- "Vestidor" (no existe en español,应该是 "probador")
+- "Vestidor" (no existe en español, debería ser "probador")
 
 ---
 

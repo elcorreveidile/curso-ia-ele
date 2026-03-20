@@ -214,7 +214,7 @@ ___
 - [ ] IA para evaluación automática
 - [ ] IA en enseñanza híbrida (online/presencial)
 - [ ] IA para creación de exámenes DELE
-- [ ] IA y literatur
+- [ ] IA y literatura
 - [ ] IA y cultura hispana
 - [ ] IA para español de negocios
 - [ ] IA para español académico
