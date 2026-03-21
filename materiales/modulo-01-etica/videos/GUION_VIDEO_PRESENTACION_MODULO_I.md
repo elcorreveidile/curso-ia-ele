@@ -34,7 +34,7 @@
 >
 > En este módulo vamos a hacer algo fundamental: antes de empezar a usar la IA en nuestras clases, vamos a reflexionar sobre **cómo**, **cuándo** y **por qué** deberíamos usarla.
 >
-> Porque la IA es una herramienta poderosa, y como dicen: con gran poder viene gran responsabilidad."
+> Porque la IA es una herramienta poderosa, y como dicen: con gran poder viene gran responsabilidad".
 
 **Visual:**
 - Transición suave
@@ -48,7 +48,7 @@
 - Título: "¿Por qué ética primero?"
 - 3 puntos clave en viñetas:
   - La IA transforma la enseñanza de ELE
-  - Necesitamos frameworks éticos antes de usarla
+  - Necesitamos marcos éticos antes de usarla
   - Responsabilidad del docente
 - Imagen: profesor/a pensando con una balanza
 
@@ -60,7 +60,7 @@
 >
 > **Segundo:** Antes de usar cualquier herramienta, necesitamos un marco ético. Necesitamos decidir qué es aceptable y qué no, qué podemos delegar en la IA y qué no.
 >
-> **Tercero:** Como docentes, tenemos una responsabilidad especial. Nuestros alumnado no solo aprende español con nosotros; también aprende **cómo ser** en el mundo. Y nuestro uso de la IA modela una relación con la tecnología que ellos absorberán."
+> **Tercero:** Como docentes, tenemos una responsabilidad especial. Nuestro alumnado no solo aprende español con nosotros; también aprende **cómo ser** en el mundo. Y nuestro uso de la IA modela una relación con la tecnología que ellos absorberán".
 
 **Visual:**
 - Cada punto aparece con animación
@@ -74,7 +74,7 @@
 - Título: "Sesgos de la IA en ELE"
 - 3 ejemplos visuales en columnas:
   - Nombres: Juan, María, José... ¿y Aisha? ¿Wei?
-  - Contextos: Soleados beaches... ¿y lluviosos Londres? ¿y barrios marginales?
+  - Contextos: Playas soleadas... ¿y lluviosos Londres? ¿y barrios marginales?
   - Vocabulario: Solo peninsular... ¿y rioplatense? ¿y mexicano?
 - Icono de advertencia ⚠️
 
@@ -92,7 +92,7 @@
 >
 > **Ejemplo 3:** Pídele ejemplos de vocabulario. Probablemente obtendrás español peninsular.
 >
-> ¿Qué pasa con 'computadora' instead of 'ordenador'? Con 'carro' instead of 'coche'? Con 'papas' instead of 'patatas'? El español es una lengua global, y nuestros materiales deberían reflejar esa riqueza."
+> ¿Qué pasa con 'computadora' en lugar de 'ordenador'? Con 'carro' en lugar de 'coche'? Con 'papas' en lugar de 'patatas'? El español es una lengua global, y nuestros materiales deberían reflejar esa riqueza".
 
 **Visual:**
 - Animaciones mostrando los ejemplos
@@ -127,7 +127,7 @@
 >
 > Este prompt es específico, contextualizado, y le da a la IA toda la información que necesita para crear algo útil.
 >
-> Usaremos una estructura llamada **FRAME** para recordar los elementos de un buen prompt. Lo veremos en detalle en la lectura 2."
+> Usaremos una estructura llamada **FRAME** para recordar los elementos de un buen prompt. Lo veremos en detalle en la lectura 2".
 
 **Visual:**
 - Animación de los elementos FRAME
@@ -159,7 +159,7 @@
 >
 > **Paso 3:** Escribirás tu declaración personal. No es un documento genérico; es TU declaración, basada en TUS valores, TUS contextos, TUS alumnados.
 >
-> **Paso 4:** Compartirás tu declaración en el foro y leerás las de tus compañeros/as. Aprenderemos mucho de las diferentes perspectivas."
+> **Paso 4:** Compartirás tu declaración en el foro y leerás las de tus compañeros/as. Aprenderemos mucho de las diferentes perspectivas".
 
 **Visual:**
 - Animación de los 4 pasos
@@ -185,7 +185,7 @@
 >
 > **Segundo:** Habilidad para escribir prompts eficaces. Sabrás cómo estructurar instrucciones para obtener resultados de calidad, adaptados a tu alumnado y nivel.
 >
-> **Tercero:** Dos casos reales analizados. Habrás visto qué funciona y qué no, y tendrás ejemplos concretos a los que podrás referirte cuando te encuentres en situaciones similares."
+> **Tercero:** Dos casos reales analizados. Habrás visto qué funciona y qué no, y tendrás ejemplos concretos a los que podrás referirte cuando te encuentres en situaciones similares".
 
 **Visual:**
 - Cada logro aparece con checkmark
@@ -213,7 +213,7 @@
 >
 > **Razón 2:** Te ahorrará tiempo. Un buen prompt produce el resultado que buscas en la primera o segunda iteración. Un mal prompt requiere 5, 6, 7 intentos. La inversión en aprender a escribir buenos prompts se paga sola.
 >
-> **Razón 3:** Modela una relación crítica con la tecnología. Nuestro alumnado crecerá en un mundo con IA. Si nosotros usamos la IA sin criterio, eso es lo que aprenderán. Si nosotros usamos la IA con reflexión ética, eso también lo aprenderán."
+> **Razón 3:** Modela una relación crítica con la tecnología. Nuestro alumnado crecerá en un mundo con IA. Si nosotros usamos la IA sin criterio, eso es lo que aprenderán. Si nosotros usamos la IA con reflexión ética, eso también lo aprenderán".
 
 **Visual:**
 - Animación de las 3 razones
@@ -229,7 +229,7 @@
   - Día 1-2: Lecturas
   - Día 3-4: Análisis de casos
   - Día 5-7: Escritura de declaración
-  - Día 8-10: Foro y feedback
+  - Día 8-10: Foro y retroalimentación
 - Icono de calendario 📅
 
 **Audio:**
@@ -242,7 +242,7 @@
 >
 > **Días 5-7:** Escribe tu declaración. No tiene que ser perfecta. Tiene que ser auténtica. Es tu declaración, no un documento para aprobar.
 >
-> **Días 8-10:** Comparte en el foro. Lee las declaraciones de tus compañeros/as. Responde a al menos dos. Aprende de perspectivas diferentes."
+> **Días 8-10:** Comparte en el foro. Lee las declaraciones de tus compañeros/as. Responde a al menos dos. Aprende de perspectivas diferentes".
 
 **Visual:**
 - Timeline animado
@@ -255,7 +255,7 @@
 **Visual:**
 - Título: "¡Comenzamos!"
 - Imagen inspiradora: profesor/a con alumnado
-- Mensaje final: "La IA sin criterio es peligrosa. La IA con criterio es transFormador."
+- Mensaje final: "La IA sin criterio es peligrosa. La IA con criterio es transformadora".
 - Cita: "Con gran poder viene gran responsabilidad"
 
 **Audio:**

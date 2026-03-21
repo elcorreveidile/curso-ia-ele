@@ -26,45 +26,52 @@
 ```
 📁 CURSO: IA para la enseñanza de ELE (20 horas, 4 semanas)
 │
-├── 🏠 Sección 0: Bienvenida y orientación
+├── 🏠 Bienvenida y orientación
 │   ├── 📹 Vídeo de bienvenida (2-3 min)
-│   ├── 📄 Esta guía de inicio
+│   ├── 📄 Guía de inicio en Moodle
+│   ├── 📄 Glosario de términos IA-ELE
 │   ├── 📋 Cuestionario diagnóstico
 │   ├── 💬 Foro de presentación
 │   └── 📅 Calendario del curso
 │
-├── 📁 Módulo I: IA con criterio
+├── 📦 Módulo I - Ética y prompts
 │   ├── 📹 Vídeo presentación (5-10 min)
 │   ├── 📄 Lectura 1: Ética de la IA en Educación ELE
 │   ├── 📄 Lectura 2: Ingeniería de Prompts para ELE
 │   ├── 📄 Casos reales (positivo + problemático)
 │   ├── 💬 Foro Módulo I
+│   ├── 📊 Rúbrica de evaluación Módulo I
 │   └── 📝 Tarea: Mi declaración de uso ético
 │
-├── 📁 Módulo II: Tu asistente de ELE
+├── 🤖 Módulo II - Tu asistente de ELE
 │   ├── 📹 Vídeo tutorial (10-15 min)
-│   ├── 📄 Guía comparativa herramientas
+│   ├── 📄 Guía comparativa de herramientas
 │   ├── 📄 Plantillas system prompt (A1-C2)
 │   ├── 💬 Foro Módulo II
+│   ├── 📊 Rúbrica de evaluación Módulo II
 │   └── 📝 Tarea: Crea tu primer mini asistente ELE
 │
-├── 📁 Módulo III: Planifica con IA
+├── 📝 Módulo III - Planifica con IA
 │   ├── 📹 Vídeo demostrativo (15-20 min)
-│   ├── 📄 Banco descriptores MCER/PCIC
+│   ├── 📄 Banco de descriptores MCER
+│   ├── 📄 Prompt plantilla para planes de clase
+│   ├── 📄 Plantilla de plan de clase
 │   ├── 📄 Tutorial mini app generador planes
 │   ├── 💬 Foro Módulo III
+│   ├── 📊 Rúbrica de evaluación Módulo III
 │   └── 📝 Tarea: Genera y evalúa un plan de clase
 │
-├── 📁 Módulo IV: Crea sin límites
+├── 🎨 Módulo IV - Crea sin límites
 │   ├── 📹 Vídeo 1: Generación de imágenes (5-8 min)
 │   ├── 📹 Vídeo 2: Creación de audios (5-8 min)
 │   ├── 📹 Vídeo 3: Mapas mentales (5-8 min)
-│   ├── 📄 Guía herramientas gratuitas
-│   ├── 📄 Criterios de calidad
+│   ├── 📄 Guía de herramientas gratuitas multimodales
+│   ├── 📄 Criterios de calidad para recursos generados con IA
 │   ├── 💬 Foro Módulo IV
+│   ├── 📊 Rúbrica de evaluación Módulo IV
 │   └── 📝 Tarea: Kit de recursos multimodales
 │
-└── 🏆 Sección final: Cierre
+└── 🏆 Cierre
     ├── 📋 Cuestionario de satisfacción
     ├── 💬 Foro de cierre
     └── 🏅 Información sobre certificado
@@ -102,13 +109,13 @@ Mostrar lista de participantes: No
 
 ## 3. CREACIÓN DE SECCIONES Y RECURSOS
 
-### 3.1 Sección 0: Bienvenida y orientación
+### 3.1 Bienvenida y orientación
 
 **Vídeo de bienvenida:**
 - Tipo: **URL** o **Etiqueta** con video incrustado
 - Nombre: Vídeo de bienvenida
 - URL: [Enlace al video en Vimeo/YouTube]
-- Descripción: "Conoce a la Formador y descubre qué aprenderás en este curso"
+- Descripción: "Conoce al Formador y descubre qué aprenderás en este curso"
 
 **Esta guía:**
 - Tipo: **Página** o **Archivo** (PDF)

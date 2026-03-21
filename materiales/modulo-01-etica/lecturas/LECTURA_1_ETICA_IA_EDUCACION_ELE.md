@@ -1,11 +1,11 @@
 # ÍNDICE
 
 
-1. Introducción: Por qué la ética importa en ELE
-2. 5 Principios éticos para docentes de ELE
-3. Casos de sesgos comunes en ELE
-4. Guía de decisiones éticas
-5. Conclusión: Tu turno
+1. Introducción: Por qué la ética importa en ELE.
+2. 5 Principios éticos para docentes de ELE.
+3. Casos de sesgos comunes en ELE.
+4. Guía de decisiones éticas.
+5. Conclusión: Tu turno.
 6. Recursos adicionales
 
 
@@ -25,16 +25,16 @@ En 2023, ChatGPT alcanzó 100 millones de usuarios en solo 2 meses. Nunca en la 
 
 Pero la adopción rápida sin reflexión ética tiene riesgos:
 
-- **Sesgos culturales:** La IA puede representar el mundo hispanohablante de forma estereotipada o incompleta
-- **Equidad:** Si solo algunos docentes usan IA, se amplía la brecha entre quienes tienen acceso y quienes no
-- **Integridad:** Si el alumnado usa IA sin criterio, puede no aprender realmente
-- **Privacidad:** Subir datos de alumnado real a herramientas de IA puede violar normativas de protección de datos
+- **Sesgos culturales:** La IA puede representar el mundo hispanohablante de forma estereotipada o incompleta.
+- **Equidad:** Si solo algunos docentes usan IA, se amplía la brecha entre quienes tienen acceso y quienes no.
+- **Integridad:** Si el alumnado usa IA sin criterio, puede no aprender realmente.
+- **Privacidad:** Subir datos de alumnado real a herramientas de IA puede violar normativas de protección de datos.
 
 ### Por qué esto es específicamente problemático en ELE
 
 En otras asignaturas, los sesgos de la IA son problemáticos. En ELE, son **doblemente** problemáticos porque:
 
-1. **Enseñamos lengua Y cultura:** Nuestro alumnado no solo aprende gramática; aprende cómo son los hispanohablantes, cómo viven, qué valoran. Si la IA presenta una visión sesgada, estamos enseñando una visión incompleta o errónea.
+1. **Enseñamos lengua y cultura:** Nuestro alumnado no solo aprende gramática; aprende cómo son los hispanohablantes, cómo viven, qué valoran. Si la IA presenta una visión sesgada, estamos enseñando una visión incompleta o errónea.
 
 2. **Nuestro alumnado es vulnerable:** Muchos estudiantes de ELE tienen conocimiento limitado del mundo hispanohablante. No pueden distinguir fácilmente entre lo auténtico y lo estereotipado.
 
@@ -78,7 +78,7 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 
 **Nunca confiar ciegamente en el contenido generado**
 
-> **Qué significa:** Revisa siempre el contenido que genera la IA. Verifica facts, gramática, nivel cultural, y adecuación al alumnado.
+> **Qué significa:** Revisa siempre el contenido que genera la IA. Verifica los datos, la gramática, nivel cultural, y adecuación al alumnado.
 
 > **Por qué es importante:** La IA "alucina": inventa información que suena plausible pero es falsa. En ELE, esto puede significar:
 > - Festividades que no existen
@@ -90,7 +90,7 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 > - Verifica culturalmente: "¿Esta celebración existe realmente?"
 > - Verifica lingüísticamente: "¿Se usa realmente esta expresión?"
 > - Verifica geográficamente: "¿Este lugar es real?"
-> - Verifica históricamente: "¿Este evento histórico es accurate?"
+> - Verifica históricamente: "¿Este evento histórico es correcto?"
 
 > **Ejemplo práctico:**
 > ```
@@ -108,6 +108,7 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 
 ---
 
+\newpage
 ### Principio 3: EQUIDAD CULTURAL
 
 **Evitar estereotipos y representar la diversidad hispanohablante**
@@ -173,6 +174,7 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 
 ---
 
+\newpage
 ### Principio 5: DESARROLLO CRÍTICO
 
 **Enseñar al alumnado a evaluar contenido generado por IA**
@@ -184,8 +186,8 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 > **Cómo aplicarlo en ELE:**
 > - Actividades de "detective": Buscar errores en contenido generado
 > - Comparaciones: Pedir a la IA que genere 3 versiones y comparar
-> - Verificación: Enseñar a verificar facts con fuentes confiables
-> - Discusión: Debates sobre "¿Este contenido es culturalmente accurate?"
+> - Verificación: Enseñar a verificar datos con fuentes fiables
+> - Discusión: Debates sobre "¿Este contenido es culturalmente adecuado?"
 
 > **Ejemplo práctico:**
 > ```
@@ -200,7 +202,7 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 > Paso 3: Cada grupo presenta qué encontraron:
 > - "El texto dice que en Argentina se celebran las fiestas en la playa.
 >   Investigamos: en Argentina es diciembre, verano, ¡sí es cierto!"
-> - "El texto dice que en México todos comen turro. Investigamos:
+> - "El texto dice que en México todos comen turrón. Investigamos:
 >   ¡no! Cada región tiene diferentes dulces."
 >
 > Paso 4: Discusión: ¿Qué aprendimos sobre confiar en la IA?
@@ -216,7 +218,7 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 
 **Ejemplos:**
 - "España" como sinónimo de "países hispanohablantes"
-- Falta de representación de países latinoamericanos
+- Falta de representación de países latinoamericanos.
 - Estereotipos de países (México = mariachis, Argentina = tango, Colombia = café)
 
 **Cómo detectarlo:**
@@ -235,7 +237,7 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 **Ejemplos:**
 - "Los españoles son..." (como si todos fueran iguales)
 - "En Latinoamérica se celebra..." (como si fuera lo mismo en México que en Bolivia)
-- Ausencia de diferencias regionales dentro de países
+- Ausencia de diferencias regionales dentro de países.
 
 **Cómo detectarlo:**
 > Pregúntate: "¿Este material reconoce la diversidad dentro de los países o los presenta como monolitos?"
@@ -254,8 +256,8 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 
 **Ejemplos:**
 - Ejercicios solo con "Juan y María"
-- Falta de nombres árabes, asiáticos, africanos, indígenas
-- Personajes siempre heterosexuales, cisgénero, sin discapacidades
+- Falta de nombres árabes, asiáticos, africanos, indígenas.
+- Personajes siempre heterosexuales, cisgénero, sin discapacidades.
 
 **Cómo detectarlo:**
 > Pregúntate: "¿Las personas en este material reflejan la diversidad real del mundo hispanohablante?"
@@ -291,9 +293,9 @@ Por todo esto, necesitamos un marco ético antes de empezar a usar IA en nuestra
 **Problema:** La IA tiende a representar personas de clase media-alta, con acceso a viajes, restaurantes, ocio.
 
 **Ejemplos:**
-- Siempre personas viajando por placer
-- Siempre personas comiendo en restaurantes
-- Falta de representación de clase trabajadora, rural, marginal
+- Siempre personas viajando por placer.
+- Siempre personas comiendo en restaurantes.
+- Falta de representación de clase trabajadora, rural, marginal.
 
 **Cómo detectarlo:**
 > Pregúntate: "¿Qué contextos económicos y sociales están representados? ¿Cuáles faltan?"
@@ -348,7 +350,7 @@ Antes de usar IA para una tarea de ELE, verifica:
 **Verificación:**
 - [ ] Tengo tiempo para revisar el resultado
 - [ ] Puedo detectar errores si los hay
-- [ ] Sé cómo verificar facts culturales/lingüísticos
+- [ ] Sé cómo verificar datos culturales/lingüísticos
 
 **Equidad:**
 - [ ] El material representa diversidad hispanohablante
@@ -388,11 +390,11 @@ En la actividad de este módulo, escribirás tu propia declaración de uso étic
 
 **Elementos que podría incluir:**
 
-- Tus valores como docente
+- Tus valores como docente.
 - Tus límites (qué NO harías con IA)
 - Tus compromisos (qué SÍ harás)
-- Cómo verificarás el contenido generado
-- Cómo enseñarás a tu alumnado a ser crítico/a
+- Cómo verificarás el contenido generado.
+- Cómo enseñarás a tu alumnado a ser crítico/a.
 
 **No te preocupes por el formato perfecto. Preocúpate por ser honesto/a contigo mismo/a.**
 
@@ -404,27 +406,26 @@ En la actividad de este módulo, escribirás tu propia declaración de uso étic
 
 **En español:**
 - **UNESCO (2021):** "Recomendación sobre la ética de la inteligencia artificial"
-  - Disponible en: https://unesdoc.unesco.org/ark:/48223/pf0000381144
-  - Capítulo 4: Educación y formación
+  - Disponible en: https://unesdoc.unesco.org/ark:/48223/pf0000386510_spa?posInSet=1&queryId=6947509f-b218-4625-ab8e-d505cefadd25
+  - Capítulo 4: Educación y formación.
 
-- **Instituto Cervantes (2023):** "La IA en la enseñanza de ELE"
-  - Artículo en: [web del Instituto Cervantes]
+- **Instituto Cervantes (2023):** "La IA en la enseñanza de ELE: Jornadas"
+  - Disponible en: https://www.youtube.com/watch?v=CCwkEehbJ78
 
 **En inglés (para quien quiera profundizar):**
-- **Baker, M. (2023):** "Education and AI: Critical perspectives"
 - **Holmes, W. et al. (2022):** "Artificial Intelligence in Education"
 
 ### Comunidades de práctica
 
-- **Reddit:** r/Spanish - discusiones sobre IA y español
+- **Reddit:** r/Spanish - discusiones sobre IA y español.
 - **LinkedIn:** Grupos de "IA en Educación"
-- **Twitter/X:** Hashtag #AIEducativa #ELE
+- **Twitter/X:** Hashtag #AIEducativa #ELE.
 
 ### Herramientas para verificar contenido
 
-- **Google Reverse Image Search:** Para verificar imágenes
-- **Snopes (Español):** Para verificar facts urbanos
-- **Wikipedia en español:** Para verificar información general
+- **Google Reverse Image Search:** Para verificar imágenes.
+- **Snopes (Español):** Para verificar bulos urbanos.
+- **Wikipedia en español:** Para verificar información general.
 
 ---
 
@@ -432,19 +433,19 @@ En la actividad de este módulo, escribirás tu propia declaración de uso étic
 
 ### Los 5 principios éticos:
 
-1. **TRANSPARENCIA:** Indica siempre cuándo usas IA
-2. **VERIFICACIÓN:** Revisa siempre el contenido generado
-3. **EQUIDAD CULTURAL:** Representa la diversidad hispanohablante
-4. **PRIVACIDAD:** No subas datos de alumnado real
-5. **DESARROLLO CRÍTICO:** Enseña a tu alumnado a evaluar IA
+1. **TRANSPARENCIA:** Indica siempre cuándo usas IA.
+2. **VERIFICACIÓN:** Revisa siempre el contenido generado.
+3. **EQUIDAD CULTURAL:** Representa la diversidad hispanohablante.
+4. **PRIVACIDAD:** No subas datos de alumnado real.
+5. **DESARROLLO CRÍTICO:** Enseña a tu alumnado a evaluar IA.
 
 ### Sesgos comunes en ELE:
 
-- Representación geográfica limitada
-- Representación cultural monolítica
+- Representación geográfica limitada.
+- Representación cultural monolítica.
 - Nombres estereotipados
-- Vocabulario solo de una variedad
-- Clase social limitada
+- Vocabulario solo de una variedad.
+- Clase social limitada.
 
 ### Antes de usar IA:
 

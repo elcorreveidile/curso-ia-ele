@@ -12,7 +12,7 @@ Este es el **prompt maestro** que usarás durante el curso y después en tu prá
 ## 📋 PROMPT MAESTRO (COPIAR Y RELLENAR)
 
 ```
-Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER (Marco Común Europeo de Referencia) y el PCIC (Plan Curricular del Instituto Cervantes).
+Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER (Marco Común Europeo de Referencia).
 
 ## DATOS DE LA CLASE
 
@@ -24,7 +24,7 @@ Actúa como profesor experto de español como lengua extranjera con especializac
 
 ## OBJETIVO DE APRENDIZAJE PRINCIPAL
 
-[Escribe 1 objetivo comunicativo principal del MCER/PCIC]
+[Escribe 1 objetivo comunicativo principal del MCER]
 
 Ejemplos de objetivos bien formulados:
 - "El alumnado será capaz de describir experiencias pasadas usando el pretérito indefinido y el imperfecto en contextos de viajes."
@@ -62,7 +62,7 @@ Para cada fase incluye:
 **FASE 3: PRÁCTICA GUIADA (20-25 minutos)**
 - Objetivo específico
 - Ejercicios con apoyo del profesor
-- Progresión de controlado a semifree
+- Progresión de controlado a semilibre
 - Intervenciones del profesor
 - Materiales necesarios
 
@@ -77,7 +77,7 @@ Para cada fase incluye:
 - Objetivo específico
 - Actividad de consolidación y reflexión
 - Cómo conectarás con la próxima clase
-- Materiales necesitos
+- Materiales necesarios
 
 ### 2. ADAPTACIONES PARA DIFERENTES RITMOS
 
@@ -162,12 +162,12 @@ Gracias.
 
 ---
 
-## 📝 EJEMPLOS COMpletos DE PROMPT RELLENADO
+## 📝 EJEMPLOS COMPLETOS DE PROMPT RELLENADO
 
 ### Ejemplo 1: B2 - Narrativa personal (viajes)
 
 ```
-Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER y el PCIC.
+Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER.
 
 ## DATOS DE LA CLASE
 
@@ -192,7 +192,7 @@ Actúa como profesor experto de español como lengua extranjera con especializac
 ### Ejemplo 2: A2 - Transacciones en tienda
 
 ```
-Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER y el PCIC.
+Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER.
 
 ## DATOS DE LA CLASE
 
@@ -217,7 +217,7 @@ Actúa como profesor experto de español como lengua extranjera con especializac
 ### Ejemplo 3: B1 - Expresar opiniones (redes sociales)
 
 ```
-Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER y el PCIC.
+Actúa como profesor experto de español como lengua extranjera con especialización en planificación didáctica según el MCER.
 
 ## DATOS DE LA CLASE
 
@@ -232,7 +232,7 @@ Actúa como profesor experto de español como lengua extranjera con especializac
 
 ## CONTENIDOS LINGÜÍSTICOS A TRABAJAR
 
-- Gramática: Conectores argumentativos (porque, ya que, puesto que, sin embargo, aunque), estructuras para opinar (me parece que, creo que, pienso que), contrasteindicadores
+- Gramática: Conectores argumentativos (porque, ya que, puesto que, sin embargo, aunque), estructuras para opinar (me parece que, creo que, pienso que), indicadores de contraste
 - Vocabulario: Redes sociales, tecnología, ventajas/desventajas, bienestar, adicción, comunicación (aprox. 30 palabras)
 - Funciones comunicativas: Expresar opinión, justificar opiniones, estar de acuerdo/desacuerdo, argumentar
 
@@ -303,7 +303,7 @@ Cuando uses este prompt correctamente, deberías obtener:
 ## 📚 RECURSOS ADICIONALES
 
 - **MCER:** https://www.cervantes.es/obref/marco/
-- **PCIC:** https://vc.cervantes.es/obref/plan_curricular/
+
 - **Inventario MCER:** https://www.coe.int/en/web/common-european-framework-reference-languages/
 
 ---

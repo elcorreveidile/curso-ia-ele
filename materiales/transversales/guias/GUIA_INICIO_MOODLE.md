@@ -16,8 +16,9 @@ Esta guía responde a las preguntas más frecuentes sobre cómo navegar y partic
 El curso está organizado en **6 secciones principales**:
 
 ### 🏠 Sección 0: Bienvenida y orientación
-- Vídeo de bienvenida de la Formador
+- Vídeo de bienvenida del Formador
 - Esta guía de inicio
+- Glosario de términos IA-ELE
 - Cuestionario diagnóstico inicial
 - Foro de presentación
 
@@ -26,6 +27,7 @@ Cada módulo incluye:
 - 📹 **Vídeo** de introducción (5-15 min)
 - 📄 **Lecturas** obligatorias y complementarias
 - 💬 **Foro** de reflexión y debate
+- 📊 **Rúbrica** de evaluación de la tarea
 - 📝 **Tarea** práctica para entregar
 
 ### 🏆 Sección final: Cierre y certificación
@@ -220,7 +222,7 @@ En la página principal del curso, verás:
 
 **Problemas con Moodle:**
 - Correo: benitezl@go.ugr.es
-- Teléfono: benitezl@go.ugr.es
+- Teléfono: [Indicar teléfono]
 - Horario: lunes a viernes, 9:00-14:00 h
 
 **Problemas con las videotutorías:**
@@ -321,11 +323,11 @@ Si has llegado hasta aquí y has completado el checklist, estás listo/a para co
 
 **Soporte técnico Moodle:**
 - Correo: benitezl@go.ugr.es
-- Teléfono: benitezl@go.ugr.es
+- Teléfono: [Indicar teléfono]
 
 ---
 
-¡Mucha suerte con el curso! ¡Estoy deseando acompañarte en este aprendizaje.
+¡Mucha suerte con el curso! ¡Estoy deseando acompañarte en este aprendizaje!
 
 **Javier Benítez Láinez**
 **Centro de Lenguas Modernas - Universidad de Granada**

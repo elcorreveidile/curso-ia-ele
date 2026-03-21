@@ -25,7 +25,7 @@
 **Visual:**
 - Plano medio (de cintura para arriba)
 - Fondo: estantería con libros de ELE, materiales didácticos
-- Superpuesto: Nombre y título de la Formador
+- Superpuesto: Nombre y título del Formador
 
 **Audio:**
 
@@ -146,7 +146,7 @@
 
 > "Estoy muy ilusionada con este curso. Sé que juntos aprenderemos muchísimo, y que tus clases de ELE van a dar un salto cualitativo importante."
 
-**Sonrisa cálido**
+**Sonrisa cálida**
 
 > "¡Nos vemos en el foro! ¡Allá vamos!"
 
@@ -166,7 +166,7 @@
 
 | Momento | Texto en pantalla | Duración |
 |---------|-------------------|----------|
-| 0:00 | Nombre de la Formador + "Profesora de ELE - CLM UGR" | 5 seg |
+| 0:00 | Nombre del Formador + "Profesor de ELE - CLM UGR" | 5 seg |
 | 0:30 | "IA para la enseñanza de ELE" (título del curso) | 4 seg |
 | 1:00 | "4 Módulos en 4 semanas" | 3 seg |
 | 1:30 | "13, 23, 30 abril 2026 | 15:00-16:30 (GMT+2)" | 5 seg |
@@ -278,7 +278,7 @@
 
 **Adaptaciones personales:**
 Si deseas personalizar, puedes añadir:
-- Una anecdota breve de cómo cambió tu práctica con IA
+- Una anécdota breve de cómo cambió tu práctica con IA
 - Un miedo o preocupación común que tú tuviste al principio
 - Un resultado concreto que lograste con IA en tus clases
 

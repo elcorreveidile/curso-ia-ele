@@ -24,9 +24,12 @@
 
 **Visual:**
 - Pantalla dividida: izquierda ChatGPT genérico, derecha "Asistente ELE B2"
-- Captura de pantalla de ChatGPT con prompt genérico
-- Captura de pantalla de resultado genérico
-- Luego captura de asistente configurado con resultado específico
+- Captura de pantalla de ChatGPT con prompt genérico.
+
+- Captura de pantalla de resultado genérico.
+
+- Luego captura de asistente configurado con resultado específico.
+
 
 **Audio:**
 
@@ -44,19 +47,23 @@
 > - Opción A: Crear un GPT personalizado en ChatGPT Plus
 > - Opción B: Usar un system prompt en Claude (gratuito)
 >
-> Al final, tendrás un asistente funcionando y listo para usar."
+> Al final, tendrás un asistente funcionando y listo para usar".
 
 **Visual:**
-- Icono de dos caminos: Opción A y Opción B
+- Icono de dos caminos: Opción A y Opción B.
+
 
 ---
 
 ### 1:30 - 5:30 | Parte 2: Crear un GPT Personalizado en ChatGPT
 
 **Visual:**
-- Capturas de pantalla de la interfaz de ChatGPT
-- Círculos y flechas señalando botones importantes
-- Capturas de pantalla de cada paso
+- Capturas de pantalla de la interfaz de ChatGPT.
+
+- Círculos y flechas señalando botones importantes.
+
+- Capturas de pantalla de cada paso.
+
 
 **Audio:**
 
@@ -74,11 +81,12 @@
 > **Paso 4: Instrucciones (LO MÁS IMPORTANTE)**
 > Aquí es donde configuras el comportamiento de tu GPT. Aquí es donde defines su 'personalidad', su rol, sus límites.
 >
-> Te voy a mostrar un ejemplo de system prompt para un asistente de nivel B2:"
+> Te voy a mostrar un ejemplo de system prompt para un asistente de nivel B2":
 
 **Visual:**
 - Captura de pantalla del campo "Instructions"
-- Texto del system prompt aparece gradualmente
+- Texto del system prompt aparece gradualmente.
+
 - System prompt ejemplo:
 ```
 Eres un asistente de español ELE nivel B2.
@@ -124,18 +132,21 @@ FORMATO DE RESPUESTA:
 > Si no te gusta el resultado, puedes modificar el system prompt y probar de nuevo.
 >
 > **Paso 7: Guardar y compartir**
-> Cuando estés satisfecho, haz clic en 'Save'. Tu GPT estará disponible en tu panel de GPTs. Si tienes ChatGPT Plus, también puedes compartir el enlace con otros docentes."
+> Cuando estés satisfecho, haz clic en 'Save'. Tu GPT estará disponible en tu panel de GPTs. Si tienes ChatGPT Plus, también puedes compartir el enlace con otros docentes".
 
 **Visual:**
-- Animación de cada paso con números
-- Capturas de pantalla reales de la interfaz
+- Animación de cada paso con números.
+
+- Capturas de pantalla reales de la interfaz.
+
 
 ---
 
 ### 5:30 - 9:30 | Parte 3: System Prompt para Claude (Opción Gratuita)
 
 **Visual:**
-- Capturas de pantalla de Claude
+- Capturas de pantalla de Claude.
+
 - Comparación: ChatGPT Plus (de pago) vs Claude (gratuito)
 
 **Audio:**
@@ -153,12 +164,15 @@ FORMATO DE RESPUESTA:
 > **Paso 3: Guardar el system prompt**
 > IMPORTANTE: Como Claude no guarda configuraciones, necesitarás guardar este system prompt en un documento de texto para reutilizarlo. Copiar y pegar cada vez.
 >
-> Voy a mostrarte el mismo system prompt que vimos antes, pero adaptado para Claude:"
+> Voy a mostrarte el mismo system prompt que vimos antes, pero adaptado para Claude":
 
 **Visual:**
-- Captura de pantalla de Claude
-- System prompt aparece gradualmente
-- Nota sobre guardarlo en documento
+- Captura de pantalla de Claude.
+
+- System prompt aparece gradualmente.
+
+- Nota sobre guardarlo en documento.
+
 
 **Audio:**
 
@@ -170,7 +184,7 @@ FORMATO DE RESPUESTA:
 > **Paso 5: Usar tu asistente**
 > Ahora puedes pedirle lo mismo que le pedirías a tu GPT: 'Genera 5 ejercicios de pretérito imperfecto vs indefinido para B2'.
 >
-> **Limitación:** Cada vez que abras un nuevo chat en Claude, necesitarás volver a enviar el system prompt. Por eso es importante guardarlo en un documento para copiar y pegar."
+> **Limitación:** Cada vez que abras un nuevo chat en Claude, necesitarás volver a enviar el system prompt. Por eso es importante guardarlo en un documento para copiar y pegar".
 
 **Visual:**
 - Comparación lado a lado: ChatGPT (configuración guardada) vs Claude (copiar/pegar cada vez)
@@ -180,8 +194,10 @@ FORMATO DE RESPUESTA:
 ### 9:30 - 11:30 | Parte 4: Ejemplo Práctico en Vivo
 
 **Visual:**
-- Grabación de pantalla en tiempo real
-- Crear un asistente desde cero
+- Grabación de pantalla en tiempo real.
+
+- Crear un asistente desde cero.
+
 
 **Audio:**
 
@@ -234,20 +250,25 @@ FORMATO:
 >
 > Ahora voy a pedirle que haga una segunda versión pero para una tienda de ropa. [Pausa]... Listo. Mismo nivel, mismo estilo, diferente contexto.
 >
-> Esto es la belleza de un asistente especializado: respuestas consistentes, siempre al nivel que necesitas."
+> Esto es la belleza de un asistente especializado: respuestas consistentes, siempre al nivel que necesitas".
 
 **Visual:**
-- Captura de pantalla del prompt
-- Captura de pantalla del diálogo generado
-- Captura de pantalla del segundo diálogo
+- Captura de pantalla del prompt.
+
+- Captura de pantalla del diálogo generado.
+
+- Captura de pantalla del segundo diálogo.
+
 
 ---
 
 ### 11:30 - 13:00 | Parte 5: Buenas Prácticas
 
 **Visual:**
-- Lista de buenas prácticas con iconos
-- Ejemplos visuales de cada práctica
+- Lista de buenas prácticas con iconos.
+
+- Ejemplos visuales de cada práctica.
+
 
 **Audio:**
 
@@ -257,7 +278,7 @@ FORMATO:
 > Nunca asumas que el asistente 'adivinará' el nivel. Sé explícito: Nivel A2, B1, B2.
 >
 > **Práctica 2: Especificar tipo de actividades**
-> ¿Tu asistente genera ejercicios? ¿Diálogos? ¿Textos? ¿Sé específico.
+> ¿Tu asistente genera ejercicios? ¿Diálogos? ¿Textos? Sé específico.
 >
 > **Práctica 3: Indicar límites claros**
 > Qué NO debe hacer. Ejemplo: 'No generar vocabulario C1 sin explicación'.
@@ -266,19 +287,23 @@ FORMATO:
 > No asumas que funciona con una prueba. Prueba 5 tareas diferentes antes de usarlo con tu alumnado.
 >
 > **Práctica 5: Guardar el system prompt**
-> Si usas Claude, guarda el prompt en un documento. Si usas ChatGPT Plus, el GPT se guarda automáticamente."
+> Si usas Claude, guarda el prompt en un documento. Si usas ChatGPT Plus, el GPT se guarda automáticamente".
 
 **Visual:**
-- Iconos de checklist ✅
-- Números del 1 al 5
+- Iconos de checklist ✅.
+
+- Números del 1 al 5.
+
 
 ---
 
 ### 13:00 - 14:00 | Parte 6: Tu Turno
 
 **Visual:**
-- Pantalla con pasos para el alumnado
-- Checklist de tareas
+- Pantalla con pasos para el alumnado.
+
+- Checklist de tareas.
+
 
 **Audio:**
 
@@ -290,22 +315,26 @@ FORMATO:
 > 3. Decide qué tipo de materiales generará
 > 4. Escribe el system prompt (puedes usar las plantillas de las lecturas)
 > 5. Prueba con al menos 5 tareas diferentes
-> 6. Itera y refine según sea necesario
-> 7. Comparte en el foro: describe tu asistente, muestra ejemplos, recibe feedback
+> 6. Itera y refina según sea necesario
+> 7. Comparte en el foro: describe tu asistente, muestra ejemplos, recibe retroalimentación
 >
-> No te preocupes si el primer intento no es perfecto. La IA se mejora con la iteración. Lo importante es empezar."
+> No te preocupes si el primer intento no es perfecto. La IA se mejora con la iteración. Lo importante es empezar".
 
 **Visual:**
-- Checklist animado
-- Icono de foro 💬
+- Checklist animado.
+
+- Icono de foro 💬.
+
 
 ---
 
 ### 14:00 - 15:00 | Cierre y Recursos
 
 **Visual:**
-- Resumen visual de lo aprendido
-- Enlaces a recursos
+- Resumen visual de lo aprendido.
+
+- Enlaces a recursos.
+
 
 **Audio:**
 
@@ -322,12 +351,16 @@ FORMATO:
 > Nos vemos en el foro. ¡Allá vamos!"
 
 **Visual:**
-- Música motivadora de fondo
+- Música motivadora de fondo.
+
 - Pantalla final con recursos:
   - 📄 Plantillas system prompt (lectura 2)
-  - 💬 Foro de compartir asistentes
-  - ⭐ Rúbrica de evaluación
-- Logo del curso
+  - 💬 Foro de compartir asistentes.
+
+  - ⭐ Rúbrica de evaluación.
+
+- Logo del curso.
+
 
 ---
 
@@ -336,54 +369,79 @@ FORMATO:
 ### Capturas de pantalla necesarias
 
 **ChatGPT:**
-1. Pantalla principal con menú lateral
+1. Pantalla principal con menú lateral.
+
 2. "Explore GPTs"
 3. Botón "Create"
-4. Campos: Name, Description, Instructions
-5. Panel de chat de prueba
+4. Campos: Name, Description, Instructions.
+
+5. Panel de chat de prueba.
+
 6. Botón "Save"
-7. Panel de GPTs guardados
+7. Panel de GPTs guardados.
+
 
 **Claude:**
-1. Pantalla principal
-2. Área de chat
-3. Envío de system prompt
-4. Respuesta de Claude
+1. Pantalla principal.
+
+2. Área de chat.
+
+3. Envío de system prompt.
+
+4. Respuesta de Claude.
+
 
 **Comparaciones:**
 - ChatGPT Plus vs Claude (tabla)
-- Respuesta genérica vs respuesta con asistente
+- Respuesta genérica vs respuesta con asistente.
+
 
 ### Iconos y elementos visuales
 
-- 🤖 Robot/asistente
+- 🤖 Robot/asistente.
+
 - ✅ Checklists
 - ⚡ Rayo (rápido)
-- 🎯 Objetivo
-- 💬 Chat/burbujas
-- 📋 Documentos
-- 🔧 Configuración
+- 🎯 Objetivo.
+
+- 💬 Chat/burbujas.
+
+- 📋 Documentos.
+
+- 🔧 Configuración.
+
 
 ---
 
 ## 📐 INSTRUCCIONES DE PRODUCCIÓN
 
 ### Software recomendado
-- **Loom** o **OBS Studio** para grabación de pantalla
-- **QuickTime** (Mac) o **Game Bar** (Windows) alternativas gratuitas
-- **iMovie** o **DaVinci Resolve** para edición
+- **Loom** o **OBS Studio** para grabación de pantalla.
+
+- **QuickTime** (Mac) o **Game Bar** (Windows) alternativas gratuitas.
+
+- **iMovie** o **DaVinci Resolve** para edición.
+
 
 ### Estilo de capturas
-- **Zoom:** Suficientemente cerca para leer texto
-- **Resalte:** Usar círculos/flechas para señalar botones
-- **Animación:** Elementos appearing gradualmente
-- **Tempo:** Pausado, con pausas en puntos clave
+- **Zoom:** Suficientemente cerca para leer texto.
+
+- **Resalte:** Usar círculos/flechas para señalar botones.
+
+- **Animación:** Elementos apareciendo gradualmente.
+
+- **Tempo:** Pausado, con pausas en puntos clave.
+
 
 ### Voz en off
-- **Tono:** Práctico, paso a paso, animado
-- **Ritmo:** Pausado, con pausas después de cada instrucción
-- **Claridad:** Explicar cada paso antes de mostrarlo
-- **Longitud:** 10-15 minutos objetivo
+- **Tono:** Práctico, paso a paso, animado.
+
+- **Ritmo:** Pausado, con pausas después de cada instrucción.
+
+- **Claridad:** Explicar cada paso antes de mostrarlo.
+
+- **Longitud:** 10-15 minutos objetivo.
+
 
 ---
 
@@ -416,11 +474,15 @@ FORMATO:
 
 Al ver este vídeo, el alumnado debería:
 
-1. **Comprender** la diferencia entre ChatGPT genérico y un mini asistente
-2. **Saber** cómo crear un GPT personalizado en ChatGPT Plus
+1. **Comprender** la diferencia entre ChatGPT genérico y un mini asistente.
+
+2. **Saber** cómo crear un GPT personalizado en ChatGPT Plus.
+
 3. **Saber** cómo usar un system prompt en Claude (gratuito)
-4. **Conocer** las buenas prácticas para crear asistentes
-5. **Sentirse listo/a** para crear su propio asistente
+4. **Conocer** las buenas prácticas para crear asistentes.
+
+5. **Sentirse listo/a** para crear su propio asistente.
+
 
 ---
 

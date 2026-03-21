@@ -89,7 +89,7 @@ cliente joven estudiante, luz natural, colores vibrantes
 
 **Uso en ELE:**
 - Diálogos para role-plays
-- Dictados y ejercicios de listening
+- Dictados y ejercicios de comprensión auditiva
 - Narraciones de cuentos
 - Guiones de videos
 - Pronunciación modelo
@@ -127,8 +127,8 @@ Juan: De nada.
 | Herramienta | Costo gratuito | Uso en ELE | Ventajas | Limitaciones |
 |-------------|----------------|------------|----------|--------------|
 | **Miro + IA** | 3 boards gratis | Mapas de vocabulario, esquemas | Colaborativo, generador de ideas | Límite de boards |
-| **Coggle** | 3 diagramas grátis | Redes de vocabulario | Sencillo de usar, exportable | Funciones limitadas |
-| **ChatGPT + exportar** | Gratis | Generar estructura, luego dibujar | Control total del contenido | Reiere transferir a otra app |
+| **Coggle** | 3 diagramas gratis | Redes de vocabulario | Sencillo de usar, exportable | Funciones limitadas |
+| **ChatGPT + exportar** | Gratis | Generar estructura, luego dibujar | Control total del contenido | Requiere transferir a otra app |
 
 ### Flujo recomendado: ChatGPT + Coggle
 
@@ -253,7 +253,7 @@ Ramas:
 ### Audio
 - ✅ No clonar voces sin permiso
 - ✅ Usar solo para fines educativos
-- ✅ Atribuir fuente si es applicable
+- ✅ Atribuir fuente si es aplicable
 - ❌ No generar deepfakes
 
 ### Mapas mentales

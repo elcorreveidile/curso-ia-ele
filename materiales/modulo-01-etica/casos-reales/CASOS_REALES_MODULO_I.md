@@ -7,10 +7,10 @@
 
 En esta sección, presentarás dos casos reales de uso de IA en la enseñanza de ELE. Cada caso incluye:
 
-- **Situación:** Contexto, alumnado, objetivo
-- **Proceso:** Qué hizo el profesor/a
-- **Resultado/Impacto:** Qué pasó
-- **Lección aprendida:** Qué podemos aprender de este caso
+- **Situación:** Contexto, alumnado, objetivo.
+- **Proceso:** Qué hizo el profesor/a.
+- **Resultado/Impacto:** Qué pasó.
+- **Lección aprendida:** Qué podemos aprender de este caso.
 
 Tu tarea es analizar cada caso críticamente y extraer lecciones para tu propia práctica.
 
@@ -25,13 +25,13 @@ Tu tarea es analizar cada caso críticamente y extraer lecciones para tu propia 
 **Profesora:** Carmen Rodríguez, profesora de ELE en CLM-UGR
 
 **Contexto:**
-- Nivel: B2
-- 15 estudiantes universitarios estadounidenses
-- Programa Study Abroad en Granada (segundo mes)
-- Tema: Pretérito imperfecto vs indefinido
+- Nivel: B2.
+- 15 estudiantes universitarios estadounidenses.
+- Programa Study Abroad en Granada (segundo mes).
+- Tema: Pretérito imperfecto vs indefinido.
 
 **Desafío:**
-> Carmen necesita 10 variaciones de un ejercicio de pretérito imperfecto vs indefinido. El alumnado tiene diferentes ritmos, y quiere ejercicios adicionales para quienes terminan rápido. Manualmente, esto le tomaría 2+ horas.
+> Carmen necesita 10 variaciones de un ejercicio de pretérito imperfecto vs indefinido. El alumnado tiene diferentes ritmos, y quiere ejercicios adicionales para quienes terminan rápido. Manualmente, esto le tomaría más de dos horas.
 
 ---
 
@@ -51,10 +51,10 @@ Necesito 10 variaciones de un ejercicio de pretérito imperfecto vs indefinido.
 Contexto de los ejercicios: experiencias de viajes pasados, experiencias en Granada, recuerdos de la infancia.
 
 Cada variación debe tener:
-- 8-10 frases para completar
-- Instrucciones claras en español B2
-- Solucionario
-- Nivel apropiado (vocabulario B2, estructuras B2+)
+- 8-10 frases para completar.
+- Instrucciones claras en español B2.
+- Solucionario.
+- Nivel apropiado (vocabulario B2, estructuras B2+).
 
 Por favor, genera variación 1.
 ```
@@ -64,15 +64,15 @@ Por favor, genera variación 1.
 Carmen revisó la primera variación:
 
 ✅ **Fortalezas:**
-- Nivel B2 adecuado
-- Instrucciones claras
-- Vocabulario apropiado
-- Ejercicios culturalmente relevantes (Granada, viajes)
+- Nivel B2 adecuado.
+- Instrucciones claras.
+- Vocabulario apropiado.
+- Ejercicios culturalmente relevantes (Granada, viajes).
 
 ⚠️ **Áreas de mejora:**
-- Algunas frases eran demasiado largas
-- Faltaban más contextos variados (no solo viajes)
-- Necesitaba más ejemplos con contextos españoles específicos
+- Algunas frases eran demasiado largas.
+- Faltaban más contextos variados (no solo viajes).
+- Necesitaba más ejemplos con contextos españoles específicos.
 
 **Paso 3: Iteración**
 
@@ -92,10 +92,10 @@ Nivel: B2. Longitud máxima de frase: 15 palabras.
 La segunda versión fue mucho mejor:
 
 ✅ **Todo mejorado:**
-- Frases más cortas
-- Contextos variados y culturalmente ricos
-- Nivel perfecto para B2
-- Referencias específicas a Granada (Albaicín, tapas, Alhambra)
+- Frases más cortas.
+- Contextos variados y culturalmente ricos.
+- Nivel perfecto para B2.
+- Referencias específicas a Granada (Albaicín, tapas, Alhambra).
 
 **Paso 5: Verificación final**
 
@@ -123,28 +123,28 @@ La IA generó las 9 variaciones restantes consistentemente.
 ### 📊 RESULTADO/IMPACTO
 
 **Tiempo invertido:**
-- Prompt inicial: 5 min
-- Revisión crítica: 10 min
-- Iteración: 3 min
-- Verificación final: 5 min
-- **Total: ~23 minutos** (vs 2+ horas manualmente)
+- Prompt inicial: 5 min.
+- Revisión crítica: 10 min.
+- Iteración: 3 min.
+- Verificación final: 5 min.
+- **Total: ~23 minutos** (vs más de dos horas manualmente).
 
 **Producto final:**
-- 10 variaciones de ejercicios de pretérito imperfecto vs indefinido
-- Todas con nivel B2 adecuado
-- Todas culturalmente relevantes
-- Todas con instrucciones claras y solucionario
+- 10 variaciones de ejercicios de pretérito imperfecto vs indefinido.
+- Todas con nivel B2 adecuado.
+- Todas culturalmente relevantes.
+- Todas con instrucciones claras y solucionario.
 
 **Uso en clase:**
-- Carmen usó las variaciones en clase
-- Alumnado que terminaba rápido recibía ejercicios adicionales
-- Nadie se aburrió esperando
-- Todos practicaron lo mismo pero con diferentes contextos
+- Carmen usó las variaciones en clase.
+- Alumnado que terminaba rápido recibía ejercicios adicionales.
+- Nadie se aburrió esperando.
+- Todos practicaron lo mismo pero con diferentes contextos.
 
-**Feedback del alumnado:**
-- "Los ejercicios eran interesantes"
-- "Me gustó que cada uno tenía contextos diferentes"
-- "Sentí que practicaba lo mismo pero de formas variadas"
+**Valoración del alumnado:**
+- "Los ejercicios eran interesantes".
+- "Me gustó que cada uno tenía contextos diferentes".
+- "Sentí que practicaba lo mismo pero de formas variadas".
 
 ---
 
@@ -152,15 +152,15 @@ La IA generó las 9 variaciones restantes consistentemente.
 
 **Qué funcionó:**
 
-1. **Prompt específico y contextualizado:** Carmen incluyó detalles sobre el alumnado (universitarios estadounidenses, Study Abroad, Granada)
+1. **Prompt específico y contextualizado:** Carmen incluyó detalles sobre el alumnado (universitarios estadounidenses, Study Abroad, Granada).
 
 2. **Revisión crítica:** No aceptó el primer resultado. Identificó fortalezas y áreas de mejora.
 
 3. **Iteración:** Hizo un segundo prompt específico para corregir lo que no funcionaba.
 
-4. **Verificación cultural:** Aseguró que los ejercicios fueran culturalmente relevantes (Granada, no solo "España" genérica)
+4. **Verificación cultural:** Aseguró que los ejercicios fueran culturalmente relevantes (Granada, no solo "España" genérica).
 
-5. **Ahorro de tiempo significativo:** 23 min vs 2+ horas = 80%+ de ahorro
+5. **Ahorro de tiempo significativo:** 23 min vs más de dos horas = más de un 80% de ahorro.
 
 \newpage
 
@@ -179,9 +179,9 @@ La IA generó las 9 variaciones restantes consistentemente.
 **Aplicabilidad para otros docentes:**
 
 Este modelo es **directamente aplicable** a:
-- Otros niveles gramaticales (subjuntivo, ser/estar, por/para)
-- Otros tipos de ejercicios (vocabulario, comprensión lectora)
-- Otros contextos geográficos (cambiar "Granada" por tu ciudad)
+- Otros niveles gramaticales (subjuntivo, ser/estar, por/para).
+- Otros tipos de ejercicios (vocabulario, comprensión lectora).
+- Otros contextos geográficos (cambiar "Granada" por tu ciudad).
 
 ---
 
@@ -203,10 +203,10 @@ Este modelo es **directamente aplicable** a:
 **Profesor:** Luis Martínez, profesor de ELE en academia privada
 
 **Contexto:**
-- Nivel: A2 (adultos europeos)
-- 8 estudiantes de diferentes nacionalidades
-- Clase nocturna (después de trabajo)
-- Tema: Vocabulario de ropa y compras
+- Nivel: A2 (adultos europeos).
+- 8 estudiantes de diferentes nacionalidades.
+- Clase nocturna (después de trabajo).
+- Tema: Vocabulario de ropa y compras.
 
 **Desafío:**
 > Luis tiene poco tiempo para preparar clases (trabaja otro trabajo de día). Necesita una actividad de vocabulario para la próxima clase.
@@ -228,9 +228,9 @@ Solo eso. Sin contexto, sin detalles sobre el alumnado, sin especificaciones.
 **Paso 2: Resultado de la IA**
 
 ChatGPT generó una actividad con:
-- 20 palabras de vocabulario de ropa
-- Un ejercicio de emparejar
-- Un diálogo en una tienda
+- 20 palabras de vocabulario de ropa.
+- Un ejercicio de emparejar.
+- Un diálogo en una tienda.
 
 **Paso 3: Sin revisión**
 
@@ -249,16 +249,16 @@ Luis imprimió la actividad y la entregó a su alumnado sin revisar.
 **Problema 1: Vocabulario inadecuado para A2**
 
 La IA generó palabras como:
-- "chubasquero" (impermeable)
-- "sobretodo" (abrigo largo)
-- "camiseta de tirantes" ( específico de España)
+- "chubasquero" (impermeable).
+- "sobretodo" (abrigo largo).
+- "camiseta de tirantes" (específico de España).
 
 Estas palabras son **C1**, no A2. El alumnado A2 las encontró muy difíciles.
 
 **Problema 2: Contexto cultural irrelevante**
 
 El diálogo incluía:
-- Comprar un chubasquero para la lluvia en Londres
+- Comprar un chubasquero para la lluvia en Londres.
 
 El alumnado era de países mediterráneos (Italia, Grecia, Portugal). No se identificaron con el contexto de lluvia constante.
 
@@ -269,13 +269,13 @@ El diálogo tenía 15 intervenciones. Para A2, esto es demasiado largo y complej
 **Problema 4: Nivel lingüístico inconsistente**
 
 Algunas frases del diálogo eran A2, pero otras eran B1 o incluso B2:
-- "Me lo podrías probar en un tono más oscuro" (B2)
-- "Llevo talla 42 pero este me va un poco grande" (B1+)
+- "Me lo podrías probar en un tono más oscuro" (B2).
+- "Llevo talla 42 pero este me va un poco grande" (B1+).
 
 **Problema 5: Error gramatical**
 
 La IA inventó una palabra:
-- "Vestidor" (no existe en español, debería ser "probador")
+- "Vestidor" (no existe en español, debería ser "probador").
 
 ---
 
@@ -301,15 +301,15 @@ La IA inventó una palabra:
 
 **Qué falló:**
 
-1. **Prompt demasiado vago:** "Crea una actividad..." sin detalles sobre alumnado, nivel específico, contexto
+1. **Prompt demasiado vago:** "Crea una actividad..." sin detalles sobre alumnado, nivel específico, contexto.
 
-2. **Sin revisión crítica:** Luis no revisó el resultado antes de usarlo
+2. **Sin revisión crítica:** Luis no revisó el resultado antes de usarlo.
 
-3. **Asumió que la IA era infalible:** Confó ciegamente en la IA
+3. **Asumió que la IA era infalible:** Confió ciegamente en la IA.
 
-4. **Falta de verificación del nivel:** No verificó que el vocabulario fuera realmente A2
+4. **Falta de verificación del nivel:** No verificó que el vocabulario fuera realmente A2.
 
-5. **Falta de contextualización:** No adaptó la actividad a su alumnado específico (italianos, griegos, portugueses)
+5. **Falta de contextualización:** No adaptó la actividad a su alumnado específico (italianos, griegos, portugueses).
 
 **Principios éticos NO aplicados:**
 
@@ -323,10 +323,10 @@ La IA inventó una palabra:
 
 **Costo del error:**
 
-- **Tiempo perdido:** 30 min de clase improductiva
-- **Credibilidad perdida:** El alumnado cuestionó la preparación
-- **Confusión del alumnado:** Aprendieron vocabulario incorrecto o inadecuado
-- **Experiencia negativa:** Algunos estudiantes se desmotivaron
+- **Tiempo perdido:** 30 min de clase improductiva.
+- **Credibilidad perdida:** El alumnado cuestionó la preparación.
+- **Confusión del alumnado:** Aprendieron vocabulario incorrecto o inadecuado.
+- **Experiencia negativa:** Algunos estudiantes se desmotivaron.
 
 ---
 
@@ -357,8 +357,8 @@ La IA inventó una palabra:
 
 Para tu actividad de este módulo, te pido que:
 
-1. **Analiza cada caso** usando la rúbrica que encontrarás en Moodle
-2. **Identifica 3 lecciones** de cada caso para tu práctica docente
+1. **Analiza cada caso** usando la rúbrica que encontrarás en Moodle.
+2. **Identifica 3 lecciones** de cada caso para tu práctica docente.
 3. **Reflexiona:** ¿Te ves más en Carmen o en Luis? ¿Por qué?
 4. **Propón:** ¿Qué harías tú en una situación similar?
 
@@ -369,14 +369,14 @@ Para tu actividad de este módulo, te pido que:
 > **"¿Qué tipo de docente de ELE quiero ser con IA?"**
 
 **Opción A:** Como Carmen
-- Usa IA con criterio y revisión crítica
-- Ahorra tiempo sin sacrificar calidad
-- Modela relación ética con tecnología
+- Usa IA con criterio y revisión crítica.
+- Ahorra tiempo sin sacrificar calidad.
+- Modela relación ética con tecnología.
 
 **Opción B:** Como Luis
-- Usa IA sin criterio ni revisión
-- Pierde tiempo y credibilidad
-- No modela pensamiento crítico
+- Usa IA sin criterio ni revisión.
+- Pierde tiempo y credibilidad.
+- No modela pensamiento crítico.
 
 **Tu respuesta a esta pregunta será el corazón de tu declaración de uso ético de la IA.**
 

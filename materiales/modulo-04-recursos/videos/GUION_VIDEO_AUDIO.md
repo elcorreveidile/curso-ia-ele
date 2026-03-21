@@ -37,7 +37,7 @@ Juan: No, unos 5 minutos a pie.
 - Duración total: 2 min
 
 ### 4:30-6:00 | USO EN CLASE
-- Actividad de listening
+- Actividad de comprensión auditiva
 - Alumnado escucha y responde preguntas
 - Role-play después de escuchar
 

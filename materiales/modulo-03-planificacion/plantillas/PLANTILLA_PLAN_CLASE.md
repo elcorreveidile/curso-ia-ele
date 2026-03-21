@@ -36,7 +36,7 @@
 
 ### 1.2 Objetivo de aprendizaje principal
 
-> Escribe 1 objetivo comunicativo principal del MCER/PCIC
+> Escribe 1 objetivo comunicativo principal del MCER
 >
 > Formato: "El alumnado será capaz de [acción comunicativa] usando [contenido lingüístico] en [contexto de uso]"
 
@@ -167,11 +167,11 @@
 
 > _________________________________________________________________________
 
-**Progresión (de controlado a semifree):**
+**Progresión (de controlado a semilibre):**
 
 > 1. Ejercicio controlado: _______________________________________________
 >
-> 2. Ejercicio semifree: _________________________________________________
+> 2. Ejercicio semilibre: _________________________________________________
 >
 > 3. Ejercicio libre (si aplica): __________________________________________
 
@@ -312,11 +312,11 @@
 
 ### 3.3 Retroalimentación a dar al alumnado
 
-**Feedback positivo (qué reforzar):**
+**Retroalimentación positiva (qué reforzar):**
 
 > _________________________________________________________________________
 
-**Feedback correctivo (qué mejorar):**
+**Retroalimentación correctiva (qué mejorar):**
 
 > _________________________________________________________________________
 

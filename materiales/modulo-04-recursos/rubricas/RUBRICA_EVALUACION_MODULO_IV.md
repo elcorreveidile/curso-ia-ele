@@ -10,6 +10,7 @@
 | **Actividad** | Kit de recursos multimodales para unidad ELE |
 | **Entrega** | Documento PDF (3-5 páginas) con: 1 imagen + 1 audio + 1 mapa mental + reflexión |
 | **Ponderación** | 12,5% de la calificación final |
+| **Fecha límite** | 30 de abril de 2026 |
 
 ---
 
@@ -36,7 +37,7 @@
 | 2 - Básico (10-13) | Recursos sueltos sin conexión clara o secuencia débil |
 | 1 - Insuficiente (0-8) | Sin unidad temática o coherencia didáctica |
 
-### Criterio 4: Aplicabilidad real (20 points)
+### Criterio 4: Aplicabilidad real (20 puntos)
 
 | 4 - Excelente (20) | Totalmente implementable con alumnado real el lunes; incluye instrucciones de uso |
 | 3 - Satisfactorio (15-17) | Implementable con adaptaciones menores |
@@ -87,7 +88,7 @@
 ### Parte 2: Reflexión (1-2 páginas)
 
 1. **Proceso de creación:** ¿Cuántas iteraciones? ¿Qué cambió entre versiones?
-2. **Decisions:** ¿Por qué elegiste esos prompts específicos?
+2. **Decisiones:** ¿Por qué elegiste esos prompts específicos?
 3. **Ventajas/limitaciones de IA:** ¿Qué hace bien la IA? ¿Qué no hace bien?
 4. **Aplicabilidad:** ¿Cómo usarás este kit con tu alumnado real?
 

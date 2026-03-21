@@ -89,7 +89,7 @@ Sistema estandarizado para describir niveles de competencia lingüística en Eur
 
 ### **Modelo (en IA)**
 Sistema matemático-computacional que realiza una tarea específica. En el contexto de IA, "modelo" generalmente se refiere a un sistema entrenado.
-*Ejemplo:** GPT-4 es un modelo de lenguaje. Stable Diffusion es un modelo de generación de imágenes.
+*Ejemplo:* GPT-4 es un modelo de lenguaje. Stable Diffusion es un modelo de generación de imágenes.
 
 ### **Multimodal**
 Capacidad de procesar múltiples tipos de datos (texto, imagen, audio, video).
@@ -97,11 +97,11 @@ Capacidad de procesar múltiples tipos de datos (texto, imagen, audio, video).
 
 ### **Parámetro**
 Variable ajustable en un sistema de IA que afecta su comportamiento.
-*Ejemplo:** La "temperatura" es un parámetro que controla la creatividad de las respuestas.
+*Ejemplo:* La "temperatura" es un parámetro que controla la creatividad de las respuestas.
 
 ### **PCIC (Plan Curricular del Instituto Cervantes)**
 Desarrollo del MCER específico para español. Propone objetivos, contenidos y criterios de evaluación por niveles.
-*Ejemplo:* Los planes de clase deben estar alineados con descriptores del PCIC.
+*Ejemplo:* Los planes de clase deben estar alineados con descriptores del MCER.
 
 ### **Prompt**
 Instrucción o mensaje que se introduce a un modelo de IA para obtener una respuesta.
@@ -159,7 +159,7 @@ Unidad básica de texto que un modelo de lenguaje procesa. Puede ser una palabra
 
 ### **Training (Entrenamiento)**
 Proceso de enseñar a un modelo de IA usando grandes cantidades de datos.
-*Ejemplo:** GPT-4 fue entrenado con millones de textos de internet.
+*Ejemplo:* GPT-4 fue entrenado con millones de textos de internet.
 
 ### **Translation (Traducción)**
 Tarea de convertir texto de un idioma a otro. Los modelos de IA pueden traducir pero no siempre perfectamente.

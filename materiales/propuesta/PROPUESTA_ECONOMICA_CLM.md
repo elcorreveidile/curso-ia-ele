@@ -32,7 +32,7 @@ El curso capacita al profesorado para integrar herramientas de inteligencia arti
 - Duración: 4 semanas (20 horas totales)
 - Materiales: Lecturas, guías, plantillas y rúbricas de elaboración propia
 - Sesiones en directo: 3 videotutorías de 90 minutos
-- Evaluación: 4 tareas prácticas con feedback personalizado
+- Evaluación: 4 tareas prácticas con retroalimentación personalizada
 - Certificado de aprovechamiento del CLM — Universidad de Granada
 
 ---
@@ -86,6 +86,32 @@ A partir de 37 participantes, la Modalidad B resulta más ventajosa para el CLM.
 - La propuesta es válida hasta el 8 de abril de 2026
 - Los materiales del curso son de elaboración propia y propiedad del autor
 - Cada edición requiere acuerdo previo sobre fechas y modalidad elegida
+
+---
+
+## EDICIONES POSTERIORES
+
+A partir de la segunda edición, el CLM puede optar por continuar con la participación del autor o gestionar el curso de forma autónoma, en los siguientes términos:
+
+### Opción 1: Ediciones con participación del autor
+
+El autor imparte las 3 videotutorías síncronas de cada edición. Los materiales del curso (lecturas, guías, plantillas, rúbricas) se utilizan sin coste adicional.
+
+**Tarifa: 750 € por edición** (3 sesiones de 90 minutos incluidas)
+
+Esta tarifa cubre la preparación de cada sesión, la impartición en directo y la atención de consultas en el período de 24 horas posterior a cada sesión.
+
+### Opción 2: Ediciones sin participación del autor
+
+El CLM imparte el curso con otro docente designado por el centro. Los materiales del curso se utilizan bajo licencia de uso institucional.
+
+**Tarifa: 500 € por edición** (licencia de uso de materiales)
+
+Esta modalidad requiere acuerdo previo por escrito. Los materiales no podrán modificarse sustancialmente ni cederse a terceros sin autorización expresa del autor.
+
+### Actualización de materiales
+
+Si en alguna edición se requiere una actualización significativa de los contenidos del curso (nuevas herramientas, cambios en el MCER, revisión de módulos completos), se presupuestará por separado según el alcance de la actualización.
 
 ---
 

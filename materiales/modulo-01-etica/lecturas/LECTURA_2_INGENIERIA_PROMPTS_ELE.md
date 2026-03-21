@@ -2,10 +2,10 @@
 
 
 1. Introducción: ¿Qué es prompt engineering?
-2. Marco FRAME para prompts ELE
-3. Prompts plantilla por género textual
-4. Iteración y refinamiento
-5. Checklist de calidad
+2. Marco FRAME para prompts ELE.
+3. Prompts plantilla por género textual.
+4. Iteración y refinamiento.
+5. Checklist de calidad.
 
 
 \newpage
@@ -28,7 +28,7 @@ Un mal prompt = 5-10 intentos frustrantes + resultados mediocres
 ### La diferencia
 
 **Prompt malo:** "Crea un ejercicio de gramática"
-**Prompt bueno:** "Actúa como profesor de español B2. Crea un ejercicio de 10 frases para completar con pretérito imperfecto vs indefinido. Alumnado: universitarios estadounidenses en Granada. Tema: viajes pasados. Incluye instrucciones y solucionario."
+**Prompt bueno:** "Actúa como profesor de español B2. Crea un ejercicio de 10 frases para completar con pretérito imperfecto vs indefinido. Alumnado: universitarios estadounidenses en Granada. Tema: viajes pasados. Incluye instrucciones y solucionario".
 
 La diferencia es evidente. El segundo prompt produce exactamente lo que necesitas; el primero, un resultado genérico e impredecible.
 
@@ -42,11 +42,11 @@ FRAME es una herramienta nemotécnica con 6 componentes esenciales para construi
 ¿Qué tipo de material quieres generar?
 
 **Ejemplos:**
-- Ejercicio de completar
-- Texto narrativo de 200 palabras
-- Diálogo de 10 intervenciones
+- Ejercicio de completar.
+- Texto narrativo de 200 palabras.
+- Diálogo de 10 intervenciones.
 - Ensayo argumentativo
-- Plan de clase de 90 minutos
+- Plan de clase de 90 minutos.
 
 **Error común:** No especificar formato → Resultado genérico
 
@@ -56,7 +56,7 @@ FRAME es una herramienta nemotécnica con 6 componentes esenciales para construi
 **Ejemplos:**
 - "Actúa como profesor de español B2 especializado en gramática"
 - "Eres editor de textos ELE nivel A2"
-- "Actúa como experto en MCER/PCIC"
+- "Actúa como experto en MCER"
 - "Eres corrector de textos para alumnado internacional"
 
 **Error común:** No definir rol → Respuesta demasiado general
@@ -68,8 +68,8 @@ FRAME es una herramienta nemotécnica con 6 componentes esenciales para construi
 - Nivel MCER (A1-C2)
 - Edad
 - Contexto (alumnado, adultos, profesionales)
-- Nacionalidad u origen cultural
-- Objetivos de aprendizaje
+- Nacionalidad u origen cultural.
+- Objetivos de aprendizaje.
 
 **Error común:** «Para alumnado» → Demasiado vago
 
@@ -93,7 +93,7 @@ FRAME es una herramienta nemotécnica con 6 componentes esenciales para construi
 - Elementos requeridos (instrucciones, solucionario, vocabulario)
 - Estilo (formal/informal)
 - Variedad de español (peninsular, latinoamericano)
-- Formato de respuesta
+- Formato de respuesta.
 
 **Error común:** No dar especificaciones → Resultado no usable
 
@@ -101,14 +101,14 @@ FRAME es una herramienta nemotécnica con 6 componentes esenciales para construi
 ¿Puedes incluir un modelo del resultado esperado?
 
 **Por qué ayuda:**
-- Muestra exactamente qué quieres
+- Muestra exactamente qué quieres.
 - Elimina ambigüedad
-- La IA puede imitar tu estilo
+- La IA puede imitar tu estilo.
 
 **Ejemplo:**
 "El ejercicio debe ser así:
 1. [Instrucción clara]
-2. [Espacio para respuesta]
+2. [Espacio para respuesta].
 3. [Ejemplo: 'Ayer ___ (ir) al cine']"
 
 ---
@@ -144,7 +144,7 @@ EJEMPLO DE ESTILO:
 FORMATO DE RESPUESTA:
 [Título]
 [Texto narrativo 150-200 palabras]
-[Vocabulario destacado: 8-10 palabras con traducción al inglés]
+[Vocabulario destacado: 8-10 palabras con traducción a la L1 del alumnado]
 [3-4 preguntas de comprensión lectora]
 [1 pregunta de opinión para debate]
 ```
@@ -266,10 +266,10 @@ FORMATO DE RESPUESTA:
 Rara vez el primer prompt produce el resultado perfecto. Necesitas iterar.
 
 **Proceso:**
-1. **Prompt inicial** → Resultado
-2. **Revisión** → Identificar fortalezas/debilidades
-3. **Prompt de refinamiento** → Resultado mejorado
-4. **(Repetir si es necesario)** → Resultado óptimo
+1. **Prompt inicial** → Resultado.
+2. **Revisión** → Identificar fortalezas/debilidades.
+3. **Prompt de refinamiento** → Resultado mejorado.
+4. **(Repetir si es necesario)** → Resultado óptimo.
 
 ### Ejemplo de iteración
 
@@ -307,7 +307,7 @@ Antes de usar el resultado de IA, verifica:
 - [ ] Nivel MCER apropiado
 - [ ] Vocabulario adecuado al nivel
 - [ ] Culturalmente auténtico (no estereotipado)
-- [ ] Sin errores fácticos
+- [ ] Sin errores de contenido
 
 **Formato:**
 - [ ] Incluye instrucciones claras
@@ -333,10 +333,10 @@ Ahora que has leído sobre FRAME y prompts plantilla, practica:
 
 1. **Elige un género textual** (narrativa, diálogo, ejercicio, artículo)
 2. **Elige un nivel** (A1-C2)
-3. **Escribe un prompt FRAME** para ese género/nivel
+3. **Escribe un prompt FRAME** para ese género/nivel.
 4. **Prueba con IA** (ChatGPT, Claude, o Gemini)
-5. **Itera si es necesario**
-6. **Guarda tu prompt exitoso** para reutilizar
+5. **Itera si es necesario**.
+6. **Guarda tu prompt exitoso** para reutilizar.
 
 ---
 

@@ -33,7 +33,7 @@ Ejemplo: "Generador de Planes de Clase ELE B2"
 
 **Descripción:**
 ```
-Genera planes de clase completos para nivel [NIVEL] alineados con MCER/PCIC.
+Genera planes de clase completos para nivel [NIVEL] alineados con MCER.
 Incluye: 5 fases, intervenciones del profesor, evaluación formativa.
 Optimizado para [tipo de alumnado].
 ```
@@ -54,7 +54,7 @@ ALUMNADO TÍPICO:
 
 ESTRUCTURA DEL PLAN:
 1. CABECERA: Nivel, duración, tema
-2. OBJETIVO MCER: 1 objetivo comunicativo alineado con MCER/PCIC
+2. OBJETIVO MCER: 1 objetivo comunicativo alineado con MCER
 3. CONTENIDOS: Gramática, vocabulario, funciones comunicativas
 4. SECUENCIA (5 fases):
    - Fase 1: Caldeamiento (10-15 min)
@@ -197,7 +197,7 @@ Tema: [TEMA/OBJETIVO]
 5. Pega tu PROMPT DE EJEMPLO (o escribe uno nuevo)
 6. Claude generará el plan
 
-### Paso 3: Crear library de prompts
+### Paso 3: Crear colección de prompts
 
 Crea una colección de prompts de ejemplo para diferentes situaciones:
 

@@ -7,7 +7,7 @@
 
 ### Criterio 1: Representación cultural auténtica
 **✅ Excelente:** Representa la diversidad del mundo hispanohablante (España, Latinoamérica, diferentes regiones)
-**✅ Bueno:** Representa al menos 2 países/regiónes diferentes
+**✅ Bueno:** Representa al menos 2 países/regiones diferentes
 **⚠️ Aceptable:** Representa una región pero de forma auténtica
 **❌ Problemático:** Estereotipos ofensivos o representación inexacta
 

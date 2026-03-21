@@ -325,13 +325,35 @@ def markdown_to_html(markdown_content):
             html_lines.append(f'</div>')
             i += 1
 
-        elif line.startswith('> '):
-            # Blockquote - recoger todas las líneas consecutivas que empiezan con >
+        elif line.startswith('> ') or line.strip() == '>':
+            # Blockquote - recoger todas las líneas consecutivas que empiezan con > o son > solas
             html_lines.append('<blockquote>')
-            while i < len(lines) and lines[i].strip().startswith('> '):
-                text = lines[i].strip()[2:]
-                text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
-                html_lines.append(f'<p>{text}</p>')
+            in_bq_code = False
+            bq_code_lines = []
+            while i < len(lines) and (lines[i].strip().startswith('> ') or lines[i].strip() == '>'):
+                raw = lines[i].strip()
+                if raw == '>':
+                    # Línea vacía dentro del blockquote
+                    if in_bq_code:
+                        bq_code_lines.append('')
+                    i += 1
+                    continue
+                text = raw[2:]  # quitar '> '
+                if text.startswith('```'):
+                    if not in_bq_code:
+                        in_bq_code = True
+                        bq_code_lines = []
+                    else:
+                        code_content = '\n'.join(bq_code_lines)
+                        html_lines.append(f'<pre><code>{code_content}</code></pre>')
+                        in_bq_code = False
+                    i += 1
+                    continue
+                if in_bq_code:
+                    bq_code_lines.append(text)
+                else:
+                    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+                    html_lines.append(f'<p>{text}</p>')
                 i += 1
             html_lines.append('</blockquote>')
 
@@ -380,11 +402,49 @@ def markdown_to_html(markdown_content):
 
         elif re.match(r'^\d+\.', line):
             html_lines.append('<ol>')
-            while i < len(lines) and re.match(r'^\d+\.', lines[i].strip()):
+            while i < len(lines):
+                # Saltar líneas vacías dentro de la lista numerada
+                if not lines[i].strip():
+                    # Ver si la siguiente línea no vacía es otro ítem o sub-bullet
+                    j = i + 1
+                    while j < len(lines) and not lines[j].strip():
+                        j += 1
+                    if j < len(lines) and (re.match(r'^\d+\.', lines[j].strip()) or lines[j].strip().startswith('- ')):
+                        i += 1
+                        continue
+                    else:
+                        break
+                if not re.match(r'^\d+\.', lines[i].strip()):
+                    break
                 text = re.sub(r'^\d+\.?\s*', '', lines[i].strip())
                 text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
-                html_lines.append(f'<li>{text}</li>')
+                html_lines.append(f'<li>{text}')
                 i += 1
+                # Sub-bullets anidados, saltando líneas vacías
+                sub_items = []
+                while i < len(lines):
+                    if not lines[i].strip():
+                        j = i + 1
+                        while j < len(lines) and not lines[j].strip():
+                            j += 1
+                        if j < len(lines) and lines[j].strip().startswith('- '):
+                            i += 1
+                            continue
+                        else:
+                            break
+                    if lines[i].strip().startswith('- '):
+                        sub_text = lines[i].strip()[2:]
+                        sub_text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', sub_text)
+                        sub_items.append(sub_text)
+                        i += 1
+                    else:
+                        break
+                if sub_items:
+                    html_lines.append('<ul>')
+                    for sub in sub_items:
+                        html_lines.append(f'<li>{sub}</li>')
+                    html_lines.append('</ul>')
+                html_lines.append('</li>')
             html_lines.append('</ol>')
 
         else:

@@ -1,16 +1,22 @@
 # ÍNDICE
 
 
-1. Plantilla Genérica
-2. Nivel A1 - Sistema Inicial
-3. Nivel A2 - Sistema de Conversación
-4. Nivel B1 - Sistema de Narración
-5. Nivel B2 - Sistema de Debate
-6. Nivel C1 - Sistema de Análisis
-7. Nivel C2 - Sistema de Especialización
+1. Plantilla Genérica.
+
+2. Nivel A1 - Sistema Inicial.
+
+3. Nivel A2 - Sistema de Conversación.
+
+4. Nivel B1 - Sistema de Narración.
+
+5. Nivel B2 - Sistema de Debate.
+
+6. Nivel C1 - Sistema de Análisis.
+
+7. Nivel C2 - Sistema de Especialización.
 
 
-\newpage
+
 
 # PLANTILLAS SYSTEM PROMPT PARA ASISTENTES ELE (A1-C2)
 ### System prompts listos para usar y adaptar a tu contexto
@@ -134,7 +140,7 @@ PERFIL TÍPICO DEL ALUMNADO:
 TIPOS DE MATERIAL QUE GENERAS:
 - Diálogos para role-plays (máximo 8-10 intervenciones)
 - Frases útiles para situaciones específicas
-- Ejercicios de listening (guiones de diálogos)
+- Ejercicios de comprensión auditiva (guiones de diálogos)
 - Vocabulario temático (20-25 palabras por tema)
 
 CONTEXTOS QUE DOMINAS:
@@ -307,12 +313,12 @@ Estoy especializado en debate y opinión B2. ¿Qué tema necesitas argumentar?
 
 ---
 
-## Nivel C1 - SISTEMA DE ANÁLISIS
+## NIVEL C1 - SISTEMA DE ANÁLISIS
 
 **Enfoque:** Análisis crítico, matices, temas abstractos, estilo académico
 
 ```
-Eres un asistente de español ELE nivel C1 (mastery).
+Eres un asistente de español ELE nivel C1 (dominio avanzado).
 
 ESPECIALIZACIÓN:
 Análisis crítico, argumentación compleja, temas abstractos y contemporáneos.
@@ -421,7 +427,7 @@ REGLAS DE NIVEL C2:
 - Citas, referencias, bibliografía
 
 ESTILO:
-- Native-like con sofisticación
+- Estilo casi nativo con sofisticación
 - Precisión terminológica extrema
 - Matices culturales profundos
 - Reconocimiento de variaciones regionales
@@ -450,9 +456,12 @@ Estoy especializado en español C2 de dominio casi nativo. ¿Qué especializaci�
 
 ### Paso 1: Elige tu nivel principal
 
-- Si enseñas principalmente A2: usa la plantilla A2 como base
-- Si enseñas principalmente B1: usa la plantilla B1 como base
-- Si tienes varios niveles: crea asistentes para cada nivel
+- Si enseñas principalmente A2: usa la plantilla A2 como base.
+
+- Si enseñas principalmente B1: usa la plantilla B1 como base.
+
+- Si tienes varios niveles: crea asistentes para cada nivel.
+
 
 ### Paso 2: Personaliza para tu contexto
 
@@ -476,13 +485,18 @@ ESPECIALIZACIÓN:
 - [tu especialización]
 ```
 
-### Paso 3: Prueba y refine
+### Paso 3: Prueba y refina
 
-1. Usa la plantilla con 5 prompts diferentes
-2. Evalúa los resultados
-3. Modifica el system prompt según sea necesario
-4. Vuelve a probar
-5. Guarda la versión final
+1. Usa la plantilla con 5 prompts diferentes.
+
+2. Evalúa los resultados.
+
+3. Modifica el system prompt según sea necesario.
+
+4. Vuelve a probar.
+
+5. Guarda la versión final.
+
 
 ---
 

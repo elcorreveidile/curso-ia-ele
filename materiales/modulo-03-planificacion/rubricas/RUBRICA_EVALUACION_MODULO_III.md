@@ -12,16 +12,16 @@
 | **Tipo de entrega** | Documento escrito (PDF) + Reflexión |
 | **Longitud sugerida** | 3-5 páginas (plan) + 1-2 páginas (reflexión) |
 | **Ponderación** | 12,5% de la calificación final del curso |
-| **Fecha límite** | [Indicar fecha específica en Moodle] |
+| **Fecha límite** | 30 de abril de 2026 |
 
 ---
 
 ## 🎯 OBJETIVO DE LA ACTIVIDAD
 
-El objetivo de esta actividad es que demostrares tu capacidad para:
+El objetivo de esta actividad es que demuestres tu capacidad para:
 
 1. **Usar el prompt plantilla** del módulo para generar un plan de clase completo
-2. **Evaluar críticamente** el plan generado según criterios MCER/PCIC
+2. **Evaluar críticamente** el plan generado según criterios MCER
 3. **Iterar y refinar** el plan con la IA hasta obtener un resultado satisfactorio
 4. **Reflexionar sobre el proceso** de co-creación con IA
 
@@ -29,19 +29,20 @@ El objetivo de esta actividad es que demostrares tu capacidad para:
 
 ## 📊 RÚBRICA DE EVALUACIÓN (4 NIVELES)
 
-### Criterio 1: Alineación MCER/PCIC (25%)
+### Criterio 1: Alineación MCER (25%)
 
-**¿Qué evalúa:** El grado en que el plan de clase está alineado con descriptores específicos del MCER/PCIC y el nivel objetivo.
+**¿Qué evalúa:** El grado en que el plan de clase está alineado con descriptores específicos del MCER y el nivel objetivo.
 
 | Nivel | Descripción | Puntos |
 |-------|-------------|--------|
-| **4 - Excelente** | - Integra 3+ descriptores MCER/PCIC específicos y correctamente citados<br>- Cada actividad está claramente alineada con uno o más descriptores<br>- El nivel objetivo (A1-C2) es consistente en todas las actividades<br>- Demuestra comprensión profunda del MCER/PCIC | 25/25 |
-| **3 - Satisfactorio** | - Incorpora 1-2 descriptores MCER/PCIC específicos<br>- La mayoría de las actividades están alineadas con los descriptores<br>- El nivel objetivo es mayormente consistente<br>- Demuestra comprensión adecuada del MCER/PCIC | 18-20/25 |
-| **2 - Básico** | - Menciona el MCER/PCIC pero sin descriptores específicos (solo "B2" o "intermedio")<br>- Algunas actividades están alineadas con el nivel, otras no<br>- Hay inconsistencias en el nivel objetivo<br>- Comprensión superficial del MCER/PCIC | 12-15/25 |
-| **1 - Insuficiente** | - No menciona el MCER/PCIC o lo hace de forma genérica<br>- Las actividades no corresponden al nivel declarado<br>- No hay coherencia en el nivel objetivo<br>- No demuestra comprensión del MCER/PCIC | 0-10/25 |
+| **4 - Excelente** | - Integra 3+ descriptores MCER específicos y correctamente citados<br>- Cada actividad está claramente alineada con uno o más descriptores<br>- El nivel objetivo (A1-C2) es consistente en todas las actividades<br>- Demuestra comprensión profunda del MCER | 25/25 |
+| **3 - Satisfactorio** | - Incorpora 1-2 descriptores MCER específicos<br>- La mayoría de las actividades están alineadas con los descriptores<br>- El nivel objetivo es mayormente consistente<br>- Demuestra comprensión adecuada del MCER | 18-20/25 |
+| **2 - Básico** | - Menciona el MCER pero sin descriptores específicos (solo "B2" o "intermedio")<br>- Algunas actividades están alineadas con el nivel, otras no<br>- Hay inconsistencias en el nivel objetivo<br>- Comprensión superficial del MCER | 12-15/25 |
+| **1 - Insuficiente** | - No menciona el MCER o lo hace de forma genérica<br>- Las actividades no corresponden al nivel declarado<br>- No hay coherencia en el nivel objetivo<br>- No demuestra comprensión del MCER | 0-10/25 |
 
 ---
 
+\newpage
 ### Criterio 2: Coherencia y secuencia didáctica (25%)
 
 **¿Qué evalúa:** La lógica interna del plan, la progresión de actividades y la coherencia entre fases.
@@ -55,6 +56,7 @@ El objetivo de esta actividad es que demostrares tu capacidad para:
 
 ---
 
+\newpage
 ### Criterio 3: Centrado en el alumnado (20%)
 
 **¿Qué evalúa:** El grado en que el plan centra la actividad en el alumnado (no en el profesor) y promueve aprendizaje comunicativo.
@@ -68,6 +70,7 @@ El objetivo de esta actividad es que demostrares tu capacidad para:
 
 ---
 
+\newpage
 ### Criterio 4: Revisión crítica e iteración (15%)
 
 **¿Qué evalúa:** La calidad de la revisión crítica del plan generado y las iteraciones realizadas con la IA.
@@ -81,6 +84,7 @@ El objetivo de esta actividad es que demostrares tu capacidad para:
 
 ---
 
+\newpage
 ### Criterio 5: Aplicabilidad real (15%)
 
 **¿Qué evalúa:** La viabilidad de implementación del plan en un contexto docente real.
@@ -178,11 +182,11 @@ Responder a estas preguntas:
 
 ---
 
-## 🎯 FEEDBACK QUE RECIBIRÁS
+## 🎯 RETROALIMENTACIÓN QUE RECIBIRÁS
 
-La Formador proporcionará feedback sobre:
+El formador proporcionará retroalimentación sobre:
 
-1. **Fortalezas:** Qué aspects de tu plan y reflexión son excelentes
+1. **Fortalezas:** Qué aspectos de tu plan y reflexión son excelentes
 2. **Áreas de mejora:** Qué podrías hacer diferente la próxima vez
 3. **Aplicabilidad:** Qué ajustes necesitarías para implementar este plan en clase
 4. **Habilidades de prompt:** Qué podrías mejorar en tu comunicación con la IA
@@ -210,7 +214,7 @@ Un plan excelente suele incluir:
 | Error | Por qué es problema | Cómo evitarlo |
 |-------|---------------------|---------------|
 | Plan aceptado tal cual | Sin revisión crítica, la IA puede alucinar | Siempre revisa con criterio MCER |
-| Objetivo vague como "aprender gramática" | No es comunicativo ni evaluable | Formula objetivos MCER con acción + contenido + contexto |
+| Objetivo vago como "aprender gramática" | No es comunicativo ni evaluable | Formula objetivos MCER con acción + contenido + contexto |
 | Solo describe el proceso, no reflexiona | Pierdes oportunidad de aprendizaje profundo | Conecta con tu experiencia docente real |
 | Timing irrealista | No podrás implementar el plan | Verifica cada fase: ¿realmente cabe en X minutos? |
 | Faltan intervenciones del profesor | El plan es abstracto, no concreto | Incluye ejemplos exactos de qué dirás en clase |

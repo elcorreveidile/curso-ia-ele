@@ -94,7 +94,7 @@
 >
 > Mientras esperamos, quiero mencionar que Claude 3.5 Sonnet es excelente para esto porque sigue instrucciones complejas muy bien y mantiene coherencia en respuestas largas.
 >
-> También quería decir: no tengan miedo de prompts largos. Este prompt tiene 300 palabras, pero produce un resultado mucho mejor que un prompt de 50 palabras. La inversión en tiempo upfront se paga en calidad del resultado.
+> También quería decir: no tengan miedo de prompts largos. Este prompt tiene 300 palabras, pero produce un resultado mucho mejor que un prompt de 50 palabras. La inversión de tiempo desde el principio se paga en calidad del resultado.
 >
 > Ah, aquí está el resultado."
 
@@ -127,9 +127,9 @@
 >
 > **En rojo** lo que es problema:
 > - La fase de práctica autónoma tiene un role-play pero sin suficientes instrucciones. El alumnado B2 necesita más estructura.
-> - No hay integración explícita de MCER/PCIC descriptores. Solo dice 'nivel B2' pero no cita descriptores específicos.
+> - No hay integración explícita de MCER descriptores. Solo dice 'nivel B2' pero no cita descriptores específicos.
 >
-> Mi evaluación general: Es un plan BÚENO, con una base sólida, pero necesita refinement antes de estar listo para implementar."
+> Mi evaluación general: Es un plan BUENO, con una base sólida, pero necesita refinamiento antes de estar listo para implementar."
 
 **Visual:**
 - Anotaciones en el plan
@@ -180,7 +180,7 @@
 > ✅ Práctica guiada: 25 min (antes 40)
 > ✅ Ejemplos de intervenciones del profesor: ahora incluidos
 > ✅ Práctica autónoma: más estructurada con tarjetas de situación
-> ✅ Descriptores MCER: añadió 2 descriptores específicos del PCIC
+> ✅ Descriptores MCER: añadió 2 descriptores MCER específicos
 >
 > Mi verificación final:
 > - [ ] Alineación MCER: ✅ Sí, con descriptores específicos
@@ -232,7 +232,7 @@
 > 4. **Verificación final antes de usar**
 > Asegúrate de que el plan es realmente aplicable.
 >
-> Este proceso es lo que tú harás en tu actividad del módulo. No es rocket science. Es método + criterio + iteración."
+> Este proceso es lo que tú harás en tu actividad del módulo. No es nada del otro mundo. Es método + criterio + iteración."
 
 **Visual:**
 - Timeline visual
@@ -263,12 +263,12 @@
 > ✅ 'Reduce práctica guiada a 25 min y añade ejemplos de intervención del profesor'
 >
 > **Error 4: Sin verificación de aplicabilidad**
-> ❌ Plan looks good on paper pero no funciona con alumnado real
+> ❌ Plan parece bueno sobre el papel pero no funciona con alumnado real
 > ✅ Verificar: ¿Puedo realmente usar esto el lunes?
 >
-> **Error 5: Olvidar MCER/PCIC**
+> **Error 5: Olvidar MCER**
 > ❌ Plan sin descriptores específicos
-> ✅ Incluir 2-3 descriptores MCER/PCIC que el plan trabaja
+> ✅ Incluir 2-3 descriptores MCER que el plan trabaja
 >
 > Eviten estos errores y su proceso será mucho más efectivo."
 

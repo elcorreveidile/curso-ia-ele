@@ -168,11 +168,11 @@ Si respondiste No, ¿por qué? ___
 - [ ] Lecturas sobre ética
 - [ ] Casos reales de uso
 - [ ] Guía comparativa de herramientas
-- [ ] Banco de descriptores MCER/PCIC
+- [ ] Banco de descriptores MCER
 - [ ] Guía de herramientas multimodales
 - [ ] Vídeos tutoriales
 - [ ] Rúbricas de evaluación
-- [ ] Foros y feedback de compañeros
+- [ ] Foros y retroalimentación de compañeros
 - [ ] Videotutorías en directo
 
 **Otro (especificar):** ___

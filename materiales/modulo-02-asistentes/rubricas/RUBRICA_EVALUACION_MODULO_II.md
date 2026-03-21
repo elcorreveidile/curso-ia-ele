@@ -5,11 +5,12 @@
 
 ## 📋 INFORMACIÓN
 
-| Campo | Información |
-|-------|-------------|
+| Campo. | Información |
+|-------.|-------------|
 | **Actividad** | Crear mini asistente ELE (GPT o system prompt) |
 | **Entrega** | Documento PDF (2-4 páginas) con: system prompt + 5 ejemplos de uso + reflexión |
 | **Ponderación** | 12,5% de la calificación final |
+| **Fecha límite** | 30 de abril de 2026 |
 
 ---
 
@@ -24,7 +25,7 @@
 
 ### Criterio 2: Pruebas realizadas (20 puntos)
 
-| 4 - Excelente (20) | 6+ pruebas sistemáticas con documentación de resultados y mejoras. |
+| 4 - Excelente (20) | seis o más pruebas sistemáticas con documentación de resultados y mejoras. |
 | 3 - Satisfactorio (15-17) | 4-5 pruebas básicas con documentación adecuada. |
 | 2 - Básico (10-13) | 2-3 pruebas sin documentación clara. |
 | 1 - Insuficiente (0-8) | 0-1 pruebas o sin documentación. |
@@ -45,7 +46,7 @@
 
 ### Criterio 5: Documentación (20 puntos)
 
-| 4 - Excelente (20) | Sistema completo + 5+ ejemplos variados + guía de uso + reflexión profunda. |
+| 4 - Excelente (20) | Sistema completo + cinco o más ejemplos variados + guía de uso + reflexión profunda. |
 | 3 - Satisfactorio (15-17) | Sistema + 3-4 ejemplos + documentación básica. |
 | 2 - Básico (10-13) | Sistema + 1-2 ejemplos + documentación mínima. |
 | 1 - Insuficiente (0-8) | Sin documentación o ejemplos insuficientes. |
@@ -54,13 +55,13 @@
 
 ## 📈 ESCALA TOTAL
 
-| Puntos | Calificación |
-|--------|--------------|
-| 90-100 | Sobresaliente |
-| 80-89 | Notable |
-| 70-79 | Aprobado bueno |
-| 60-69 | Aprobado suficiente |
-| 0-59 | Insuficiente |
+| Puntos. | Calificación |
+|--------.|--------------|
+| 90-100. | Sobresaliente |
+| 80-89. | Notable |
+| 70-79. | Aprobado bueno |
+| 60-69. | Aprobado suficiente |
+| 0-59. | Insuficiente |
 
 ---
 
