@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 from weasyprint import HTML, CSS
 
-EBOOK_DIR = Path("/Users/javierbenitez/Desktop/AI/Formación IA/Curso formación CLM/ebook")
+EBOOK_DIR = Path(__file__).parent / "ebook"
 OUTPUT_FILE = EBOOK_DIR / "PROMPTS_QUE_FUNCIONAN.pdf"
 
 BOOK_TITLE = "Prompts que Funcionan"
