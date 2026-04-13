@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre mí · Javier Benítez Láinez · La Clase Digital</title>
+  <meta name="description" content="Javier Benítez Láinez — Docente de ELE, filólogo, poeta y formador. 30 años de experiencia en la enseñanza del español como lengua extranjera.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bio-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .bio-sidebar {
+      position: sticky; top: 5rem;
+    }
+    .bio-avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--r-xl);
+      background: linear-gradient(135deg, var(--blue), #0A2F5A);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .bio-name {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 800;
+      color: var(--ink); margin-bottom: .25rem;
+    }
+    .bio-role {
+      font-size: .9rem; color: var(--ink-muted);
+      margin-bottom: 1.25rem; line-height: 1.5;
+    }
+    .bio-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.5rem; }
+    .bio-tag {
+      font-size: .75rem; font-weight: 600;
+      padding: .3rem .75rem; border-radius: 100px;
+      background: var(--blue-light); color: var(--blue);
+    }
+    .bio-tag--amber { background: var(--clm-red-light); color: var(--clm-red-dark); }
+    .bio-stat {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .65rem 0;
+      border-bottom: 1px solid var(--canvas-alt);
+      font-size: .875rem; color: var(--ink-soft);
+    }
+    .bio-stat:last-child { border-bottom: none; }
+    .bio-stat__num {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 800;
+      color: var(--blue); min-width: 2.5rem;
+    }
+
+    .bio-section { margin-bottom: 3rem; }
+    .bio-section__title {
+      font-family: var(--font-display);
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 2px solid var(--canvas-alt);
+    }
+    .bio-text {
+      font-size: 1rem; color: var(--ink-soft);
+      line-height: 1.8; margin-bottom: 1rem;
+    }
+    .cred-list { display: flex; flex-direction: column; gap: .75rem; }
+    .cred-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: var(--white); border-radius: var(--r-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .cred-item__icon {
+      font-size: 1.3rem; flex-shrink: 0;
+      width: 40px; height: 40px;
+      background: var(--blue-light); border-radius: var(--r-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cred-item__title {
+      font-family: var(--font-display);
+      font-size: .9rem; font-weight: 700;
+      color: var(--ink); margin-bottom: .2rem;
+    }
+    .cred-item__desc { font-size: .82rem; color: var(--ink-muted); line-height: 1.5; }
+    .pub-list { display: flex; flex-direction: column; gap: .6rem; }
+    .pub-item {
+      display: flex; gap: .75rem; align-items: flex-start;
+      font-size: .9rem; color: var(--ink-soft); line-height: 1.5;
+    }
+    .pub-item::before {
+      content: '›'; color: var(--clm-red);
+      font-weight: 700; font-size: 1.1rem;
+      flex-shrink: 0; line-height: 1.4;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, var(--blue), #0A2F5A);
+      border-radius: var(--r-xl); padding: 2.5rem;
+      text-align: center; margin-top: 3rem;
+    }
+    .cta-box__title {
+      font-family: var(--font-display);
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--white); margin-bottom: .75rem;
+    }
+    .cta-box__text {
+      font-size: .95rem; color: rgba(255,255,255,.7);
+      max-width: 480px; margin: 0 auto 1.75rem; line-height: 1.7;
+    }
+    @media (max-width: 900px) {
+      .bio-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .bio-sidebar { position: static; }
+      .bio-avatar { width: 140px; aspect-ratio: 1; margin: 0 auto 1.5rem; }
+    }
+  </style>
+</head>
+<body class="inner-page">
+
+<nav class="inner-nav" id="innerNav">
+  <a href="index.html" class="inner-nav__logo">La Clase<span>Digital</span></a>
+  <div class="inner-nav__links">
+    <a href="descripcion.html">El curso</a>
+    <a href="programa.html">Programa</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="precios.html">Precios</a>
+    <a href="sobre-mi.html" class="active">Sobre mí</a>
+    <a href="index.html" class="inner-nav__cta">Cuestionario</a>
+    <button class="btn-contact" data-contact style="margin-left:.5rem;border-color:rgba(15,76,129,.4);color:var(--ink-soft)">✉ Contacto</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__tag">El formador</p>
+    <h1 class="page-hero__title">Javier Benítez Láinez</h1>
+    <p class="page-hero__desc">Docente de ELE · Filólogo · Especialista en digitalización · Granada</p>
+  </div>
+</div>
+
+<div class="inner-content">
+  <div class="bio-grid">
+
+    <!-- Sidebar -->
+    <aside class="bio-sidebar reveal">
+      <div class="bio-avatar">👨‍🏫</div>
+      <p class="bio-name">Javier Benítez Láinez</p>
+      <p class="bio-role">Docente de ELE · Filólogo Hispánico<br>Especialista en Digitalización Aplicada</p>
+      <div class="bio-tags">
+        <span class="bio-tag">ELE</span>
+        <span class="bio-tag">IA aplicada</span>
+        <span class="bio-tag">Formación docente</span>
+        <span class="bio-tag--amber bio-tag">Poeta</span>
+        <span class="bio-tag--amber bio-tag">Editor</span>
+      </div>
+      <div>
+        <div class="bio-stat"><span class="bio-stat__num">30+</span><span>años de experiencia docente en ELE</span></div>
+        <div class="bio-stat"><span class="bio-stat__num">1987</span><span>en Granada desde</span></div>
+        <div class="bio-stat"><span class="bio-stat__num">4</span><span>poemarios publicados</span></div>
+        <div class="bio-stat"><span class="bio-stat__num">1</span><span>año investigando IA aplicada a ELE</span></div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main>
+
+      <div class="bio-section reveal">
+        <h2 class="bio-section__title">Quién soy</h2>
+        <p class="bio-text">
+          Nací en Estepona en 1969 y desde 1987 vivo en Granada, ciudad que me ha formado y a la que pertenezco. Soy licenciado en Filología Hispánica por la Universidad de Granada y llevo más de treinta años enseñando español a personas de todo el mundo.
+        </p>
+        <p class="bio-text">
+          Durante todo ese tiempo he tenido una certeza: la enseñanza de idiomas es un acto humano que no puede reducirse a técnica. Pero también he aprendido que la técnica, cuando está bien usada, libera tiempo para lo que de verdad importa en el aula.
+        </p>
+        <p class="bio-text">
+          Hace algo más de un año empecé a investigar en serio cómo integrar la inteligencia artificial en mi práctica docente. No como usuario curioso, sino con criterio pedagógico: qué funciona, qué no, dónde la IA ayuda al docente y dónde lo sustituye de una manera que no nos conviene. Este curso es el resultado de ese año de trabajo.
+        </p>
+      </div>
+
+      <div class="bio-section reveal">
+        <h2 class="bio-section__title">Formación y titulaciones</h2>
+        <div class="cred-list">
+          <div class="cred-item">
+            <div class="cred-item__icon">🎓</div>
+            <div>
+              <p class="cred-item__title">Licenciado en Filología Hispánica</p>
+              <p class="cred-item__desc">Universidad de Granada · Base académica en lingüística, literatura y lengua española</p>
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-item__icon">💻</div>
+            <div>
+              <p class="cred-item__title">Especialista en Digitalización Aplicada al Sector Empresarial</p>
+              <p class="cred-item__desc">Titulación que combina la transformación digital con la gestión de equipos y procesos organizativos · Aplicable a centros educativos y empresas</p>
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-item__icon">🤖</div>
+            <div>
+              <p class="cred-item__title">Formación continua en IA aplicada a la educación</p>
+              <p class="cred-item__desc">Investigación práctica durante más de un año sobre ingeniería de prompts, herramientas de IA generativa y su integración pedagógica en ELE</p>
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-item__icon">🏛️</div>
+            <div>
+              <p class="cred-item__title">Docente en el Centro de Lenguas Modernas · UGR</p>
+              <p class="cred-item__desc">Más de veinte años impartiendo ELE en programas CEH, CLCE, CILE, CELE y Study Abroad para estudiantes internacionales de todo el mundo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bio-section reveal">
+        <h2 class="bio-section__title">Más allá del aula</h2>
+        <p class="bio-text">
+          Soy poeta. He publicado cuatro poemarios: <em>Un guiño, un cómplice, un deseo</em> (1991), <em>Baile de disfraces</em> (1998), <em>Todas las mentiras</em> (2008) y <em>Versos sencillos para despistar a la poesía</em> (2025). La escritura y la lengua no son para mí herramientas de trabajo: son la manera en que entiendo el mundo.
+        </p>
+        <p class="bio-text">
+          Soy editor de <em>Olvidos de Granada</em>, revista cultural y política digital, y fundador de <em>Letra Clara</em> y la Asociación Cultural del Diente de Oro. Estas actividades no son anecdóticas en mi perfil como formador: me han enseñado a pensar críticamente sobre el lenguaje, la cultura y la tecnología — que es exactamente lo que necesita un docente de ELE que quiere usar la IA con criterio.
+        </p>
+        <p class="bio-text">
+          También soy representante sindical de UGT en el comité de empresa de mi centro. No lo menciono por protocolo sino porque creo que quien enseña tiene la obligación de pensar también en las condiciones en que enseña.
+        </p>
+      </div>
+
+      <div class="bio-section reveal">
+        <h2 class="bio-section__title">Publicaciones</h2>
+        <div class="pub-list">
+          <div class="pub-item"><em>Versos sencillos para despistar a la poesía</em> (2025)</div>
+          <div class="pub-item"><em>Todas las mentiras</em> (2008)</div>
+          <div class="pub-item"><em>Baile de disfraces</em> (1998) · ISBN 9788412778625</div>
+          <div class="pub-item"><em>Un guiño, un cómplice, un deseo</em> (1991)</div>
+        </div>
+      </div>
+
+      <div class="bio-section reveal">
+        <h2 class="bio-section__title">Por qué este curso</h2>
+        <p class="bio-text">
+          Podría haberme quedado en el escepticismo. Hay buenos argumentos para desconfiar de la IA en educación: el riesgo de la superficialidad, los sesgos culturales, la pérdida del criterio docente. Los conozco y los tomo en serio.
+        </p>
+        <p class="bio-text">
+          Pero también sé que la IA ya está en las aulas — en los teléfonos del alumnado, en las búsquedas de información, en las traducciones automáticas. La pregunta no es si usarla, sino cómo hacerlo de manera que sirva al aprendizaje real y no lo sabotee.
+        </p>
+        <p class="bio-text">
+          Este curso no es una guía de herramientas. Es una propuesta pedagógica para integrar la IA en la enseñanza de ELE con criterio, con ética y con la experiencia docente como eje.
+        </p>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-box reveal">
+        <h3 class="cta-box__title">¿Empezamos juntos?</h3>
+        <p class="cta-box__text">Primera edición · Mayo 2026 · 20 plazas al precio fundador de 149 €. A partir de la segunda edición el precio será 249 €.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+          <a href="precios.html" class="btn btn--primary">Ver precios e inscripción</a>
+          <button class="btn" data-contact style="background:rgba(255,255,255,.1);color:var(--white);border:1.5px solid rgba(255,255,255,.25)">✉ Escríbeme</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand__logo">La Clase<span>Digital</span></div>
+      <p class="footer-brand__desc">Formación docente en Inteligencia Artificial para la enseñanza de Español como Lengua Extranjera.<br>Curso de mayo 2026.</p>
+    </div>
+    <div>
+      <p class="footer-col__title">El curso</p>
+      <div class="footer-col__links">
+        <a href="descripcion.html">Descripción y objetivos</a>
+        <a href="programa.html">Programa por módulos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="metodologia.html">Metodología</a>
+        <a href="precios.html">Precios e inscripción</a>
+        <a href="sobre-mi.html">Sobre el formador</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col__title">Contacto</p>
+      <p class="footer-contact">
+        <strong>Javier Benítez Láinez</strong><br>
+        Docente de ELE · Granada (España)
+      </p>
+      <button class="btn-contact" data-contact style="margin-top:.75rem">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Envíame un mensaje
+      </button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Javier Benítez Láinez · Formación Docente ELE</span>
+    <a href="https://laclasedigital.com" target="_blank" rel="noopener">laclasedigital.com</a>
+  </div>
+</footer>
+
+<!-- Modal contacto -->
+<div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__header">
+      <div><p class="modal__title" id="modalTitle">Escríbeme</p><p class="modal__subtitle">IA para la enseñanza de ELE · Javier Benítez Láinez</p></div>
+      <button class="modal__close" id="closeModal">✕</button>
+    </div>
+    <div class="modal__body">
+      <form id="contactForm" action="https://formspree.io/f/mjgalypd" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="Consulta desde laclasedigital.com">
+        <div class="form-group"><label for="c_nombre">Nombre</label><input class="form-input" type="text" id="c_nombre" name="nombre" placeholder="Tu nombre" required></div>
+        <div class="form-group"><label for="c_email">Correo</label><input class="form-input" type="email" id="c_email" name="email" placeholder="tu@correo.com" required></div>
+        <div class="form-group"><label for="c_asunto">Asunto</label>
+          <select class="form-input" id="c_asunto" name="asunto">
+            <option value="">Selecciona…</option>
+            <option value="Información sobre el curso">Información sobre el curso</option>
+            <option value="Inscripción al curso">Inscripción al curso</option>
+            <option value="Propuesta institucional">Propuesta para mi institución</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c_mensaje">Mensaje</label><textarea id="c_mensaje" name="mensaje" placeholder="Cuéntame en qué puedo ayudarte…" required></textarea></div>
+      </form>
+      <div class="modal__msg" id="modalMsg">✓ Mensaje enviado. Te responderé en menos de 48 horas.</div>
+    </div>
+    <div class="modal__footer" id="modalFooter">
+      <button type="button" class="btn btn--outline" id="cancelModal" style="font-size:.875rem;padding:.6rem 1.25rem">Cancelar</button>
+      <button type="button" class="btn btn--primary" id="sendContact" style="font-size:.875rem;padding:.6rem 1.25rem">Enviar mensaje</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const nav = document.getElementById('innerNav');
+window.addEventListener('scroll', () => nav?.classList.toggle('scrolled', scrollY > 20));
+document.querySelectorAll('.reveal').forEach(el => {
+  new IntersectionObserver(([e],obs)=>{if(e.isIntersecting){el.classList.add('visible');obs.unobserve(el);}},{threshold:.1}).observe(el);
+});
+(function(){
+  const overlay=document.getElementById('contactModal'),closeBtn=document.getElementById('closeModal'),cancelBtn=document.getElementById('cancelModal'),sendBtn=document.getElementById('sendContact'),form=document.getElementById('contactForm'),msg=document.getElementById('modalMsg'),footer=document.getElementById('modalFooter');
+  function openModal(){overlay?.classList.add('open');document.body.style.overflow='hidden';}
+  function closeModal(){overlay?.classList.remove('open');document.body.style.overflow='';}
+  document.querySelectorAll('[data-contact],.btn-contact').forEach(el=>el.addEventListener('click',openModal));
+  closeBtn?.addEventListener('click',closeModal);cancelBtn?.addEventListener('click',closeModal);
+  overlay?.addEventListener('click',e=>{if(e.target===overlay)closeModal();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+  sendBtn?.addEventListener('click',async()=>{
+    if(!form.checkValidity()){form.reportValidity();return;}
+    sendBtn.disabled=true;sendBtn.textContent='Enviando…';
+    try{const res=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
+    if(res.ok){form.style.display='none';footer.style.display='none';msg.classList.add('show');setTimeout(closeModal,3000);}
+    else throw new Error();}catch{sendBtn.disabled=false;sendBtn.textContent='Enviar mensaje';alert('Error al enviar.');}
+  });
+})();
+</script>
+</body>
+</html>
