@@ -1739,31 +1739,35 @@ footer {
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 60px; left: 0; right: 0;
     background: var(--white);
-    padding: 5rem 2rem 2rem;
+    padding: 1rem 1.5rem 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,.15);
+    border-top: 2px solid var(--clm-red);
     gap: 0;
+    max-height: calc(100vh - 60px);
     overflow-y: auto;
-    z-index: 8998;
-    transform: translateX(100%);
-    transition: transform .3s ease;
+    z-index: 8999;
+    transform: translateY(-110%);
+    opacity: 0;
     pointer-events: none;
+    transition: transform .3s ease, opacity .3s ease;
   }
   .inner-nav__links.open {
-    transform: translateX(0);
+    transform: translateY(0);
+    opacity: 1;
     pointer-events: all;
   }
   .inner-nav__links a {
-    padding: 1.1rem 0;
+    padding: .9rem 0;
     border-bottom: 1px solid var(--canvas-alt);
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--ink) !important;
+    font-size: 1rem;
+    color: var(--ink);
     width: 100%;
   }
   .inner-nav__links a:last-of-type { border-bottom: none; }
   .inner-nav__cta {
-    margin: 1.25rem 0 0 0 !important;
+    margin: 1rem 0 0 0 !important;
     text-align: center;
     display: block;
   }
@@ -1771,10 +1775,5 @@ footer {
     margin: .75rem 0 0 0 !important;
     width: 100%;
     justify-content: center;
-  }
-  /* Burger por encima del menú */
-  .inner-nav__burger {
-    position: relative;
-    z-index: 9000;
   }
 }
