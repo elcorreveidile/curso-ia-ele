@@ -222,6 +222,13 @@
   .home-hero .inner-nav__logo span { background: var(--clm-red); color: var(--white); }
   .home-hero .inner-nav__links a { color: rgba(255,255,255,.7); }
   .home-hero .inner-nav__links a:hover { color: var(--white); }
+  /* Menú abierto en móvil — fondo blanco, letras azules */
+  @media (max-width: 900px) {
+    .home-hero .inner-nav__links a { color: var(--blue) !important; font-weight: 600; }
+    .home-hero .inner-nav__links a:hover { color: var(--blue-mid) !important; }
+    .home-hero .inner-nav__cta { background: var(--clm-red) !important; color: var(--white) !important; }
+    .home-hero .inner-nav__burger span { background: rgba(255,255,255,.9); }
+  }
   .home-hero .inner-nav__burger span { background: rgba(255,255,255,.9); }
   </style>
 </head>
