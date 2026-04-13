@@ -239,15 +239,20 @@ const RUTAS_AREA = {
     icono: '🏢',
     contexto: 'En conserjería del centro, la IA puede ayudarte a redactar comunicaciones, traducir avisos para el alumnado internacional y gestionar incidencias de forma más eficiente.'
   },
+  'empresa': {
+    label: 'Empresa y organizaciones',
+    icono: '🏢',
+    contexto: 'En el entorno empresarial, la IA puede transformar la gestión de equipos, la comunicación interna y externa, el análisis de datos, la generación de informes y la automatización de tareas repetitivas.'
+  },
   'direccion': {
-    label: 'Dirección',
+    label: 'Dirección y gerencia',
     icono: '🎯',
-    contexto: 'Desde la dirección del centro, la IA puede apoyar la toma de decisiones estratégicas, la redacción de informes, la comunicación institucional y el diseño de políticas de transformación digital.'
+    contexto: 'Desde la dirección, la IA puede apoyar la toma de decisiones estratégicas, la redacción de informes, la comunicación institucional y el diseño de proyectos de transformación digital.'
   },
   'general': {
-    label: 'CLM',
-    icono: '🏛️',
-    contexto: 'Como miembro del equipo del centro, la IA puede adaptarse a las necesidades específicas de tu puesto y ayudarte a trabajar de forma más eficiente.'
+    label: 'Profesional',
+    icono: '💼',
+    contexto: 'La IA puede adaptarse a las necesidades específicas de tu puesto y sector, ayudándote a trabajar de forma más eficiente y a destacar en un mercado laboral en transformación.'
   }
 };
 

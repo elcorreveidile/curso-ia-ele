@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Precios · IA para la enseñanza de ELE · La Clase Digital</title>
+  <meta name="description" content="Precios e inscripción al curso de formación docente IA para la enseñanza de ELE.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .price-hero-tag { font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--clm-red);margin-bottom:.6rem; }
+    .price-card {
+      background:var(--white);border-radius:var(--r-xl);
+      padding:2.5rem;box-shadow:var(--shadow-md);
+      border:2px solid var(--canvas-alt);
+      position:relative;overflow:hidden;
+      transition:transform .25s,box-shadow .25s;
+    }
+    .price-card:hover { transform:translateY(-4px);box-shadow:var(--shadow-lg); }
+    .price-card--featured {
+      border-color:var(--blue);
+      background:linear-gradient(160deg,#0A1628,#0F2744);
+      color:var(--white);
+    }
+    .price-card__badge {
+      position:absolute;top:1.25rem;right:1.25rem;
+      background:var(--clm-red);color:var(--white);
+      font-size:.72rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.06em;padding:.3rem .8rem;border-radius:100px;
+    }
+    .price-card__label {
+      font-size:.75rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.1em;color:var(--ink-muted);margin-bottom:.75rem;
+    }
+    .price-card--featured .price-card__label { color:rgba(255,255,255,.55); }
+    .price-card__amount {
+      font-family:var(--font-display);font-size:3.5rem;font-weight:800;
+      color:var(--blue);line-height:1;margin-bottom:.25rem;
+    }
+    .price-card--featured .price-card__amount { color:var(--clm-red); }
+    .price-card__period { font-size:.9rem;color:var(--ink-muted);margin-bottom:1.5rem; }
+    .price-card--featured .price-card__period { color:rgba(255,255,255,.55); }
+    .price-card__original {
+      font-size:.85rem;color:var(--ink-muted);
+      text-decoration:line-through;margin-bottom:.25rem;
+    }
+    .price-card--featured .price-card__original { color:rgba(255,255,255,.4); }
+    .price-card__savings {
+      display:inline-block;background:var(--clm-red-light);
+      color:var(--clm-red);font-size:.78rem;font-weight:700;
+      padding:.2rem .7rem;border-radius:100px;margin-bottom:1.5rem;
+    }
+    .price-card--featured .price-card__savings {
+      background:rgba(245,166,35,.2);color:var(--clm-red);
+    }
+    .price-includes { list-style:none;margin-bottom:1.75rem; }
+    .price-includes li {
+      display:flex;gap:.75rem;align-items:flex-start;
+      font-size:.9rem;padding:.5rem 0;
+      border-bottom:1px solid var(--canvas-alt);
+      color:var(--ink-soft);
+    }
+    .price-card--featured .price-includes li {
+      border-bottom-color:rgba(255,255,255,.1);
+      color:rgba(255,255,255,.8);
+    }
+    .price-includes li:last-child { border-bottom:none; }
+    .price-includes li::before {
+      content:'✓';color:var(--blue);font-weight:700;flex-shrink:0;
+    }
+    .price-card--featured .price-includes li::before { color:var(--clm-red); }
+    .price-note {
+      font-size:.8rem;color:var(--ink-muted);
+      font-style:italic;margin-top:1rem;line-height:1.5;
+    }
+    .price-card--featured .price-note { color:rgba(255,255,255,.4); }
+    .faq-item {
+      background:var(--white);border-radius:var(--r-md);
+      padding:1.5rem;margin-bottom:.75rem;
+      box-shadow:var(--shadow-sm);
+    }
+    .faq-item__q {
+      font-family:var(--font-display);font-size:.975rem;
+      font-weight:700;color:var(--ink);margin-bottom:.5rem;
+    }
+    .faq-item__a { font-size:.9rem;color:var(--ink-soft);line-height:1.6; }
+  </style>
+</head>
+<body class="inner-page">
+
+<nav class="inner-nav" id="innerNav">
+  <a href="index.html" class="inner-nav__logo">La Clase<span>Digital</span></a>
+  <div class="inner-nav__links">
+    <a href="descripcion.html">El curso</a>
+    <a href="programa.html">Programa</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="precios.html" class="active">Precios</a>
+    <a href="index.html" class="inner-nav__cta">Cuestionario</a>
+    <button class="btn-contact" data-contact style="margin-left:.5rem;border-color:rgba(15,76,129,.4);color:var(--ink-soft)">✉ Contacto</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__tag">Inscripción</p>
+    <h1 class="page-hero__title">Precio e inscripción</h1>
+    <p class="page-hero__desc">Formación de 20 horas con certificado de aprovechamiento, materiales propios y feedback personalizado en cada tarea.</p>
+  </div>
+</div>
+
+<div class="inner-content">
+
+  <!-- Cards de precio -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:4rem" class="reveal">
+
+    <!-- Precio individual -->
+    <div class="price-card">
+      <p class="price-card__label">Precio público</p>
+      <p class="price-card__original">Precio de referencia: 299 €</p>
+      <div class="price-card__amount">249<span style="font-size:1.5rem;font-weight:400;color:var(--ink-muted)"> €</span></div>
+      <p class="price-card__period">por participante · pago único</p>
+      <span class="price-card__savings">— 17 % de descuento de lanzamiento</span>
+      <ul class="price-includes">
+        <li>20 horas de formación en 4 semanas</li>
+        <li>4 módulos con actividades prácticas</li>
+        <li>3 videotutorías en directo (90 min c/u)</li>
+        <li>Materiales, guías y plantillas de elaboración propia</li>
+        <li>Feedback personalizado en cada tarea</li>
+        <li>Acceso a las grabaciones de las sesiones</li>
+        <li>Certificado de aprovechamiento</li>
+      </ul>
+      <button class="btn btn--primary" data-contact style="width:100%;justify-content:center">
+        Solicitar inscripción
+      </button>
+      <p class="price-note">El pago se gestiona directamente tras confirmar la inscripción. Plazas limitadas.</p>
+    </div>
+
+    <!-- Precio institucional -->
+    <div class="price-card price-card--featured">
+      <span class="price-card__badge">Instituciones</span>
+      <p class="price-card__label">Para centros y organizaciones</p>
+      <p class="price-card__original">Precio público: 249 € / participante</p>
+      <div class="price-card__amount" style="font-size:2rem;margin-top:.5rem">Precio<br>negociable</div>
+      <p class="price-card__period">según número de participantes</p>
+      <span class="price-card__savings">Descuentos desde el 30 %</span>
+      <ul class="price-includes">
+        <li>Todo lo incluido en el precio individual</li>
+        <li>Descuento por volumen desde 10 participantes</li>
+        <li>Adaptación de ejemplos al contexto del centro</li>
+        <li>Facturación centralizada a la institución</li>
+        <li>Posibilidad de edición cerrada para tu equipo</li>
+        <li>Informe de resultados del diagnóstico del grupo</li>
+      </ul>
+      <button class="btn btn--primary" data-contact style="width:100%;justify-content:center;background:var(--clm-red);color:var(--ink)">
+        Solicitar propuesta
+      </button>
+      <p class="price-note">Indicado para centros de idiomas, departamentos universitarios y equipos de formación empresarial.</p>
+    </div>
+
+  </div>
+
+  <!-- Qué incluye en detalle -->
+  <div class="reveal" style="margin-bottom:4rem">
+    <p class="section__tag">Qué incluye</p>
+    <h2 class="section__title" style="font-size:1.8rem;margin-bottom:2rem">Todo lo que recibes con tu inscripción</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem">
+      <div class="meto-card">
+        <div class="meto-card__icon">📹</div>
+        <h3 class="meto-card__title">3 videotutorías en directo</h3>
+        <p class="meto-card__text">Sesiones síncronas de 90 minutos los días 4, 14 y 21 de mayo. Grabadas para quienes no puedan asistir.</p>
+      </div>
+      <div class="meto-card">
+        <div class="meto-card__icon">📚</div>
+        <h3 class="meto-card__title">Materiales de elaboración propia</h3>
+        <p class="meto-card__text">Guías, plantillas de prompts, rúbricas y recursos creados específicamente para este curso. No encontrarás esto en ningún otro sitio.</p>
+      </div>
+      <div class="meto-card">
+        <div class="meto-card__icon">✍️</div>
+        <h3 class="meto-card__title">Feedback personalizado</h3>
+        <p class="meto-card__text">Cada una de las 4 tareas del curso recibe retroalimentación individual, no automática.</p>
+      </div>
+      <div class="meto-card">
+        <div class="meto-card__icon">🤖</div>
+        <h3 class="meto-card__title">Acceso a herramientas</h3>
+        <p class="meto-card__text">Todas las herramientas del curso son gratuitas. No necesitas ninguna suscripción de pago.</p>
+      </div>
+      <div class="meto-card">
+        <div class="meto-card__icon">🏅</div>
+        <h3 class="meto-card__title">Certificado de aprovechamiento</h3>
+        <p class="meto-card__text">Certificado de 20 horas de formación docente emitido al completar el curso con los requisitos mínimos.</p>
+      </div>
+      <div class="meto-card">
+        <div class="meto-card__icon">♾️</div>
+        <h3 class="meto-card__title">Acceso permanente</h3>
+        <p class="meto-card__text">Los materiales del curso quedan disponibles sin límite de tiempo una vez completada la formación.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="reveal">
+    <p class="section__tag">Preguntas frecuentes</p>
+    <h2 class="section__title" style="font-size:1.8rem;margin-bottom:1.5rem">Dudas sobre la inscripción</h2>
+    <div style="max-width:720px">
+      <div class="faq-item">
+        <p class="faq-item__q">¿Cuándo empieza el curso?</p>
+        <p class="faq-item__a">La primera edición comienza el <strong>4 de mayo de 2026</strong>. Las videotutorías son los días 4, 14 y 21 de mayo a las 15:00 h (GMT+2).</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-item__q">¿Necesito conocimientos previos de IA?</p>
+        <p class="faq-item__a">No. El curso está diseñado para docentes sin experiencia previa con herramientas de IA. Solo necesitas competencia digital básica (correo, Moodle, videoconferencias).</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-item__q">¿Cómo se realiza el pago?</p>
+        <p class="faq-item__a">Tras confirmar la inscripción por correo recibirás las instrucciones de pago. Se acepta transferencia bancaria y tarjeta de crédito.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-item__q">¿Qué pasa si no puedo asistir a alguna videotutoría?</p>
+        <p class="faq-item__a">Las sesiones se graban y quedan disponibles en la plataforma. Para obtener el certificado es obligatorio asistir a un mínimo de 2 de las 3 sesiones.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-item__q">¿Hay plazas limitadas?</p>
+        <p class="faq-item__a">Sí. Para garantizar un seguimiento personalizado el número de participantes es limitado. Se asignan por orden de inscripción.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-item__q">¿Mi institución puede contratar el curso para un grupo?</p>
+        <p class="faq-item__a">Sí. Puedo organizar una edición cerrada adaptada a tu equipo con precios especiales desde 10 participantes. Escríbeme para una propuesta personalizada.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand__logo">La Clase<span>Digital</span></div>
+      <p class="footer-brand__desc">Formación docente en Inteligencia Artificial para la enseñanza de Español como Lengua Extranjera.<br>Curso de mayo 2026.</p>
+    </div>
+    <div>
+      <p class="footer-col__title">El curso</p>
+      <div class="footer-col__links">
+        <a href="descripcion.html">Descripción y objetivos</a>
+        <a href="programa.html">Programa por módulos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="metodologia.html">Metodología</a>
+        <a href="precios.html">Precios e inscripción</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col__title">Contacto</p>
+      <p class="footer-contact">
+        <strong>Javier Benítez Láinez</strong><br>
+        Docente de ELE · Granada (España)
+      </p>
+      <button class="btn-contact" data-contact style="margin-top:.75rem">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Envíame un mensaje
+      </button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Javier Benítez Láinez · Formación Docente ELE</span>
+    <a href="https://laclasedigital.com" target="_blank" rel="noopener">laclasedigital.com</a>
+  </div>
+</footer>
+
+<!-- Modal de contacto -->
+<div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal__header">
+      <div>
+        <p class="modal__title" id="modalTitle">Escríbeme</p>
+        <p class="modal__subtitle">IA para la enseñanza de ELE · Javier Benítez Láinez</p>
+      </div>
+      <button class="modal__close" id="closeModal" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal__body">
+      <form id="contactForm" action="https://formspree.io/f/mjgalypd" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="Consulta desde laclasedigital.com">
+        <div class="form-group">
+          <label for="c_nombre">Nombre</label>
+          <input class="form-input" type="text" id="c_nombre" name="nombre" placeholder="Tu nombre" required>
+        </div>
+        <div class="form-group">
+          <label for="c_email">Correo electrónico</label>
+          <input class="form-input" type="email" id="c_email" name="email" placeholder="tu@correo.com" required>
+        </div>
+        <div class="form-group">
+          <label for="c_asunto">Asunto</label>
+          <select class="form-input" id="c_asunto" name="asunto">
+            <option value="">Selecciona un tema…</option>
+            <option value="Información sobre el curso">Información sobre el curso</option>
+            <option value="Inscripción al curso">Inscripción al curso</option>
+            <option value="Propuesta institucional">Propuesta para mi institución</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="c_mensaje">Mensaje</label>
+          <textarea id="c_mensaje" name="mensaje" placeholder="Cuéntame en qué puedo ayudarte…" required></textarea>
+        </div>
+      </form>
+      <div class="modal__msg" id="modalMsg">✓ &nbsp;Mensaje enviado. Te responderé en menos de 48 horas.</div>
+    </div>
+    <div class="modal__footer" id="modalFooter">
+      <button type="button" class="btn btn--outline" id="cancelModal" style="font-size:.875rem;padding:.6rem 1.25rem">Cancelar</button>
+      <button type="button" class="btn btn--primary" id="sendContact" style="font-size:.875rem;padding:.6rem 1.25rem">Enviar mensaje <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const nav = document.getElementById('innerNav');
+window.addEventListener('scroll', () => nav?.classList.toggle('scrolled', scrollY > 20));
+document.querySelectorAll('.reveal').forEach(el => {
+  new IntersectionObserver(([e],obs) => { if(e.isIntersecting){el.classList.add('visible');obs.unobserve(el);} },{threshold:.1}).observe(el);
+});
+(function(){
+  const overlay=document.getElementById('contactModal'),closeBtn=document.getElementById('closeModal'),cancelBtn=document.getElementById('cancelModal'),sendBtn=document.getElementById('sendContact'),form=document.getElementById('contactForm'),msg=document.getElementById('modalMsg'),footer=document.getElementById('modalFooter');
+  function openModal(){overlay?.classList.add('open');document.body.style.overflow='hidden';}
+  function closeModal(){overlay?.classList.remove('open');document.body.style.overflow='';}
+  document.querySelectorAll('[data-contact],.btn-contact').forEach(el=>el.addEventListener('click',openModal));
+  closeBtn?.addEventListener('click',closeModal);cancelBtn?.addEventListener('click',closeModal);
+  overlay?.addEventListener('click',e=>{if(e.target===overlay)closeModal();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+  sendBtn?.addEventListener('click',async()=>{
+    if(!form.checkValidity()){form.reportValidity();return;}
+    sendBtn.disabled=true;sendBtn.textContent='Enviando…';
+    try{const res=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
+    if(res.ok){form.style.display='none';footer.style.display='none';msg.classList.add('show');setTimeout(closeModal,3000);}
+    else throw new Error();}catch{sendBtn.disabled=false;sendBtn.textContent='Enviar mensaje';alert('Error al enviar. Inténtalo de nuevo.');}
+  });
+})();
+</script>
+</body>
+</html>
