@@ -151,13 +151,7 @@
     }
     .home-links a:hover { color: rgba(255,255,255,.8); border-color: rgba(255,255,255,.4); }
 
-    @media (max-width: 700px) {
-      .test-cards { grid-template-columns: 1fr; }
-      .home-nav { display: none; }
-      .home-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-    }
-
-    /* Home burger */
+    /* Burger — oculto en escritorio */
     .home-burger {
       display: none;
       flex-direction: column;
@@ -169,46 +163,57 @@
       margin-left: auto;
       position: relative;
       z-index: 9000;
+      flex-shrink: 0;
     }
     .home-burger span {
       display: block;
-      width: 24px; height: 2.5px;
-      background: rgba(255,255,255,.85);
+      width: 26px; height: 2.5px;
+      background: rgba(255,255,255,.9);
       border-radius: 2px;
       transition: all .25s;
     }
     .home-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .home-burger.open span:nth-child(2) { opacity: 0; }
+    .home-burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     .home-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
     @media (max-width: 700px) {
+      /* Mostrar burger, ocultar nav por defecto */
       .home-burger { display: flex !important; }
+      .test-cards { grid-template-columns: 1fr; }
+      .home-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+
+      /* Nav: pantalla completa, desliza desde derecha */
       .home-nav {
+        position: fixed !important;
+        top: 0 !important; left: 0 !important;
+        right: 0 !important; bottom: 0 !important;
         display: flex !important;
-        flex-direction: column;
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: #07111F;
-        padding: 5rem 2rem 2rem;
-        border-top: none;
-        gap: 0;
-        z-index: 8998;
-        transform: translateX(100%);
-        opacity: 1;
-        pointer-events: none;
-        transition: transform .3s ease;
+        flex-direction: column !important;
+        background: #07111F !important;
+        padding: 80px 2rem 2rem !important;
+        gap: 0 !important;
+        z-index: 8998 !important;
+        transform: translateX(100%) !important;
+        transition: transform .3s ease !important;
+        pointer-events: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
       }
       .home-nav.open {
-        transform: translateX(0);
-        pointer-events: all;
+        transform: translateX(0) !important;
+        pointer-events: all !important;
       }
       .home-nav a {
-        padding: 1.1rem 0;
-        border-bottom: 1px solid rgba(255,255,255,.08);
-        font-size: 1.2rem;
-        font-weight: 600;
+        display: block !important;
+        padding: 1rem 0 !important;
+        border-bottom: 1px solid rgba(255,255,255,.1) !important;
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
         color: rgba(255,255,255,.9) !important;
+        text-decoration: none !important;
+        pointer-events: all !important;
       }
-      .home-nav a:last-child { border-bottom: none; }
+      .home-nav a:last-child { border-bottom: none !important; }
     }
   </style>
 </head>
