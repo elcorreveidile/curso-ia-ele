@@ -533,5 +533,26 @@
   });
 })();
 </script>
+<script>
+/* ── Hamburger nav ── */
+(function(){
+  const burger = document.getElementById('navBurger');
+  const links  = document.querySelector('.inner-nav__links');
+  if (!burger || !links) return;
+  burger.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  // Close on link click
+  links.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
+      burger.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+})();
+</script>
 </body>
 </html>

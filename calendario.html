@@ -19,6 +19,7 @@
     <a href="sobre-mi.html">Sobre mí</a>
     <a href="index.html" class="inner-nav__cta">Cuestionario</a>
     <button class="btn-contact" data-contact style="margin-left:.5rem;border-color:rgba(15,76,129,.4);color:var(--ink-soft)">✉ Contacto</button>
+    <button class="inner-nav__burger" id="navBurger" aria-label="Menú"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -219,6 +220,27 @@
       sendBtn.disabled = false; sendBtn.textContent = 'Enviar mensaje';
       alert('Ha habido un problema. Por favor, inténtalo de nuevo.');
     }
+  });
+})();
+</script>
+<script>
+/* ── Hamburger nav ── */
+(function(){
+  const burger = document.getElementById('navBurger');
+  const links  = document.querySelector('.inner-nav__links');
+  if (!burger || !links) return;
+  burger.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  // Close on link click
+  links.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
+      burger.classList.remove('open');
+      document.body.style.overflow = '';
+    });
   });
 })();
 </script>
