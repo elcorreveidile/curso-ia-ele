@@ -1703,3 +1703,77 @@ footer {
   .q-section-tab { font-size: .72rem; padding: .5rem .6rem; }
   .home-title { font-size: 1.7rem; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   NAV HAMBURGER — fix definitivo
+═══════════════════════════════════════════════════════ */
+.inner-nav {
+  display: flex;
+  align-items: center;
+}
+.inner-nav__burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: .5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.inner-nav__burger span {
+  display: block;
+  width: 24px; height: 2.5px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: all .25s;
+}
+.inner-nav__burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.inner-nav__burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.inner-nav__burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 900px) {
+  .inner-nav__burger { display: flex !important; }
+  .inner-nav__links {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: var(--white);
+    padding: 1rem 1.5rem 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,.15);
+    border-top: 2px solid var(--clm-red);
+    gap: 0;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    z-index: 8999;
+    transform: translateY(-110%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .3s ease, opacity .3s ease;
+  }
+  .inner-nav__links.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+  .inner-nav__links a {
+    padding: .9rem 0;
+    border-bottom: 1px solid var(--canvas-alt);
+    font-size: 1rem;
+    color: var(--ink);
+    width: 100%;
+  }
+  .inner-nav__links a:last-of-type { border-bottom: none; }
+  .inner-nav__cta {
+    margin: 1rem 0 0 0 !important;
+    text-align: center;
+    display: block;
+  }
+  .inner-nav__links .btn-contact {
+    margin: .75rem 0 0 0 !important;
+    width: 100%;
+    justify-content: center;
+  }
+}
