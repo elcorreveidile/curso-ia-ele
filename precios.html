@@ -83,6 +83,67 @@
       font-weight:700;color:var(--ink);margin-bottom:.5rem;
     }
     .faq-item__a { font-size:.9rem;color:var(--ink-soft);line-height:1.6; }
+
+    /* Founder banner */
+    .founder-banner {
+      background: linear-gradient(135deg, #0A1628, #0F2744);
+      border: 1.5px solid rgba(245,166,35,.3);
+      border-radius: var(--r-xl);
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+    }
+    .founder-banner__tag {
+      font-size:.72rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.1em;color:var(--clm-red);margin-bottom:.5rem;
+    }
+    .founder-banner__title {
+      font-family:var(--font-display);font-size:1.6rem;font-weight:800;
+      color:var(--white);line-height:1.2;margin-bottom:.75rem;
+    }
+    .founder-banner__title em { font-style:normal;color:var(--clm-red); }
+    .founder-banner__text {
+      font-size:.95rem;color:rgba(255,255,255,.7);
+      line-height:1.7;max-width:560px;
+    }
+    .founder-counter {
+      background: rgba(245,166,35,.1);
+      border: 1.5px solid rgba(245,166,35,.3);
+      border-radius: var(--r-lg);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      min-width: 180px;
+    }
+    .founder-counter__num {
+      font-family:var(--font-display);
+      font-size:3rem;font-weight:800;
+      color:var(--clm-red);line-height:1;
+    }
+    .founder-counter__label {
+      font-size:.78rem;font-weight:600;
+      color:rgba(255,255,255,.6);
+      text-transform:uppercase;letter-spacing:.08em;
+      margin-top:.4rem;
+    }
+    .founder-perks {
+      display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.25rem;
+    }
+    .founder-perk {
+      display:inline-flex;align-items:center;gap:.4rem;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.75);
+      font-size:.82rem;font-weight:500;
+      padding:.35rem .85rem;border-radius:100px;
+    }
+    .founder-perk::before { content:'✓';color:var(--clm-red);font-weight:700; }
+    @media(max-width:700px){
+      .founder-banner{grid-template-columns:1fr;}
+      .founder-counter{min-width:auto;}
+    }
   </style>
 </head>
 <body class="inner-page">
@@ -103,22 +164,45 @@
   <div class="page-hero__inner">
     <p class="page-hero__tag">Inscripción</p>
     <h1 class="page-hero__title">Precio e inscripción</h1>
-    <p class="page-hero__desc">Formación de 20 horas con certificado de aprovechamiento, materiales propios y feedback personalizado en cada tarea.</p>
+    <p class="page-hero__desc">Primera edición · Mayo 2026 · Precio fundador para los primeros 20 inscritos.</p>
   </div>
 </div>
 
 <div class="inner-content">
+
+  <!-- Founder banner -->
+  <div class="founder-banner reveal">
+    <div>
+      <p class="founder-banner__tag">🚀 Primera edición · Mayo 2026</p>
+      <h2 class="founder-banner__title">Sé parte de la<br><em>primera edición</em></h2>
+      <p class="founder-banner__text">
+        Buscamos 20 docentes que quieran ser los primeros en integrar la IA en su práctica de ELE.
+        A cambio: el precio más bajo que existirá para este curso, acceso directo al formador
+        y la posibilidad de influir en los contenidos de las próximas ediciones.
+      </p>
+      <div class="founder-perks">
+        <span class="founder-perk">Precio exclusivo 149 €</span>
+        <span class="founder-perk">Solo 20 plazas</span>
+        <span class="founder-perk">Acceso directo al formador</span>
+        <span class="founder-perk">A partir de la 2ª edición: 249 €</span>
+      </div>
+    </div>
+    <div class="founder-counter">
+      <div class="founder-counter__num" id="plazasNum">20</div>
+      <div class="founder-counter__label">plazas<br>disponibles</div>
+    </div>
+  </div>
 
   <!-- Cards de precio -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:4rem" class="reveal">
 
     <!-- Precio individual -->
     <div class="price-card">
-      <p class="price-card__label">Precio público</p>
-      <p class="price-card__original">Precio de referencia: 299 €</p>
-      <div class="price-card__amount">249<span style="font-size:1.5rem;font-weight:400;color:var(--ink-muted)"> €</span></div>
-      <p class="price-card__period">por participante · pago único</p>
-      <span class="price-card__savings">— 17 % de descuento de lanzamiento</span>
+      <p class="price-card__label">⭐ Precio fundador · Primera edición</p>
+      <p class="price-card__original">Precio a partir de la 2ª edición: 249 €</p>
+      <div class="price-card__amount">149<span style="font-size:1.5rem;font-weight:400;color:var(--ink-muted)"> €</span></div>
+      <p class="price-card__period">por participante · pago único · solo 20 plazas</p>
+      <span class="price-card__savings">— 40 % de descuento · Solo primera edición</span>
       <ul class="price-includes">
         <li>20 horas de formación en 4 semanas</li>
         <li>4 módulos con actividades prácticas</li>
@@ -131,7 +215,7 @@
       <button class="btn btn--primary" data-contact style="width:100%;justify-content:center">
         Solicitar inscripción
       </button>
-      <p class="price-note">El pago se gestiona directamente tras confirmar la inscripción. Plazas limitadas.</p>
+      <p class="price-note">Solo para los primeros 20 inscritos de la primera edición (mayo 2026). A partir de la segunda edición el precio será 249 €. El pago se gestiona tras confirmar la inscripción.</p>
     </div>
 
     <!-- Precio institucional -->
@@ -204,6 +288,10 @@
       <div class="faq-item">
         <p class="faq-item__q">¿Cuándo empieza el curso?</p>
         <p class="faq-item__a">La primera edición comienza el <strong>4 de mayo de 2026</strong>. Las videotutorías son los días 4, 14 y 21 de mayo a las 15:00 h (GMT+2).</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-item__q">¿El precio de 149 € estará disponible siempre?</p>
+        <p class="faq-item__a">No. Es el <strong>precio fundador</strong>, exclusivo para los primeros 20 inscritos de la primera edición. A partir de la segunda edición el precio será <strong>249 €</strong>. Una vez cubiertas las 20 plazas, el precio de esta edición sube también a 249 €.</p>
       </div>
       <div class="faq-item">
         <p class="faq-item__q">¿Necesito conocimientos previos de IA?</p>
