@@ -3,42 +3,42 @@
 
 /* ── Design Tokens ── */
 :root {
-  /* ── Paleta inspirada en la identidad CLM/UGR ── */
-  --ink:        #141820;       /* casi negro, más cálido que puro negro */
-  --ink-soft:   #2D3748;
-  --ink-muted:  #64748B;
-  --canvas:     #F8F7F4;       /* blanco roto cálido, como papel */
-  --canvas-alt: #EDECEA;
+  /* ── Paleta La Clase Digital: azul profundo + ámbar ── */
+  --ink:        #1A2535;       /* azul oscuro cálido */
+  --ink-soft:   #2E4260;
+  --ink-muted:  #6B82A0;
+  --canvas:     #F4F7FA;       /* blanco azulado suave */
+  --canvas-alt: #E8EEF5;
 
-  /* Rojo CLM como acento principal (sustituye al naranja) */
-  --clm-red:      #C8102E;
-  --clm-red-dark: #9E0B22;
-  --clm-red-light: #FAE8EB;
+  /* Naranja ámbar — acento principal */
+  --clm-red:      #F5A623;
+  --clm-red-dark: #D4881A;
+  --clm-red-light: #FEF3DC;
 
-  /* Mantenemos azul UGR como secundario institucional */
-  --blue:       #1A3A6B;
-  --blue-mid:   #1E5FA0;
-  --blue-light: #D4E6F5;
+  /* Azul — color corporativo principal */
+  --blue:       #0F4C81;
+  --blue-mid:   #1B6CA8;
+  --blue-light: #D6E8F7;
 
-  /* Naranja como terciario de energía (más suave) */
-  --orange:       #C8102E;     /* unificado con rojo CLM */
-  --orange-light: #FAE8EB;
+  /* Alias para compatibilidad */
+  --orange:       #F5A623;
+  --orange-light: #FEF3DC;
 
-  --green:      #1A6B4A;
+  --green:      #1A7A52;
   --white:      #FFFFFF;
 
   --font-display: 'Syne', sans-serif;
   --font-body:    'DM Sans', sans-serif;
-  --font-serif:   'Playfair Display', serif;  /* para acentos institucionales */
+  --font-serif:   'Playfair Display', serif;
 
-  --r-sm: 4px;    /* más cuadrado, más institucional */
-  --r-md: 8px;
-  --r-lg: 14px;
-  --r-xl: 24px;
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 32px;
 
-  --shadow-sm: 0 2px 8px rgba(20,24,32,.07);
-  --shadow-md: 0 6px 24px rgba(20,24,32,.12);
-  --shadow-lg: 0 16px 48px rgba(20,24,32,.16);
+  --shadow-sm: 0 2px 8px rgba(15,76,129,.08);
+  --shadow-md: 0 6px 24px rgba(15,76,129,.14);
+  --shadow-lg: 0 16px 48px rgba(15,76,129,.18);
 }
 
 /* ── Reset ── */
@@ -601,7 +601,7 @@ ul { list-style: none; }
 
 /* ── CUESTIONARIO ── */
 .cuestionario-intro {
-  background: linear-gradient(135deg, var(--ink) 0%, #1A0A0F 100%);
+  background: linear-gradient(135deg, var(--blue) 0%, #0A1E3A 100%);
   border-radius: var(--r-xl);
   padding: 3rem;
   color: var(--white);
@@ -707,7 +707,7 @@ ul { list-style: none; }
   color: var(--white);
   flex-shrink: 0;
 }
-.q-section__letter--A { background: var(--clm-red); }
+.q-section__letter--A { background: var(--blue); }
 .q-section__letter--B { background: var(--blue-mid); }
 .q-section__letter--C { background: var(--ink); }
 .q-section__letter--D { background: var(--green); }
@@ -956,7 +956,7 @@ footer strong { color: var(--white); }
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr;
-  background: linear-gradient(160deg, #0D1117 0%, #1A0A0F 50%, #0D1117 100%);
+  background: linear-gradient(160deg, #0A1628 0%, #0F2744 50%, #0A1628 100%);
   position: relative;
   overflow: hidden;
 }
@@ -1134,7 +1134,7 @@ footer strong { color: var(--white); }
   padding-top: 64px;
 }
 .page-hero {
-  background: linear-gradient(160deg, #0D1117 0%, #1A0A0F 60%, #0D1117 100%);
+  background: linear-gradient(160deg, #0A1628 0%, #0F2744 60%, #0A1628 100%);
   padding: 4rem 2.5rem 3.5rem;
   position: relative; overflow: hidden;
 }
@@ -1392,14 +1392,14 @@ body::before {
   content: '';
   position: fixed; top: 0; left: 0; right: 0;
   height: 3px;
-  background: var(--clm-red);
+  background: linear-gradient(90deg, var(--blue), var(--clm-red));
   z-index: 9999;
 }
 
 /* Footer CLM */
 footer {
-  background: #0D1117;
-  border-top: 1px solid rgba(200,16,46,.3);
+  background: #07111F;
+  border-top: 1px solid rgba(27,108,168,.3);
 }
 .footer-inner {
   max-width: 1200px; margin: 0 auto;
@@ -1449,7 +1449,7 @@ footer {
 
 /* Módulos header colors */
 .module-card__header--I   { background: linear-gradient(135deg, #1A3A6B, #1E5FA0); }
-.module-card__header--II  { background: linear-gradient(135deg, #C8102E, #9E0B22); }
+.module-card__header--II  { background: linear-gradient(135deg, #D4881A, #F5A623); }
 .module-card__header--III { background: linear-gradient(135deg, #1A6B4A, #2ea87c); }
 .module-card__header--IV  { background: linear-gradient(135deg, #4A1A6B, #7B3AB5); }
 
@@ -1457,21 +1457,21 @@ footer {
 .inner-nav__links a::after { background: var(--clm-red); }
 
 /* Objective hover accent */
-.objetivo-item:hover { transform: translateX(4px); box-shadow: var(--shadow-md); border-left: 3px solid var(--clm-red); }
+.objetivo-item:hover { transform: translateX(4px); box-shadow: var(--shadow-md); border-left: 3px solid var(--blue); }
 
 /* Competencias left border */
-.competencias { border-left: 4px solid var(--clm-red); }
+.competencias { border-left: 4px solid var(--blue); }
 
 /* Session card number */
-.session-card__num { background: var(--clm-red); }
+.session-card__num { background: var(--blue); }
 
 /* Eval cards */
 .eval-card--1 { background: var(--blue); }
 .eval-card--2 { background: var(--green); }
-.eval-card--3 { background: var(--clm-red); }
+.eval-card--3 { background: var(--blue); }
 
 /* Meto card icon */
-.meto-card__icon { background: var(--clm-red-light); color: var(--clm-red); }
+.meto-card__icon { background: var(--blue-light); color: var(--blue); }
 
 /* Cuestionario intro text */
 .cuestionario-intro__title { color: var(--white); }

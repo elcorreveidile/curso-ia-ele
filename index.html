@@ -9,7 +9,7 @@
   <style>
     .home-hero {
       min-height: 100vh;
-      background: linear-gradient(160deg, #0D1117 0%, #1A0A0F 50%, #0D1117 100%);
+      background: linear-gradient(160deg, #0A1628 0%, #0F2744 50%, #0A1628 100%);
       display: flex; flex-direction: column;
       position: relative; overflow: hidden;
     }
@@ -17,9 +17,9 @@
       content: '';
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse at 90% 10%, rgba(200,16,46,.22) 0%, transparent 45%),
-        radial-gradient(ellipse at 5% 90%, rgba(200,16,46,.12) 0%, transparent 40%),
-        radial-gradient(ellipse at 50% 50%, rgba(26,58,107,.15) 0%, transparent 60%);
+        radial-gradient(ellipse at 90% 10%, rgba(245,166,35,.2) 0%, transparent 45%),
+        radial-gradient(ellipse at 5% 90%, rgba(27,108,168,.2) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, rgba(15,76,129,.2) 0%, transparent 60%);
       pointer-events: none;
     }
     /* Línea roja CLM en el top */
@@ -27,7 +27,7 @@
       content: '';
       position: absolute; top: 0; left: 0; right: 0;
       height: 3px;
-      background: linear-gradient(90deg, var(--clm-red), transparent);
+      background: linear-gradient(90deg, var(--clm-red), var(--blue), transparent);
     }
     .home-top {
       padding: 2rem 2.5rem;
@@ -41,7 +41,7 @@
       display: flex; align-items: center; gap: .5rem;
     }
     .home-logo span {
-      background: var(--clm-red); color: var(--white);
+      background: var(--clm-red); color: var(--ink);
       padding: 2px 8px; border-radius: var(--r-sm); font-size: .8rem;
     }
     .home-nav { display: flex; gap: 1.5rem; }
@@ -92,9 +92,9 @@
     }
     .test-card:hover {
       background: rgba(255,255,255,.09);
-      border-color: rgba(200,16,46,.4);
+      border-color: rgba(245,166,35,.5);
       transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(200,16,46,.15);
+      box-shadow: 0 8px 32px rgba(245,166,35,.15);
     }
     .test-card__badge {
       display: inline-flex; align-items: center; gap: .4rem;
@@ -102,8 +102,8 @@
       text-transform: uppercase; letter-spacing: .08em;
       padding: .3rem .8rem; border-radius: 100px;
     }
-    .test-card__badge--general { background: rgba(26,58,107,.4); color: #7BB8E8; }
-    .test-card__badge--curso   { background: rgba(200,16,46,.3);  color: #F08080; }
+    .test-card__badge--general { background: rgba(15,76,129,.4); color: #7BC8F0; }
+    .test-card__badge--curso   { background: rgba(245,166,35,.25); color: #F5C060; }
     .test-card__icon { font-size: 2.5rem; line-height: 1; }
     .test-card__title {
       font-family: var(--font-display);
@@ -131,8 +131,8 @@
       margin-top: .25rem; align-self: flex-start;
     }
     .test-card__btn:hover { opacity: .88; transform: translateX(3px); }
-    .test-card__btn--general { background: var(--blue); color: var(--white); }
-    .test-card__btn--curso   { background: var(--clm-red); color: var(--white); }
+    .test-card__btn--general { background: var(--blue-mid); color: var(--white); }
+    .test-card__btn--curso   { background: var(--clm-red); color: var(--ink); }
 
     .home-divider {
       margin-top: 3rem;
