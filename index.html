@@ -156,6 +156,57 @@
       .home-nav { display: none; }
       .home-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
     }
+
+    /* Home burger */
+    .home-burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: .5rem;
+      margin-left: auto;
+    }
+    .home-burger span {
+      display: block;
+      width: 24px; height: 2.5px;
+      background: rgba(255,255,255,.85);
+      border-radius: 2px;
+      transition: all .25s;
+    }
+    .home-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .home-burger.open span:nth-child(2) { opacity: 0; }
+    .home-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    @media (max-width: 700px) {
+      .home-burger { display: flex !important; }
+      .home-nav {
+        display: flex !important;
+        flex-direction: column;
+        position: fixed;
+        top: 56px; left: 0; right: 0;
+        background: #0A1628;
+        padding: 1rem 1.5rem 2rem;
+        border-top: 2px solid var(--clm-red);
+        gap: 0;
+        z-index: 8999;
+        transform: translateY(-110%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .3s ease, opacity .3s ease;
+      }
+      .home-nav.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+      .home-nav a {
+        padding: .9rem 0;
+        border-bottom: 1px solid rgba(255,255,255,.1);
+        font-size: 1rem;
+        color: rgba(255,255,255,.85) !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -164,7 +215,7 @@
 
   <div class="home-top">
     <div class="home-logo">La Clase<span>Digital</span></div>
-    <nav class="home-nav">
+    <nav class="home-nav" id="homeNav">
       <a href="descripcion.html">El curso</a>
       <a href="programa.html">Programa</a>
       <a href="calendario.html">Calendario</a>
@@ -172,6 +223,7 @@
       <a href="precios.html">Precios</a>
       <a href="sobre-mi.html">Sobre mí</a>
     </nav>
+    <button class="home-burger" id="homeBurger" aria-label="Menú"><span></span><span></span><span></span></button>
   </div>
 
   <div class="home-body">
@@ -249,6 +301,41 @@
   </div>
 </div>
 
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand__logo">La Clase<span>Digital</span></div>
+      <p class="footer-brand__desc">Formación docente en Inteligencia Artificial para la enseñanza de Español como Lengua Extranjera.<br>Curso de mayo 2026.</p>
+    </div>
+    <div>
+      <p class="footer-col__title">El curso</p>
+      <div class="footer-col__links">
+        <a href="descripcion.html">Descripción y objetivos</a>
+        <a href="programa.html">Programa por módulos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="metodologia.html">Metodología</a>
+        <a href="precios.html">Precios e inscripción</a>
+        <a href="sobre-mi.html">Sobre el formador</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col__title">Contacto</p>
+      <p class="footer-contact">
+        <strong>Javier Benítez Láinez</strong><br>
+        Docente de ELE · Granada (España)
+      </p>
+      <button class="btn-contact" data-contact style="margin-top:.75rem">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Envíame un mensaje
+      </button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Javier Benítez Láinez · Formación Docente ELE</span>
+    <a href="https://laclasedigital.com" target="_blank" rel="noopener">laclasedigital.com</a>
+  </div>
+</footer>
 
 <!-- ── MODAL DE CONTACTO ── -->
 <div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -340,6 +427,27 @@
       sendBtn.disabled = false; sendBtn.textContent = 'Enviar mensaje';
       alert('Ha habido un problema. Por favor, inténtalo de nuevo.');
     }
+  });
+})();
+</script>
+
+<script>
+/* Home burger */
+(function(){
+  const burger = document.getElementById('homeBurger');
+  const nav    = document.getElementById('homeNav');
+  if (!burger || !nav) return;
+  burger.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  nav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      nav.classList.remove('open');
+      burger.classList.remove('open');
+      document.body.style.overflow = '';
+    });
   });
 })();
 </script>
