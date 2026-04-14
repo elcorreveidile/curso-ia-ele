@@ -1941,3 +1941,49 @@ footer {
     gap: .4rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE FIX v3 · padding inline y contenedores internos
+═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  /* Forzar box-sizing en todo */
+  *, *::before, *::after { box-sizing: border-box !important; }
+
+  /* Evitar cualquier scroll horizontal */
+  html, body { max-width: 100vw; overflow-x: hidden; }
+
+  /* Contenedor raíz */
+  .landing-hero { max-width: 100vw; overflow-x: hidden; }
+  .landing-body { padding-left: 1rem !important; padding-right: 1rem !important; max-width: 100%; }
+  .landing-top  { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+  /* Form wrap */
+  .landing-form-wrap { max-width: 100%; width: 100%; }
+
+  /* Intro del cuestionario: padding 3rem → 1rem */
+  .cuestionario-intro { padding: 1.25rem !important; border-radius: var(--r-md) !important; }
+
+  /* Tabs con padding inline en HTML */
+  .q-sections { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+  /* formWrapper con padding:2rem inline */
+  #formWrapper { padding: 1rem !important; }
+
+  /* q-blocks con padding inline */
+  .q-block { padding: .875rem 1rem !important; }
+
+  /* Inputs: no salirse */
+  .form-input { max-width: 100%; }
+
+  /* Opciones: no salirse */
+  .q-option, .area-option { max-width: 100%; box-sizing: border-box; }
+
+  /* Textos: word-wrap */
+  .q-block__text, .q-block__note, .q-option__label,
+  .area-option__label, .area-option__desc,
+  .cuestionario-intro__title, .cuestionario-intro__text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
