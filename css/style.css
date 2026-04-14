@@ -1782,3 +1782,104 @@ footer {
 @media (max-width: 700px) {
   .meto-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE FIXES · diagnostico-clm.html
+   Añadido automáticamente
+═══════════════════════════════════════════════════════ */
+
+/* ── Pantallas pequeñas (≤ 600px) ───────────────────── */
+@media (max-width: 600px) {
+
+  #formWrapper { padding: 1rem; }
+  .landing-form-wrap .q-block { padding: .875rem 1rem; margin-bottom: .6rem; }
+  .q-progress { margin: 1rem 1rem 0 !important; }
+
+  /* Tabs de sección: scroll horizontal */
+  .q-sections {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    padding-bottom: .5rem;
+    gap: .3rem;
+    scrollbar-width: none;
+  }
+  .q-sections::-webkit-scrollbar { display: none; }
+  .q-section-tab {
+    flex-shrink: 0;
+    font-size: .7rem;
+    padding: .35rem .6rem;
+    white-space: nowrap;
+  }
+
+  /* Tablas Likert: cada pregunta en bloque vertical */
+  .q-likert { overflow-x: visible; }
+  .q-likert table { display: block; }
+  .q-likert thead { display: none; }
+  .q-likert tbody { display: block; }
+
+  .q-likert tbody tr {
+    display: block;
+    background: var(--white);
+    border: 1px solid var(--canvas-alt);
+    border-radius: var(--r-sm);
+    padding: .875rem;
+    margin-bottom: .75rem;
+  }
+  .q-likert tr:nth-child(even) td { background: transparent; }
+
+  .q-likert tbody tr td:first-child {
+    display: block;
+    text-align: left;
+    padding: 0 0 .75rem 0;
+    border-top: none;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .q-likert tbody tr td:not(:first-child) {
+    display: inline-flex;
+    width: 20%;
+    justify-content: center;
+    align-items: center;
+    border-top: none;
+    padding: .2rem 0;
+  }
+
+  .q-likert label {
+    width: 40px;
+    height: 40px;
+    font-size: .85rem;
+    touch-action: manipulation;
+  }
+
+  /* Opciones en grid 2 col → 1 col */
+  .q-options--grid { grid-template-columns: 1fr !important; }
+
+  /* Datos de contacto */
+  .datos-grid { grid-template-columns: 1fr; }
+
+  /* Botones de navegación */
+  .q-nav { flex-wrap: wrap; gap: .6rem; }
+  .q-nav .btn { flex: 1 1 140px; justify-content: center; text-align: center; }
+  #btnSubmit { width: 100%; justify-content: center; }
+
+  /* Header de sección */
+  .q-section__header { flex-direction: row; align-items: flex-start; gap: .75rem; }
+  .q-section__letter { width: 36px; height: 36px; flex-shrink: 0; }
+}
+
+/* ── Pantallas medianas (601–768px) ─────────────────── */
+@media (min-width: 601px) and (max-width: 768px) {
+
+  #formWrapper { padding: 1.25rem; }
+
+  .q-likert th, .q-likert td { padding: .4rem .2rem; font-size: .8rem; }
+  .q-likert th:first-child { width: 48%; }
+  .q-likert label { width: 32px; height: 32px; font-size: .75rem; }
+
+  .q-sections { overflow-x: auto; flex-wrap: nowrap !important; scrollbar-width: none; }
+  .q-sections::-webkit-scrollbar { display: none; }
+  .q-section-tab { flex-shrink: 0; font-size: .75rem; }
+}
