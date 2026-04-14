@@ -126,11 +126,11 @@
             <div class="datos-grid">
               <div class="form-group">
                 <label for="nombre">Nombre y apellidos</label>
-                <input class="form-input" type="text" id="nombre" name="nombre" placeholder="Tu nombre completo">
+                <input class="form-input" type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
               </div>
               <div class="form-group">
                 <label for="email">Correo electrónico</label>
-                <input class="form-input" type="email" id="email" name="email" placeholder="tu@correo.com">
+                <input class="form-input" type="email" id="email" name="email" placeholder="tu@correo.com" required>
               </div>
             </div>
           </div>
@@ -510,7 +510,51 @@ function nextSection() {
 function prevSection() { if (currentSection > 0) showSection(currentSection - 1); }
 
 SECTIONS.forEach((s,i) => document.getElementById('tab-'+s)?.addEventListener('click', () => showSection(i)));
-document.getElementById('btnNext')?.addEventListener('click', nextSection);
+document.getElementById('btnNext')?.addEventListener('click', () => {
+  const nombre = document.getElementById('nombre');
+  const email  = document.getElementById('email');
+  let ok = true;
+
+  [nombre, email].forEach(field => {
+    if (!field) return;
+    const val = field.value.trim();
+    const empty = !val;
+    const badEmail = field.type === 'email' && val && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val);
+
+    if (empty || badEmail) {
+      field.style.borderColor = '#C8102E';
+      field.style.background  = '#FEF0F0';
+      if (!field.dataset.listener) {
+        field.dataset.listener = '1';
+        field.addEventListener('input', () => {
+          field.style.borderColor = '';
+          field.style.background  = '';
+        });
+      }
+      ok = false;
+    }
+  });
+
+  if (!ok) {
+    nombre?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Show inline message
+    let msg = document.getElementById('validationMsg');
+    if (!msg) {
+      msg = document.createElement('p');
+      msg.id = 'validationMsg';
+      msg.style.cssText = 'color:#C8102E;font-size:.85rem;font-weight:600;margin-top:.5rem;';
+      nombre?.closest('.form-group')?.after(msg);
+    }
+    msg.textContent = 'Por favor, introduce tu nombre y un correo electrónico válido para continuar.';
+    return;
+  }
+
+  // Clear any error message
+  const msg = document.getElementById('validationMsg');
+  if (msg) msg.remove();
+
+  nextSection();
+});
 document.getElementById('btnPrevB')?.addEventListener('click', prevSection);
 document.getElementById('btnNextB')?.addEventListener('click', nextSection);
 document.getElementById('btnPrevC')?.addEventListener('click', prevSection);
