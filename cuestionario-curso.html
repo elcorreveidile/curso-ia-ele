@@ -139,8 +139,8 @@
           <div class="q-block">
             <p class="q-block__num">Pregunta 1</p>
             <p class="q-block__text">¿Cuántos años llevas ejerciendo como docente de ELE?</p>
-            <div class="q-options">
-              <label class="q-option"><input type="radio" name="anos_exp" value="Menos de 2 años"><span class="q-option__box"></span><span class="q-option__label">Menos de 2 años</span></label>
+            <div class="q-options" id="anos_exp_group">
+              <label class="q-option"><input type="radio" name="anos_exp" value="Menos de 2 años" required><span class="q-option__box"></span><span class="q-option__label">Menos de 2 años</span></label>
               <label class="q-option"><input type="radio" name="anos_exp" value="2-5 años"><span class="q-option__box"></span><span class="q-option__label">Entre 2 y 5 años</span></label>
               <label class="q-option"><input type="radio" name="anos_exp" value="6-15 años"><span class="q-option__box"></span><span class="q-option__label">Entre 6 y 15 años</span></label>
               <label class="q-option"><input type="radio" name="anos_exp" value="Más de 15 años"><span class="q-option__box"></span><span class="q-option__label">Más de 15 años</span></label>
@@ -549,10 +549,36 @@ document.getElementById('btnNext')?.addEventListener('click', () => {
     return;
   }
 
+  // Validate años_exp (at least one selected)
+  const anosSelected = document.querySelector('input[name="anos_exp"]:checked');
+  if (!anosSelected) {
+    const group = document.getElementById('anos_exp_group');
+    if (group) {
+      group.style.outline = '2px solid #C8102E';
+      group.style.borderRadius = '8px';
+      group.style.padding = '0.5rem';
+    }
+    let msg2 = document.getElementById('validationMsg2');
+    if (!msg2) {
+      msg2 = document.createElement('p');
+      msg2.id = 'validationMsg2';
+      msg2.style.cssText = 'color:#C8102E;font-size:.85rem;font-weight:600;margin-top:.5rem;';
+      group?.after(msg2);
+    }
+    msg2.textContent = 'Por favor, indica cuántos años llevas como docente de ELE.';
+    if (ok) group?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    ok = false;
+  } else {
+    const group = document.getElementById('anos_exp_group');
+    if (group) { group.style.outline = ''; group.style.padding = ''; }
+    document.getElementById('validationMsg2')?.remove();
+  }
+
   // Clear any error message
   const msg = document.getElementById('validationMsg');
   if (msg) msg.remove();
 
+  if (!ok) return;
   nextSection();
 });
 document.getElementById('btnPrevB')?.addEventListener('click', prevSection);
