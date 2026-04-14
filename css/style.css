@@ -1987,3 +1987,42 @@ footer {
     overflow-wrap: break-word;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE FIX v4 · corte lateral definitivo
+═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  .cuestionario-intro__title {
+    font-size: 1.1rem !important;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .cuestionario-intro__text {
+    font-size: .8rem !important;
+  }
+  .cuest-badge {
+    font-size: .75rem;
+    padding: .3rem .7rem;
+  }
+
+  /* El elemento que desborda: forzar contención */
+  .landing-form-wrap.reveal {
+    max-width: calc(100vw - 2rem) !important;
+    overflow: hidden !important;
+  }
+
+  /* q-sections: scroll interno, no desborde */
+  .q-sections {
+    padding-left: .75rem !important;
+    padding-right: .75rem !important;
+    overflow-x: auto !important;
+    overflow-y: visible;
+  }
+
+  /* q-progress: márgenes contenidos */
+  .q-progress {
+    margin-left: .75rem !important;
+    margin-right: .75rem !important;
+  }
+}
