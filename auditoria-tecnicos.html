@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoría IA · Técnicos y Dirección · CLM · UGR</title>
+  <meta name="description" content="Diagnóstico de IA para el personal técnico y directivo del CLM.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="landing-hero">
+  <div class="landing-top">
+    <a href="index.html" class="landing-logo" style="text-decoration:none">La Clase<span>Digital</span></a>
+    <nav class="landing-nav"><a href="index.html">← Inicio</a></nav>
+  </div>
+
+  <div class="landing-body">
+    <div class="landing-pitch reveal">
+      <div class="landing-pitch__left">
+        <p class="landing-pitch__eyebrow">Técnicos y Dirección · CLM · UGR</p>
+        <h1 class="landing-pitch__title">Auditoría <em>IA</em><br>Técnicos</h1>
+      </div>
+      <div>
+        <p class="landing-pitch__text">Diagnóstico orientado a detectar el uso real de IA en flujos de trabajo técnicos, infraestructura existente, riesgos y visión estratégica para la implantación institucional. Sin preguntas básicas: este cuestionario asume conocimiento técnico.</p>
+      </div>
+    </div>
+
+    <div class="landing-form-wrap reveal">
+      <div class="cuestionario-intro" style="border-radius:0;margin:0;">
+        <div>
+          <h2 class="cuestionario-intro__title">Auditoría IA · Técnicos y Dirección</h2>
+          <p class="cuestionario-intro__text">Confidencial · 15-20 min · Informática, programación, diseño, biblioteca y dirección</p>
+        </div>
+        <div class="cuestionario-intro__meta">
+          <span class="cuest-badge">📋 4 bloques</span>
+          <span class="cuest-badge">💻 Perfiles técnicos</span>
+        </div>
+      </div>
+
+      <div class="q-progress" style="margin:1.5rem 1rem 0;border-radius:12px;">
+        <span class="q-progress__label">Progreso</span>
+        <div class="q-progress__bar"><div class="q-progress__fill" id="progressFill"></div></div>
+        <span class="q-progress__pct" id="progressPct">0%</span>
+      </div>
+
+      <div class="q-sections" style="padding:0 1rem;margin-top:1rem;margin-bottom:0;">
+        <button class="q-section-tab active" id="tab-1"><span class="q-section-tab__dot"></span>1 · Perfil</button>
+        <button class="q-section-tab" id="tab-2"><span class="q-section-tab__dot"></span>2 · Uso real de IA</button>
+        <button class="q-section-tab" id="tab-3"><span class="q-section-tab__dot"></span>3 · Infraestructura y riesgos</button>
+        <button class="q-section-tab" id="tab-4"><span class="q-section-tab__dot"></span>4 · Visión estratégica</button>
+      </div>
+
+      <div id="formWrapper" style="padding:1.25rem;">
+      <form id="auditoriaForm" action="https://formspree.io/f/mjgalypd" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="Auditoría IA · Técnicos y Dirección · CLM">
+        <input type="hidden" name="_tipo" value="auditoria-tecnicos-clm">
+
+        <!-- ══ BLOQUE 1: PERFIL ══ -->
+        <div class="q-section active" id="section-1">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--A">1</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu perfil técnico</p>
+              <p class="q-section__desc">Para contextualizar tus respuestas</p>
+            </div>
+          </div>
+
+          <div class="q-block" style="border:2px solid var(--clm-red);background:var(--clm-red-light)">
+            <p class="q-block__num" style="color:var(--clm-red)">Pregunta 1 · Obligatoria</p>
+            <p class="q-block__text" style="font-weight:600">¿Cuál es tu área de trabajo?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="area" value="Informática y sistemas" required><span class="q-option__box"></span><span class="q-option__label">Informática y Sistemas</span></label>
+              <label class="q-option"><input type="radio" name="area" value="Programación y desarrollo"><span class="q-option__box"></span><span class="q-option__label">Programación y Desarrollo</span></label>
+              <label class="q-option"><input type="radio" name="area" value="Diseño web y audiovisual"><span class="q-option__box"></span><span class="q-option__label">Diseño Gráfico, Web y Audiovisual</span></label>
+              <label class="q-option"><input type="radio" name="area" value="Biblioteca"><span class="q-option__box"></span><span class="q-option__label">Biblioteca</span></label>
+              <label class="q-option"><input type="radio" name="area" value="Dirección o subdirección"><span class="q-option__box"></span><span class="q-option__label">Dirección o Subdirección</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 2</p>
+            <p class="q-block__text">¿Cuántos años llevas en el CLM?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="anos_clm" value="Menos de 2"><span class="q-option__box"></span><span class="q-option__label">Menos de 2 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_clm" value="2-5"><span class="q-option__box"></span><span class="q-option__label">Entre 2 y 5 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_clm" value="6-15"><span class="q-option__box"></span><span class="q-option__label">Entre 6 y 15 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_clm" value="Más de 15"><span class="q-option__box"></span><span class="q-option__label">Más de 15 años</span></label>
+            </div>
+          </div>
+
+          <div class="q-nav"><span class="q-nav__info">Bloque 1 de 4</span><button type="button" class="btn btn--primary" id="btn1Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 2: USO REAL DE IA ══ -->
+        <div class="q-section" id="section-2">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--B">2</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu uso real de la IA</p>
+              <p class="q-section__desc">Herramientas, flujos de trabajo y nivel de integración real</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 3 · Discriminante</p>
+            <p class="q-block__text">¿Qué herramientas de asistencia por IA usas habitualmente en tu flujo de trabajo? (Marca todas las que apliquen)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="GitHub Copilot"><span class="q-option__box"></span><span class="q-option__label">GitHub Copilot</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Claude Code"><span class="q-option__box"></span><span class="q-option__label">Claude Code</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Cursor"><span class="q-option__box"></span><span class="q-option__label">Cursor</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Codex / OpenAI API"><span class="q-option__box"></span><span class="q-option__label">Codex / OpenAI API</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="ChatGPT"><span class="q-option__box"></span><span class="q-option__label">ChatGPT (interfaz web)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Claude web"><span class="q-option__box"></span><span class="q-option__label">Claude (interfaz web)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Midjourney"><span class="q-option__box"></span><span class="q-option__label">Midjourney</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="DALL-E"><span class="q-option__box"></span><span class="q-option__label">DALL-E / Adobe Firefly</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Runway / Sora"><span class="q-option__box"></span><span class="q-option__label">Runway / Sora (vídeo)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="ElevenLabs"><span class="q-option__box"></span><span class="q-option__label">ElevenLabs (audio)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Copilot Microsoft"><span class="q-option__box"></span><span class="q-option__label">Microsoft Copilot (Office)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Ninguna"><span class="q-option__box"></span><span class="q-option__label">Ninguna actualmente</span></label>
+            </div>
+            <textarea class="q-open" name="herramientas_otras" placeholder="¿Alguna otra herramienta no listada?" rows="2" style="margin-top:.75rem"></textarea>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 4 · Discriminante</p>
+            <p class="q-block__text">¿Desde dónde trabajas habitualmente con IA? (Marca todas las que apliquen)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="modo_uso" value="Terminal / CLI"><span class="q-option__box"></span><span class="q-option__label">Terminal / línea de comandos</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="modo_uso" value="Plugin editor"><span class="q-option__box"></span><span class="q-option__label">Plugin en el editor (VS Code, JetBrains…)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="modo_uso" value="Interfaz web"><span class="q-option__box"></span><span class="q-option__label">Interfaz web del modelo</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="modo_uso" value="API propia"><span class="q-option__box"></span><span class="q-option__label">Llamadas directas a la API en mis proyectos</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="modo_uso" value="Herramienta integrada"><span class="q-option__box"></span><span class="q-option__label">Herramienta con IA integrada (Canva, Figma, Adobe…)</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 5 · Discriminante</p>
+            <p class="q-block__text">¿Has integrado alguna vez una API de IA (OpenAI, Anthropic, Google…) en un proyecto propio o profesional?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="api_integracion" value="Sí en producción"><span class="q-option__box"></span><span class="q-option__label">Sí, en proyectos en producción.</span></label>
+              <label class="q-option"><input type="radio" name="api_integracion" value="Sí en pruebas"><span class="q-option__box"></span><span class="q-option__label">Sí, en proyectos de prueba o personales.</span></label>
+              <label class="q-option"><input type="radio" name="api_integracion" value="No pero sé cómo"><span class="q-option__box"></span><span class="q-option__label">No, pero sé cómo hacerlo y podría.</span></label>
+              <label class="q-option"><input type="radio" name="api_integracion" value="No me aplica"><span class="q-option__box"></span><span class="q-option__label">No es parte de mi perfil técnico.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 6 · Usos específicos</p>
+            <p class="q-block__text">¿Para qué usas la IA en tu trabajo técnico? (Marca todas las que apliquen)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Escribir código"><span class="q-option__box"></span><span class="q-option__label">Escribir o completar código</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Depurar código"><span class="q-option__box"></span><span class="q-option__label">Depurar y corregir errores</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Documentar"><span class="q-option__box"></span><span class="q-option__label">Documentar código o sistemas</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Seguridad"><span class="q-option__box"></span><span class="q-option__label">Análisis de seguridad y vulnerabilidades</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Diseño generativo"><span class="q-option__box"></span><span class="q-option__label">Generación de imágenes o recursos visuales</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Vídeo y audio"><span class="q-option__box"></span><span class="q-option__label">Producción de vídeo o audio con IA</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Automatización"><span class="q-option__box"></span><span class="q-option__label">Automatización de procesos</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Agentes"><span class="q-option__box"></span><span class="q-option__label">Desarrollo de agentes o chatbots</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="usos_tecnicos" value="Ninguno"><span class="q-option__box"></span><span class="q-option__label">Ninguno todavía</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 7 · Abierta</p>
+            <p class="q-block__text">Describe brevemente el caso de uso de IA más avanzado que hayas implementado o probado en tu trabajo.</p>
+            <textarea class="q-open" name="caso_uso_avanzado" placeholder="Ej: Monté un pipeline con la API de OpenAI para clasificar automáticamente las consultas entrantes y derivarlas al departamento correcto…" rows="4"></textarea>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" id="btn2Prev">← Anterior</button><span class="q-nav__info">Bloque 2 de 4</span><button type="button" class="btn btn--primary" id="btn2Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 3: INFRAESTRUCTURA Y RIESGOS ══ -->
+        <div class="q-section" id="section-3">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--C">3</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Infraestructura del CLM y riesgos</p>
+              <p class="q-section__desc">Lo que existe hoy y lo que habría que construir</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 8</p>
+            <p class="q-block__text">¿Tiene el CLM actualmente algún sistema de gestión de consultas o CRM? (Ticketing, helpdesk, base de datos de contactos…)</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="crm_existente" value="Sí consolidado"><span class="q-option__box"></span><span class="q-option__label">Sí, un sistema consolidado y en uso.</span></label>
+              <label class="q-option"><input type="radio" name="crm_existente" value="Sí parcial"><span class="q-option__box"></span><span class="q-option__label">Sí, pero parcial o poco utilizado.</span></label>
+              <label class="q-option"><input type="radio" name="crm_existente" value="No solo email"><span class="q-option__box"></span><span class="q-option__label">No, todo funciona por correo y teléfono de forma manual.</span></label>
+              <label class="q-option"><input type="radio" name="crm_existente" value="No lo sé"><span class="q-option__box"></span><span class="q-option__label">No lo sé con certeza.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 9</p>
+            <p class="q-block__text">¿Qué infraestructura técnica necesitaría el CLM para implantar un agente de IA para atención al estudiante? (Marca lo que falta)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="infraestructura_necesaria" value="CRM o base de datos de consultas"><span class="q-option__box"></span><span class="q-option__label">CRM o base de datos de consultas</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="infraestructura_necesaria" value="Integración WhatsApp Business"><span class="q-option__box"></span><span class="q-option__label">Integración con WhatsApp Business API</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="infraestructura_necesaria" value="Centralita VoIP"><span class="q-option__box"></span><span class="q-option__label">Centralita VoIP compatible con IA</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="infraestructura_necesaria" value="Base de conocimiento"><span class="q-option__box"></span><span class="q-option__label">Base de conocimiento institucional estructurada</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="infraestructura_necesaria" value="API del sistema de gestión"><span class="q-option__box"></span><span class="q-option__label">API del sistema de gestión académica</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="infraestructura_necesaria" value="Política de privacidad actualizada"><span class="q-option__box"></span><span class="q-option__label">Política de privacidad y RGPD actualizada</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 10 · Riesgos</p>
+            <p class="q-block__text">¿Qué riesgos técnicos o de seguridad ves en la implantación de IA en el CLM? (Marca todos los que identifiques)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="riesgos" value="Fuga de datos estudiantes"><span class="q-option__box"></span><span class="q-option__label">Fuga de datos personales de estudiantes</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="riesgos" value="Uso no supervisado actual"><span class="q-option__box"></span><span class="q-option__label">Uso no supervisado ya existente en la plantilla</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="riesgos" value="Incumplimiento RGPD"><span class="q-option__box"></span><span class="q-option__label">Incumplimiento del RGPD</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="riesgos" value="Dependencia de terceros"><span class="q-option__box"></span><span class="q-option__label">Dependencia de proveedores externos (OpenAI, Google…)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="riesgos" value="Calidad respuestas agente"><span class="q-option__box"></span><span class="q-option__label">Respuestas incorrectas del agente a estudiantes</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="riesgos" value="Resistencia plantilla"><span class="q-option__box"></span><span class="q-option__label">Resistencia de la plantilla a adoptar la tecnología</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="riesgos" value="Coste"><span class="q-option__box"></span><span class="q-option__label">Coste de las herramientas y el mantenimiento</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 11 · Abierta</p>
+            <p class="q-block__text">¿Qué proceso técnico del CLM crees que podría automatizarse con IA con más impacto y menos riesgo?</p>
+            <textarea class="q-open" name="proceso_automatizable" placeholder="Escribe libremente con detalle técnico si lo consideras útil…" rows="4"></textarea>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" id="btn3Prev">← Anterior</button><span class="q-nav__info">Bloque 3 de 4</span><button type="button" class="btn btn--primary" id="btn3Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 4: VISIÓN ESTRATÉGICA ══ -->
+        <div class="q-section" id="section-4">
+          <div class="q-section__header">
+            <div class="q-section__letter" style="background:#6C3483">4</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Visión estratégica e implicación</p>
+              <p class="q-section__desc">Cómo debería abordarse la implantación de IA en el CLM</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 12 · 1 = Totalmente en desacuerdo · 5 = Totalmente de acuerdo</p>
+            <div class="q-likert"><table>
+              <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><td>P12a. El CLM tiene la infraestructura técnica necesaria para implantar agentes de IA hoy.</td>
+                  <td><input type="radio" name="est1" value="1" id="est1-1"><label for="est1-1">1</label></td><td><input type="radio" name="est1" value="2" id="est1-2"><label for="est1-2">2</label></td><td><input type="radio" name="est1" value="3" id="est1-3"><label for="est1-3">3</label></td><td><input type="radio" name="est1" value="4" id="est1-4"><label for="est1-4">4</label></td><td><input type="radio" name="est1" value="5" id="est1-5"><label for="est1-5">5</label></td></tr>
+                <tr><td>P12b. La implantación de IA debería hacerse de forma progresiva, piloto a piloto.</td>
+                  <td><input type="radio" name="est2" value="1" id="est2-1"><label for="est2-1">1</label></td><td><input type="radio" name="est2" value="2" id="est2-2"><label for="est2-2">2</label></td><td><input type="radio" name="est2" value="3" id="est2-3"><label for="est2-3">3</label></td><td><input type="radio" name="est2" value="4" id="est2-4"><label for="est2-4">4</label></td><td><input type="radio" name="est2" value="5" id="est2-5"><label for="est2-5">5</label></td></tr>
+                <tr><td>P12c. El CLM necesita una política institucional clara sobre el uso de IA antes de implantarla.</td>
+                  <td><input type="radio" name="est3" value="1" id="est3-1"><label for="est3-1">1</label></td><td><input type="radio" name="est3" value="2" id="est3-2"><label for="est3-2">2</label></td><td><input type="radio" name="est3" value="3" id="est3-3"><label for="est3-3">3</label></td><td><input type="radio" name="est3" value="4" id="est3-4"><label for="est3-4">4</label></td><td><input type="radio" name="est3" value="5" id="est3-5"><label for="est3-5">5</label></td></tr>
+                <tr><td>P12d. Estaría dispuesto/a a liderar o participar activamente en la implantación técnica de IA en el CLM.</td>
+                  <td><input type="radio" name="est4" value="1" id="est4-1"><label for="est4-1">1</label></td><td><input type="radio" name="est4" value="2" id="est4-2"><label for="est4-2">2</label></td><td><input type="radio" name="est4" value="3" id="est4-3"><label for="est4-3">3</label></td><td><input type="radio" name="est4" value="4" id="est4-4"><label for="est4-4">4</label></td><td><input type="radio" name="est4" value="5" id="est4-5"><label for="est4-5">5</label></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 13</p>
+            <p class="q-block__text">¿Por dónde empezarías tú la implantación de IA en el CLM si tuvieras que decidirlo?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="por_donde_empezar" value="Agente atención estudiante"><span class="q-option__box"></span><span class="q-option__label">Agente de atención al estudiante (WhatsApp / teléfono / email).</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar" value="Formación docente"><span class="q-option__box"></span><span class="q-option__label">Formación de la plantilla para uso autónomo de IA.</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar" value="Automatización administrativa"><span class="q-option__box"></span><span class="q-option__label">Automatización de procesos administrativos internos.</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar" value="Política institucional"><span class="q-option__box"></span><span class="q-option__label">Primero definir una política institucional y luego implantar.</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar" value="Piloto técnico"><span class="q-option__box"></span><span class="q-option__label">Un piloto técnico pequeño para validar antes de escalar.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 14 · Abierta</p>
+            <p class="q-block__text">¿Qué necesitaría el CLM para que la implantación de IA sea sostenible técnicamente a largo plazo?</p>
+            <textarea class="q-open" name="sostenibilidad_tecnica" placeholder="Escribe con la perspectiva técnica que te da tu experiencia…" rows="4"></textarea>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 15 · Abierta</p>
+            <p class="q-block__text">¿Hay algo más que quieras añadir desde tu perspectiva técnica?</p>
+            <textarea class="q-open" name="observaciones" placeholder="Escribe libremente…" rows="3"></textarea>
+          </div>
+
+          <div class="q-nav">
+            <button type="button" class="btn btn--outline" id="btn4Prev">← Anterior</button>
+            <span class="q-nav__info">Bloque 4 de 4</span>
+            <button type="submit" class="btn btn--primary" id="btnSubmit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Enviar diagnóstico
+            </button>
+          </div>
+        </div>
+
+      </form>
+      </div>
+      <div id="thankYou" style="display:none"><div id="resultados"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+(function() {
+  const TOTAL = 4;
+  function showSection(n) {
+    document.querySelectorAll('.q-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + n).classList.add('active');
+    document.querySelectorAll('.q-section-tab').forEach((t, i) => {
+      t.classList.remove('active', 'done');
+      if (i + 1 === n) t.classList.add('active');
+      if (i + 1 < n) t.classList.add('done');
+    });
+    const pct = Math.round(((n - 1) / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.getElementById('btn1Next').addEventListener('click', () => showSection(2));
+  document.getElementById('btn2Prev').addEventListener('click', () => showSection(1));
+  document.getElementById('btn2Next').addEventListener('click', () => showSection(3));
+  document.getElementById('btn3Prev').addEventListener('click', () => showSection(2));
+  document.getElementById('btn3Next').addEventListener('click', () => showSection(4));
+  document.getElementById('btn4Prev').addEventListener('click', () => showSection(3));
+  const form = document.getElementById('auditoriaForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } });
+      if (res.ok) {
+        document.getElementById('formWrapper').style.display = 'none';
+        document.querySelector('.q-progress').style.display = 'none';
+        document.querySelector('.q-sections').style.display = 'none';
+        document.getElementById('thankYou').style.display = 'block';
+        document.getElementById('resultados').innerHTML = `<div style="text-align:center;padding:3rem 2rem;"><div style="font-size:3rem;margin-bottom:1rem">✓</div><h2 style="font-family:var(--font-display);font-size:1.6rem;color:var(--blue);margin-bottom:.75rem">¡Gracias por tu participación!</h2><p style="color:var(--ink-soft);max-width:480px;margin:0 auto;line-height:1.7">Tus respuestas son confidenciales. Los resultados se presentarán de forma agregada en el informe de diagnóstico institucional del CLM.</p></div>`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else { throw new Error(); }
+    } catch {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar diagnóstico';
+      alert('Ha habido un problema al enviar. Por favor, inténtalo de nuevo.');
+    }
+  });
+})();
+</script>
+</body>
+</html>
