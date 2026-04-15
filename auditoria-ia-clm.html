@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoría IA · CLM · Universidad de Granada</title>
+  <meta name="description" content="Cuestionario de diagnóstico para la implantación de IA en el Centro de Lenguas Modernas.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="landing-hero">
+  <div class="landing-top">
+    <a href="index.html" class="landing-logo" style="text-decoration:none">La Clase<span>Digital</span></a>
+    <nav class="landing-nav">
+      <a href="index.html">← Inicio</a>
+    </nav>
+  </div>
+
+  <div class="landing-body">
+    <div class="landing-pitch reveal">
+      <div class="landing-pitch__left">
+        <p class="landing-pitch__eyebrow">Centro de Lenguas Modernas · UGR</p>
+        <h1 class="landing-pitch__title">Auditoría <em>IA</em><br>Institucional</h1>
+      </div>
+      <div>
+        <p class="landing-pitch__text">
+          Diagnóstico de necesidades de implantación de inteligencia artificial en el CLM. Confidencial, anónimo y adaptado a tu área de trabajo. Tu participación es fundamental para diseñar un plan de formación ajustado a la realidad de nuestra institución.
+        </p>
+        <div class="landing-pitch__links">
+          <a href="index.html" class="landing-pitch__link">← Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="landing-form-wrap reveal">
+      <div class="cuestionario-intro" style="border-radius:0;margin:0;">
+        <div>
+          <h2 class="cuestionario-intro__title">Diagnóstico IA · CLM</h2>
+          <p class="cuestionario-intro__text">Anónimo · Confidencial · 20-25 min · Todos los perfiles</p>
+        </div>
+        <div class="cuestionario-intro__meta">
+          <span class="cuest-badge">📋 6 bloques</span>
+          <span class="cuest-badge">🏛️ CLM · UGR</span>
+        </div>
+      </div>
+
+      <div class="q-progress" style="margin:1.5rem 1rem 0;border-radius:12px;">
+        <span class="q-progress__label">Progreso</span>
+        <div class="q-progress__bar"><div class="q-progress__fill" id="progressFill"></div></div>
+        <span class="q-progress__pct" id="progressPct">0%</span>
+      </div>
+
+      <div class="q-sections" style="padding:0 1rem;margin-top:1rem;margin-bottom:0;">
+        <button class="q-section-tab active" id="tab-1"><span class="q-section-tab__dot"></span>1 · Perfil</button>
+        <button class="q-section-tab" id="tab-2"><span class="q-section-tab__dot"></span>2 · Competencia digital</button>
+        <button class="q-section-tab" id="tab-3"><span class="q-section-tab__dot"></span>3 · Conocimiento IA</button>
+        <button class="q-section-tab" id="tab-4"><span class="q-section-tab__dot"></span>4 · Uso actual</button>
+        <button class="q-section-tab" id="tab-5"><span class="q-section-tab__dot"></span>5 · Necesidades</button>
+        <button class="q-section-tab" id="tab-6"><span class="q-section-tab__dot"></span>6 · Tu área</button>
+        <button class="q-section-tab" id="tab-7"><span class="q-section-tab__dot"></span>7 · Actitudes</button>
+      </div>
+
+      <div id="formWrapper" style="padding:1.25rem;">
+      <form id="auditoriaForm" action="https://formspree.io/f/mjgalypd" method="POST" novalidate>
+        <input type="hidden" name="_subject" value="Auditoría IA · CLM · UGR">
+        <input type="hidden" name="_tipo" value="auditoria-ia-clm">
+        <input type="hidden" name="modulo_perfil" id="modulo_perfil_hidden" value="">
+
+        <!-- ══ BLOQUE 1: PERFIL ══ -->
+        <div class="q-section active" id="section-1">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--A">1</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu perfil en el CLM</p>
+              <p class="q-section__desc">Esta información adapta el cuestionario a tu área de trabajo</p>
+            </div>
+          </div>
+
+          <div class="q-block" style="border:2px solid var(--clm-red);background:var(--clm-red-light)">
+            <p class="q-block__num" style="color:var(--clm-red)">Pregunta 1 · Obligatoria</p>
+            <p class="q-block__text" style="font-weight:600">¿En qué área trabajas en el CLM?</p>
+            <p class="q-block__note">Tu respuesta determina las preguntas específicas de tu área.</p>
+            <div class="area-grid" style="margin-top:.75rem">
+              <label class="area-option"><input type="radio" name="area_trabajo" value="docente-ele" required>
+                <span class="area-option__icon">🇪🇸</span>
+                <span class="area-option__info"><span class="area-option__label">Profesorado de ELE</span><span class="area-option__desc">Español como lengua extranjera</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="docente-lm">
+                <span class="area-option__icon">🌍</span>
+                <span class="area-option__info"><span class="area-option__label">Profesorado de Lenguas Modernas</span><span class="area-option__desc">Inglés, francés, alemán, italiano y otras</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="administracion">
+                <span class="area-option__icon">📋</span>
+                <span class="area-option__info"><span class="area-option__label">Administración y Gestión</span><span class="area-option__desc">Matrículas, Study Abroad, contabilidad, eventos, actividades culturales</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="marketing">
+                <span class="area-option__icon">📣</span>
+                <span class="area-option__info"><span class="area-option__label">Marketing y Comunicación</span><span class="area-option__desc">Comunicación externa, redes sociales, promoción</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="conserjeria">
+                <span class="area-option__icon">🔑</span>
+                <span class="area-option__info"><span class="area-option__label">Conserjería y Servicios</span><span class="area-option__desc">Atención presencial, mantenimiento, servicios generales</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="diseno">
+                <span class="area-option__icon">🎨</span>
+                <span class="area-option__info"><span class="area-option__label">Diseño, Web y Audiovisual</span><span class="area-option__desc">Diseño gráfico, producción web y audiovisual</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="informatica">
+                <span class="area-option__icon">💻</span>
+                <span class="area-option__info"><span class="area-option__label">Informática y Sistemas</span><span class="area-option__desc">Sistemas, infraestructura, soporte técnico</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="programacion">
+                <span class="area-option__icon">⌨️</span>
+                <span class="area-option__info"><span class="area-option__label">Programación y Desarrollo</span><span class="area-option__desc">Desarrollo de software y plataformas digitales</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="biblioteca">
+                <span class="area-option__icon">📚</span>
+                <span class="area-option__info"><span class="area-option__label">Biblioteca</span><span class="area-option__desc">Gestión de fondos y servicios bibliotecarios</span></span>
+              </label>
+              <label class="area-option"><input type="radio" name="area_trabajo" value="direccion">
+                <span class="area-option__icon">🎯</span>
+                <span class="area-option__info"><span class="area-option__label">Dirección y Subdirecciones</span><span class="area-option__desc">Dirección, gerencia y gestión estratégica</span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 2</p>
+            <p class="q-block__text">¿Cuántos años llevas trabajando en el CLM?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="anos_clm" value="Menos de 2 años"><span class="q-option__box"></span><span class="q-option__label">Menos de 2 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_clm" value="Entre 2 y 5 años"><span class="q-option__box"></span><span class="q-option__label">Entre 2 y 5 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_clm" value="Entre 6 y 15 años"><span class="q-option__box"></span><span class="q-option__label">Entre 6 y 15 años</span></label>
+              <label class="q-option"><input type="radio" name="anos_clm" value="Más de 15 años"><span class="q-option__box"></span><span class="q-option__label">Más de 15 años</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 3</p>
+            <p class="q-block__text">¿Has recibido formación sobre tecnología o herramientas digitales en los últimos dos años?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="formacion_previa" value="Ninguna"><span class="q-option__box"></span><span class="q-option__label">No, ninguna</span></label>
+              <label class="q-option"><input type="radio" name="formacion_previa" value="Ofimática"><span class="q-option__box"></span><span class="q-option__label">Sí, sobre herramientas ofimáticas o de gestión</span></label>
+              <label class="q-option"><input type="radio" name="formacion_previa" value="Tecnología educativa"><span class="q-option__box"></span><span class="q-option__label">Sí, sobre tecnología educativa o plataformas digitales</span></label>
+              <label class="q-option"><input type="radio" name="formacion_previa" value="IA"><span class="q-option__box"></span><span class="q-option__label">Sí, sobre inteligencia artificial</span></label>
+              <label class="q-option"><input type="radio" name="formacion_previa" value="Programación"><span class="q-option__box"></span><span class="q-option__label">Sí, sobre programación, sistemas o ciberseguridad</span></label>
+            </div>
+          </div>
+
+          <div class="q-nav"><span class="q-nav__info">Bloque 1 de 7</span><button type="button" class="btn btn--primary" id="btn1Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 2: COMPETENCIA DIGITAL ══ -->
+        <div class="q-section" id="section-2">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--B">2</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu competencia digital general</p>
+              <p class="q-section__desc">Valora con sinceridad · 1 = Nada · 3 = Algo · 5 = Mucho</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-likert"><table>
+              <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><td>P4. Manejo con soltura el correo electrónico y las aplicaciones básicas de oficina.</td>
+                  <td><input type="radio" name="cd1" value="1" id="cd1-1"><label for="cd1-1">1</label></td><td><input type="radio" name="cd1" value="2" id="cd1-2"><label for="cd1-2">2</label></td><td><input type="radio" name="cd1" value="3" id="cd1-3"><label for="cd1-3">3</label></td><td><input type="radio" name="cd1" value="4" id="cd1-4"><label for="cd1-4">4</label></td><td><input type="radio" name="cd1" value="5" id="cd1-5"><label for="cd1-5">5</label></td></tr>
+                <tr><td>P5. Uso herramientas colaborativas en la nube (Google Drive, OneDrive, Teams, etc.).</td>
+                  <td><input type="radio" name="cd2" value="1" id="cd2-1"><label for="cd2-1">1</label></td><td><input type="radio" name="cd2" value="2" id="cd2-2"><label for="cd2-2">2</label></td><td><input type="radio" name="cd2" value="3" id="cd2-3"><label for="cd2-3">3</label></td><td><input type="radio" name="cd2" value="4" id="cd2-4"><label for="cd2-4">4</label></td><td><input type="radio" name="cd2" value="5" id="cd2-5"><label for="cd2-5">5</label></td></tr>
+                <tr><td>P6. Busco información en internet de forma eficiente y evalúo la fiabilidad de las fuentes.</td>
+                  <td><input type="radio" name="cd3" value="1" id="cd3-1"><label for="cd3-1">1</label></td><td><input type="radio" name="cd3" value="2" id="cd3-2"><label for="cd3-2">2</label></td><td><input type="radio" name="cd3" value="3" id="cd3-3"><label for="cd3-3">3</label></td><td><input type="radio" name="cd3" value="4" id="cd3-4"><label for="cd3-4">4</label></td><td><input type="radio" name="cd3" value="5" id="cd3-5"><label for="cd3-5">5</label></td></tr>
+                <tr><td>P7. Participo en videoconferencias y reuniones virtuales sin dificultad técnica.</td>
+                  <td><input type="radio" name="cd4" value="1" id="cd4-1"><label for="cd4-1">1</label></td><td><input type="radio" name="cd4" value="2" id="cd4-2"><label for="cd4-2">2</label></td><td><input type="radio" name="cd4" value="3" id="cd4-3"><label for="cd4-3">3</label></td><td><input type="radio" name="cd4" value="4" id="cd4-4"><label for="cd4-4">4</label></td><td><input type="radio" name="cd4" value="5" id="cd4-5"><label for="cd4-5">5</label></td></tr>
+                <tr><td>P8. Me adapto con facilidad cuando aparecen nuevas aplicaciones o herramientas en el trabajo.</td>
+                  <td><input type="radio" name="cd5" value="1" id="cd5-1"><label for="cd5-1">1</label></td><td><input type="radio" name="cd5" value="2" id="cd5-2"><label for="cd5-2">2</label></td><td><input type="radio" name="cd5" value="3" id="cd5-3"><label for="cd5-3">3</label></td><td><input type="radio" name="cd5" value="4" id="cd5-4"><label for="cd5-4">4</label></td><td><input type="radio" name="cd5" value="5" id="cd5-5"><label for="cd5-5">5</label></td></tr>
+                <tr><td>P9. Mantengo buenas prácticas de seguridad digital (contraseñas seguras, no compartir datos sensibles).</td>
+                  <td><input type="radio" name="cd6" value="1" id="cd6-1"><label for="cd6-1">1</label></td><td><input type="radio" name="cd6" value="2" id="cd6-2"><label for="cd6-2">2</label></td><td><input type="radio" name="cd6" value="3" id="cd6-3"><label for="cd6-3">3</label></td><td><input type="radio" name="cd6" value="4" id="cd6-4"><label for="cd6-4">4</label></td><td><input type="radio" name="cd6" value="5" id="cd6-5"><label for="cd6-5">5</label></td></tr>
+                <tr><td>P10. Me mantengo al día sobre tendencias tecnológicas que pueden afectar a mi trabajo.</td>
+                  <td><input type="radio" name="cd7" value="1" id="cd7-1"><label for="cd7-1">1</label></td><td><input type="radio" name="cd7" value="2" id="cd7-2"><label for="cd7-2">2</label></td><td><input type="radio" name="cd7" value="3" id="cd7-3"><label for="cd7-3">3</label></td><td><input type="radio" name="cd7" value="4" id="cd7-4"><label for="cd7-4">4</label></td><td><input type="radio" name="cd7" value="5" id="cd7-5"><label for="cd7-5">5</label></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 11</p>
+            <p class="q-block__text">¿Cuál describe mejor tu relación general con la tecnología?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="actitud_tec" value="Evito usarla"><span class="q-option__box"></span><span class="q-option__label">Prefiero evitarla cuando puedo: me genera inseguridad o no la veo necesaria.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_tec" value="Solo si no hay otra opción"><span class="q-option__box"></span><span class="q-option__label">La uso cuando no tengo otra opción, pero no la busco activamente.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_tec" value="Tareas concretas"><span class="q-option__box"></span><span class="q-option__label">La uso para tareas concretas que ya domino, sin explorar más.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_tec" value="La integro habitualmente"><span class="q-option__box"></span><span class="q-option__label">La integro de forma habitual y busco nuevas herramientas útiles.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_tec" value="Soy referente"><span class="q-option__box"></span><span class="q-option__label">Soy un referente en mi entorno: mis compañeros/as me preguntan a mí.</span></label>
+            </div>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" id="btn2Prev">← Anterior</button><span class="q-nav__info">Bloque 2 de 7</span><button type="button" class="btn btn--primary" id="btn2Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 3: CONOCIMIENTO IA ══ -->
+        <div class="q-section" id="section-3">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--C">3</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu conocimiento sobre Inteligencia Artificial</p>
+              <p class="q-section__desc">Preguntas con respuesta correcta · Miden tu conocimiento real</p>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1rem;padding:.6rem 1rem;background:var(--blue);border-radius:var(--r-sm);">
+            <p style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.08em">Estas preguntas tienen respuesta correcta — miden tu conocimiento real, no tu opinión</p>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 12</p>
+            <p class="q-block__text">¿Cuál de estas frases describe mejor qué es la Inteligencia Artificial?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="pk1" value="a"><span class="q-option__box"></span><span class="q-option__label">Un robot físico capaz de moverse y hablar de forma autónoma.</span></label>
+              <label class="q-option"><input type="radio" name="pk1" value="b"><span class="q-option__box"></span><span class="q-option__label">Un motor de búsqueda muy avanzado que encuentra información en internet.</span></label>
+              <label class="q-option"><input type="radio" name="pk1" value="c"><span class="q-option__box"></span><span class="q-option__label">Un conjunto de tecnologías que permiten a las máquinas aprender de datos y realizar tareas que normalmente requieren inteligencia humana.</span></label>
+              <label class="q-option"><input type="radio" name="pk1" value="d"><span class="q-option__box"></span><span class="q-option__label">Un programa de traducción automática muy sofisticado.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 13</p>
+            <p class="q-block__text">¿Qué es un «prompt» en el contexto de la IA?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="pk2" value="a"><span class="q-option__box"></span><span class="q-option__label">El nombre de un modelo de inteligencia artificial.</span></label>
+              <label class="q-option"><input type="radio" name="pk2" value="b"><span class="q-option__box"></span><span class="q-option__label">La instrucción o texto que escribimos para comunicarnos con una IA y obtener una respuesta.</span></label>
+              <label class="q-option"><input type="radio" name="pk2" value="c"><span class="q-option__box"></span><span class="q-option__label">Un error que cometen las IAs al generar respuestas incorrectas.</span></label>
+              <label class="q-option"><input type="radio" name="pk2" value="d"><span class="q-option__box"></span><span class="q-option__label">El proceso de entrenamiento de un modelo de IA.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 14</p>
+            <p class="q-block__text">¿Cuáles de estas herramientas son ejemplos de IA generativa? (Marca todas las correctas)</p>
+            <p class="q-block__note">Puedes marcar más de una opción.</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="pk3" value="ChatGPT"><span class="q-option__box"></span><span class="q-option__label">ChatGPT</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="pk3" value="Google Translate"><span class="q-option__box"></span><span class="q-option__label">Google Translate</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="pk3" value="Claude"><span class="q-option__box"></span><span class="q-option__label">Claude (Anthropic)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="pk3" value="Midjourney"><span class="q-option__box"></span><span class="q-option__label">Midjourney (imágenes)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="pk3" value="Gemini"><span class="q-option__box"></span><span class="q-option__label">Gemini (Google)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="pk3" value="ElevenLabs"><span class="q-option__box"></span><span class="q-option__label">ElevenLabs (audio)</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="pk3" value="No lo sé"><span class="q-option__box"></span><span class="q-option__label">No lo sé con certeza</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 15</p>
+            <p class="q-block__text">¿Qué significa que una IA «alucina»?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="pk4" value="a"><span class="q-option__box"></span><span class="q-option__label">Que genera respuestas muy creativas e inesperadas.</span></label>
+              <label class="q-option"><input type="radio" name="pk4" value="b"><span class="q-option__box"></span><span class="q-option__label">Que genera información falsa o inventada presentándola como si fuera cierta.</span></label>
+              <label class="q-option"><input type="radio" name="pk4" value="c"><span class="q-option__box"></span><span class="q-option__label">Que aprende de nuevos datos en tiempo real.</span></label>
+              <label class="q-option"><input type="radio" name="pk4" value="d"><span class="q-option__box"></span><span class="q-option__label">Que tiene errores de programación en su código fuente.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 16</p>
+            <p class="q-block__text">¿Qué información NUNCA deberías introducir en una herramienta de IA gratuita?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="pk5" value="a"><span class="q-option__box"></span><span class="q-option__label">Datos personales de estudiantes o trabajadores del CLM, contraseñas o información económica confidencial.</span></label>
+              <label class="q-option"><input type="radio" name="pk5" value="b"><span class="q-option__box"></span><span class="q-option__label">Preguntas sobre historia o cultura española.</span></label>
+              <label class="q-option"><input type="radio" name="pk5" value="c"><span class="q-option__box"></span><span class="q-option__label">Textos en idiomas distintos al español.</span></label>
+              <label class="q-option"><input type="radio" name="pk5" value="d"><span class="q-option__box"></span><span class="q-option__label">Nada: las herramientas de IA son completamente seguras y privadas.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 17 · Abierta</p>
+            <p class="q-block__text">¿Qué aspecto de la IA te genera más dudas o te resulta más difícil de entender?</p>
+            <textarea class="q-open" name="dudas_ia" placeholder="Escribe libremente…" rows="3"></textarea>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" id="btn3Prev">← Anterior</button><span class="q-nav__info">Bloque 3 de 7</span><button type="button" class="btn btn--primary" id="btn3Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 4: USO ACTUAL ══ -->
+        <div class="q-section" id="section-4">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--D">4</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tu uso actual de la IA</p>
+              <p class="q-section__desc">Qué estás usando ya, con o sin supervisión institucional</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 18</p>
+            <p class="q-block__text">¿Con qué frecuencia usas herramientas de IA en tu trabajo o vida personal?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="freq_ia" value="Nunca"><span class="q-option__box"></span><span class="q-option__label">Nunca las he usado.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="1-2 veces"><span class="q-option__box"></span><span class="q-option__label">Las he probado una o dos veces por curiosidad.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="Ocasionalmente"><span class="q-option__box"></span><span class="q-option__label">Las uso ocasionalmente cuando surge una necesidad concreta.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="Varias veces semana"><span class="q-option__box"></span><span class="q-option__label">Las uso varias veces a la semana.</span></label>
+              <label class="q-option"><input type="radio" name="freq_ia" value="A diario"><span class="q-option__box"></span><span class="q-option__label">Las uso a diario, ya es parte de mi rutina.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 19</p>
+            <p class="q-block__text">¿Para qué tareas has usado la IA? (Marca todas las que apliquen)</p>
+            <p class="q-block__note">Puedes marcar más de una opción.</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Redactar textos"><span class="q-option__box"></span><span class="q-option__label">Redactar o mejorar textos y correos</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Traducir"><span class="q-option__box"></span><span class="q-option__label">Traducir documentos o mensajes</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Buscar información"><span class="q-option__box"></span><span class="q-option__label">Buscar información o resolver dudas</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Resumir documentos"><span class="q-option__box"></span><span class="q-option__label">Resumir documentos o reuniones</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Crear imágenes"><span class="q-option__box"></span><span class="q-option__label">Crear o editar imágenes</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Materiales docentes"><span class="q-option__box"></span><span class="q-option__label">Crear materiales o actividades docentes</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Programar"><span class="q-option__box"></span><span class="q-option__label">Programar o automatizar tareas</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Audio o vídeo"><span class="q-option__box"></span><span class="q-option__label">Generar audio, voz o vídeo</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Analizar datos"><span class="q-option__box"></span><span class="q-option__label">Analizar datos o generar informes</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="uso_ia" value="Nunca"><span class="q-option__box"></span><span class="q-option__label">Todavía no la he usado para nada</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 20</p>
+            <p class="q-block__text">¿Qué herramientas de IA usas habitualmente? (Marca las que apliquen)</p>
+            <p class="q-block__note">Puedes marcar más de una opción.</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="ChatGPT"><span class="q-option__box"></span><span class="q-option__label">ChatGPT</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Claude"><span class="q-option__box"></span><span class="q-option__label">Claude</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Gemini"><span class="q-option__box"></span><span class="q-option__label">Gemini</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Copilot"><span class="q-option__box"></span><span class="q-option__label">Microsoft Copilot</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Midjourney"><span class="q-option__box"></span><span class="q-option__label">Midjourney / DALL-E</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Canva IA"><span class="q-option__box"></span><span class="q-option__label">Canva con IA</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="DeepL"><span class="q-option__box"></span><span class="q-option__label">DeepL</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="herramientas_ia" value="Ninguna"><span class="q-option__box"></span><span class="q-option__label">Ninguna</span></label>
+            </div>
+            <textarea class="q-open" name="herramientas_otras" placeholder="¿Usas alguna otra herramienta no listada aquí?" rows="2" style="margin-top:.75rem"></textarea>
+          </div>
+
+          <div class="q-block" style="border:2px solid #D9534F;background:#FDF2F2">
+            <p class="q-block__num" style="color:#D9534F">Pregunta 21 · Importante</p>
+            <p class="q-block__text" style="font-weight:600">¿Has introducido alguna vez datos del CLM, de estudiantes o de compañeros/as en una herramienta de IA?</p>
+            <p class="q-block__note">Esta pregunta es anónima. Su objetivo es detectar posibles riesgos de privacidad institucional, no identificar a nadie.</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="datos_clm" value="No"><span class="q-option__box"></span><span class="q-option__label">No, nunca.</span></label>
+              <label class="q-option"><input type="radio" name="datos_clm" value="Sí, sin darme cuenta"><span class="q-option__box"></span><span class="q-option__label">Posiblemente sí, sin ser del todo consciente de ello.</span></label>
+              <label class="q-option"><input type="radio" name="datos_clm" value="Sí, conscientemente"><span class="q-option__box"></span><span class="q-option__label">Sí, de forma consciente para agilizar mi trabajo.</span></label>
+              <label class="q-option"><input type="radio" name="datos_clm" value="No lo sé"><span class="q-option__box"></span><span class="q-option__label">No sé qué se considera «datos del CLM» exactamente.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 22</p>
+            <p class="q-block__text">¿Sabes si el CLM tiene alguna política o criterio institucional sobre el uso de IA?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="politica_clm" value="Sí"><span class="q-option__box"></span><span class="q-option__label">Sí, conozco las directrices.</span></label>
+              <label class="q-option"><input type="radio" name="politica_clm" value="No"><span class="q-option__box"></span><span class="q-option__label">No, no tengo información al respecto.</span></label>
+              <label class="q-option"><input type="radio" name="politica_clm" value="No lo sé"><span class="q-option__box"></span><span class="q-option__label">No lo sé.</span></label>
+            </div>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" id="btn4Prev">← Anterior</button><span class="q-nav__info">Bloque 4 de 7</span><button type="button" class="btn btn--primary" id="btn4Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 5: NECESIDADES ══ -->
+        <div class="q-section" id="section-5">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--D">5</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tus necesidades y expectativas</p>
+              <p class="q-section__desc">Dónde puede ayudarte más la IA en tu trabajo diario</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 23</p>
+            <p class="q-block__text">¿Cuál sería la tarea de tu trabajo diario en el CLM donde la IA podría ahorrarte más tiempo o esfuerzo?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="tarea_util" value="Redactar comunicaciones"><span class="q-option__box"></span><span class="q-option__label">Redactar comunicaciones, correos o documentos.</span></label>
+              <label class="q-option"><input type="radio" name="tarea_util" value="Traducir contenidos"><span class="q-option__box"></span><span class="q-option__label">Traducir contenidos a otros idiomas.</span></label>
+              <label class="q-option"><input type="radio" name="tarea_util" value="Crear materiales"><span class="q-option__box"></span><span class="q-option__label">Crear materiales, recursos o contenidos visuales.</span></label>
+              <label class="q-option"><input type="radio" name="tarea_util" value="Analizar datos"><span class="q-option__box"></span><span class="q-option__label">Analizar datos, generar informes o memorias.</span></label>
+              <label class="q-option"><input type="radio" name="tarea_util" value="Atender consultas"><span class="q-option__box"></span><span class="q-option__label">Responder consultas frecuentes del alumnado o compañeros/as.</span></label>
+              <label class="q-option"><input type="radio" name="tarea_util" value="Automatizar procesos"><span class="q-option__box"></span><span class="q-option__label">Automatizar procesos técnicos o de gestión.</span></label>
+              <label class="q-option"><input type="radio" name="tarea_util" value="Organizar actividades"><span class="q-option__box"></span><span class="q-option__label">Organizar y promocionar actividades culturales y visitas.</span></label>
+              <label class="q-option"><input type="radio" name="tarea_util" value="No lo veo útil"><span class="q-option__box"></span><span class="q-option__label">No veo cómo la IA podría ayudarme en mi trabajo.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 24 · Abierta</p>
+            <p class="q-block__text">¿Qué tareas de tu trabajo crees que NO debería hacer nunca una IA?</p>
+            <textarea class="q-open" name="tareas_no_ia" placeholder="Escribe libremente…" rows="3"></textarea>
+          </div>
+
+          <div class="q-block">
+            <div class="q-likert"><table>
+              <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><td>P25. La IA podría mejorar la calidad o la eficiencia de mi trabajo en el CLM.</td>
+                  <td><input type="radio" name="nec1" value="1" id="nec1-1"><label for="nec1-1">1</label></td><td><input type="radio" name="nec1" value="2" id="nec1-2"><label for="nec1-2">2</label></td><td><input type="radio" name="nec1" value="3" id="nec1-3"><label for="nec1-3">3</label></td><td><input type="radio" name="nec1" value="4" id="nec1-4"><label for="nec1-4">4</label></td><td><input type="radio" name="nec1" value="5" id="nec1-5"><label for="nec1-5">5</label></td></tr>
+                <tr><td>P26. Me siento preparado/a para usar IA en mi trabajo de forma autónoma.</td>
+                  <td><input type="radio" name="nec2" value="1" id="nec2-1"><label for="nec2-1">1</label></td><td><input type="radio" name="nec2" value="2" id="nec2-2"><label for="nec2-2">2</label></td><td><input type="radio" name="nec2" value="3" id="nec2-3"><label for="nec2-3">3</label></td><td><input type="radio" name="nec2" value="4" id="nec2-4"><label for="nec2-4">4</label></td><td><input type="radio" name="nec2" value="5" id="nec2-5"><label for="nec2-5">5</label></td></tr>
+                <tr><td>P27. Estaría dispuesto/a a dedicar tiempo a formarme en IA si el CLM lo ofreciera.</td>
+                  <td><input type="radio" name="nec3" value="1" id="nec3-1"><label for="nec3-1">1</label></td><td><input type="radio" name="nec3" value="2" id="nec3-2"><label for="nec3-2">2</label></td><td><input type="radio" name="nec3" value="3" id="nec3-3"><label for="nec3-3">3</label></td><td><input type="radio" name="nec3" value="4" id="nec3-4"><label for="nec3-4">4</label></td><td><input type="radio" name="nec3" value="5" id="nec3-5"><label for="nec3-5">5</label></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 28</p>
+            <p class="q-block__text">¿Qué modalidad de formación preferirías?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="modalidad_form" value="Presencial"><span class="q-option__box"></span><span class="q-option__label">Sesiones presenciales en el CLM.</span></label>
+              <label class="q-option"><input type="radio" name="modalidad_form" value="Online en directo"><span class="q-option__box"></span><span class="q-option__label">Sesiones online en directo (videoconferencia).</span></label>
+              <label class="q-option"><input type="radio" name="modalidad_form" value="Online autónoma"><span class="q-option__box"></span><span class="q-option__label">Formación online a mi ritmo (plataforma / vídeos).</span></label>
+              <label class="q-option"><input type="radio" name="modalidad_form" value="Combinada"><span class="q-option__box"></span><span class="q-option__label">Combinación de presencial y online.</span></label>
+            </div>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" id="btn5Prev">← Anterior</button><span class="q-nav__info">Bloque 5 de 7</span><button type="button" class="btn btn--primary" id="btn5Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 6: MÓDULO ESPECÍFICO POR PERFIL ══ -->
+        <div class="q-section" id="section-6">
+          <div class="q-section__header">
+            <div class="q-section__letter" id="modulo-letra" style="background:var(--blue)">6</div>
+            <div class="q-section__info">
+              <p class="q-section__name" id="modulo-titulo">Preguntas específicas de tu área</p>
+              <p class="q-section__desc" id="modulo-desc">Adaptadas a tu perfil profesional en el CLM</p>
+            </div>
+          </div>
+
+          <!-- MÓDULO D: DOCENTES -->
+          <div id="mod-docente" class="modulo-bloque" style="display:none">
+            <div class="q-block">
+              <p class="q-block__num">Preguntas de tu área · Escala 1-5</p>
+              <div class="q-likert"><table>
+                <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                  <tr><td>MD-1. Uso IA para planificar clases o diseñar actividades.</td>
+                    <td><input type="radio" name="md1" value="1" id="md1-1"><label for="md1-1">1</label></td><td><input type="radio" name="md1" value="2" id="md1-2"><label for="md1-2">2</label></td><td><input type="radio" name="md1" value="3" id="md1-3"><label for="md1-3">3</label></td><td><input type="radio" name="md1" value="4" id="md1-4"><label for="md1-4">4</label></td><td><input type="radio" name="md1" value="5" id="md1-5"><label for="md1-5">5</label></td></tr>
+                  <tr><td>MD-2. Uso IA para crear materiales didácticos.</td>
+                    <td><input type="radio" name="md2" value="1" id="md2-1"><label for="md2-1">1</label></td><td><input type="radio" name="md2" value="2" id="md2-2"><label for="md2-2">2</label></td><td><input type="radio" name="md2" value="3" id="md2-3"><label for="md2-3">3</label></td><td><input type="radio" name="md2" value="4" id="md2-4"><label for="md2-4">4</label></td><td><input type="radio" name="md2" value="5" id="md2-5"><label for="md2-5">5</label></td></tr>
+                  <tr><td>MD-3. Uso IA para evaluar o dar feedback a estudiantes.</td>
+                    <td><input type="radio" name="md3" value="1" id="md3-1"><label for="md3-1">1</label></td><td><input type="radio" name="md3" value="2" id="md3-2"><label for="md3-2">2</label></td><td><input type="radio" name="md3" value="3" id="md3-3"><label for="md3-3">3</label></td><td><input type="radio" name="md3" value="4" id="md3-4"><label for="md3-4">4</label></td><td><input type="radio" name="md3" value="5" id="md3-5"><label for="md3-5">5</label></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MD-4</p>
+              <p class="q-block__text">¿Cómo gestionas los textos generados por IA que entregan tus estudiantes?</p>
+              <div class="q-options">
+                <label class="q-option"><input type="radio" name="md4" value="No ocurre"><span class="q-option__box"></span><span class="q-option__label">No me ha ocurrido todavía.</span></label>
+                <label class="q-option"><input type="radio" name="md4" value="Sin criterio"><span class="q-option__box"></span><span class="q-option__label">No tengo un criterio claro aún.</span></label>
+                <label class="q-option"><input type="radio" name="md4" value="Lo prohíbo"><span class="q-option__box"></span><span class="q-option__label">Lo prohíbo y lo comunico así a mis estudiantes.</span></label>
+                <label class="q-option"><input type="radio" name="md4" value="Lo permito con condiciones"><span class="q-option__box"></span><span class="q-option__label">Lo permito con condiciones y lo trabajo en clase.</span></label>
+                <label class="q-option"><input type="radio" name="md4" value="Lo integro en la metodología"><span class="q-option__box"></span><span class="q-option__label">Lo integro activamente en mi metodología.</span></label>
+              </div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MD-5 · Abierta</p>
+              <p class="q-block__text">¿Qué competencias relacionadas con IA crees que deberían tener tus estudiantes al terminar el curso?</p>
+              <textarea class="q-open" name="md5" placeholder="Escribe libremente…" rows="3"></textarea>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MD-6 · Necesidades de formación docente · 1 = Nada · 5 = Mucho</p>
+              <div class="q-likert"><table>
+                <thead><tr><th>Área</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                  <tr><td>Generación de materiales con IA</td>
+                    <td><input type="radio" name="mdf1" value="1" id="mdf1-1"><label for="mdf1-1">1</label></td><td><input type="radio" name="mdf1" value="2" id="mdf1-2"><label for="mdf1-2">2</label></td><td><input type="radio" name="mdf1" value="3" id="mdf1-3"><label for="mdf1-3">3</label></td><td><input type="radio" name="mdf1" value="4" id="mdf1-4"><label for="mdf1-4">4</label></td><td><input type="radio" name="mdf1" value="5" id="mdf1-5"><label for="mdf1-5">5</label></td></tr>
+                  <tr><td>Evaluación y feedback con IA</td>
+                    <td><input type="radio" name="mdf2" value="1" id="mdf2-1"><label for="mdf2-1">1</label></td><td><input type="radio" name="mdf2" value="2" id="mdf2-2"><label for="mdf2-2">2</label></td><td><input type="radio" name="mdf2" value="3" id="mdf2-3"><label for="mdf2-3">3</label></td><td><input type="radio" name="mdf2" value="4" id="mdf2-4"><label for="mdf2-4">4</label></td><td><input type="radio" name="mdf2" value="5" id="mdf2-5"><label for="mdf2-5">5</label></td></tr>
+                  <tr><td>Detección de textos generados por IA</td>
+                    <td><input type="radio" name="mdf3" value="1" id="mdf3-1"><label for="mdf3-1">1</label></td><td><input type="radio" name="mdf3" value="2" id="mdf3-2"><label for="mdf3-2">2</label></td><td><input type="radio" name="mdf3" value="3" id="mdf3-3"><label for="mdf3-3">3</label></td><td><input type="radio" name="mdf3" value="4" id="mdf3-4"><label for="mdf3-4">4</label></td><td><input type="radio" name="mdf3" value="5" id="mdf3-5"><label for="mdf3-5">5</label></td></tr>
+                  <tr><td>Ética del uso de IA en el aula</td>
+                    <td><input type="radio" name="mdf4" value="1" id="mdf4-1"><label for="mdf4-1">1</label></td><td><input type="radio" name="mdf4" value="2" id="mdf4-2"><label for="mdf4-2">2</label></td><td><input type="radio" name="mdf4" value="3" id="mdf4-3"><label for="mdf4-3">3</label></td><td><input type="radio" name="mdf4" value="4" id="mdf4-4"><label for="mdf4-4">4</label></td><td><input type="radio" name="mdf4" value="5" id="mdf4-5"><label for="mdf4-5">5</label></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+          </div>
+
+          <!-- MÓDULO A: ADMINISTRACIÓN Y SERVICIOS -->
+          <div id="mod-admin" class="modulo-bloque" style="display:none">
+            <div class="q-block">
+              <p class="q-block__num">Preguntas de tu área · Escala 1-5</p>
+              <div class="q-likert"><table>
+                <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                  <tr><td>MA-1. Uso IA para redactar o traducir comunicaciones.</td>
+                    <td><input type="radio" name="ma1" value="1" id="ma1-1"><label for="ma1-1">1</label></td><td><input type="radio" name="ma1" value="2" id="ma1-2"><label for="ma1-2">2</label></td><td><input type="radio" name="ma1" value="3" id="ma1-3"><label for="ma1-3">3</label></td><td><input type="radio" name="ma1" value="4" id="ma1-4"><label for="ma1-4">4</label></td><td><input type="radio" name="ma1" value="5" id="ma1-5"><label for="ma1-5">5</label></td></tr>
+                  <tr><td>MA-2. Uso IA para gestionar documentación o procesos administrativos.</td>
+                    <td><input type="radio" name="ma2" value="1" id="ma2-1"><label for="ma2-1">1</label></td><td><input type="radio" name="ma2" value="2" id="ma2-2"><label for="ma2-2">2</label></td><td><input type="radio" name="ma2" value="3" id="ma2-3"><label for="ma2-3">3</label></td><td><input type="radio" name="ma2" value="4" id="ma2-4"><label for="ma2-4">4</label></td><td><input type="radio" name="ma2" value="5" id="ma2-5"><label for="ma2-5">5</label></td></tr>
+                  <tr><td>MA-3. He usado IA para atender o responder consultas de estudiantes.</td>
+                    <td><input type="radio" name="ma3" value="1" id="ma3-1"><label for="ma3-1">1</label></td><td><input type="radio" name="ma3" value="2" id="ma3-2"><label for="ma3-2">2</label></td><td><input type="radio" name="ma3" value="3" id="ma3-3"><label for="ma3-3">3</label></td><td><input type="radio" name="ma3" value="4" id="ma3-4"><label for="ma3-4">4</label></td><td><input type="radio" name="ma3" value="5" id="ma3-5"><label for="ma3-5">5</label></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MA-4</p>
+              <p class="q-block__text">¿Qué proceso de tu trabajo en el CLM se beneficiaría más de la automatización con IA?</p>
+              <div class="q-options">
+                <label class="q-option"><input type="radio" name="ma4" value="Matrículas"><span class="q-option__box"></span><span class="q-option__label">Gestión de matrículas e inscripciones.</span></label>
+                <label class="q-option"><input type="radio" name="ma4" value="Atención estudiante"><span class="q-option__box"></span><span class="q-option__label">Atención y respuesta a estudiantes.</span></label>
+                <label class="q-option"><input type="radio" name="ma4" value="Comunicación externa"><span class="q-option__box"></span><span class="q-option__label">Comunicación externa e institucional.</span></label>
+                <label class="q-option"><input type="radio" name="ma4" value="Actividades culturales"><span class="q-option__box"></span><span class="q-option__label">Organización y promoción de actividades culturales y visitas.</span></label>
+                <label class="q-option"><input type="radio" name="ma4" value="Gestión documental"><span class="q-option__box"></span><span class="q-option__label">Gestión documental y archivo.</span></label>
+                <label class="q-option"><input type="radio" name="ma4" value="Otro"><span class="q-option__box"></span><span class="q-option__label">Otro proceso.</span></label>
+              </div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MA-5 · Necesidades de formación · 1 = Nada · 5 = Mucho</p>
+              <div class="q-likert"><table>
+                <thead><tr><th>Área</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                  <tr><td>Redacción asistida por IA</td>
+                    <td><input type="radio" name="maf1" value="1" id="maf1-1"><label for="maf1-1">1</label></td><td><input type="radio" name="maf1" value="2" id="maf1-2"><label for="maf1-2">2</label></td><td><input type="radio" name="maf1" value="3" id="maf1-3"><label for="maf1-3">3</label></td><td><input type="radio" name="maf1" value="4" id="maf1-4"><label for="maf1-4">4</label></td><td><input type="radio" name="maf1" value="5" id="maf1-5"><label for="maf1-5">5</label></td></tr>
+                  <tr><td>Traducción automática</td>
+                    <td><input type="radio" name="maf2" value="1" id="maf2-1"><label for="maf2-1">1</label></td><td><input type="radio" name="maf2" value="2" id="maf2-2"><label for="maf2-2">2</label></td><td><input type="radio" name="maf2" value="3" id="maf2-3"><label for="maf2-3">3</label></td><td><input type="radio" name="maf2" value="4" id="maf2-4"><label for="maf2-4">4</label></td><td><input type="radio" name="maf2" value="5" id="maf2-5"><label for="maf2-5">5</label></td></tr>
+                  <tr><td>Automatización de tareas administrativas</td>
+                    <td><input type="radio" name="maf3" value="1" id="maf3-1"><label for="maf3-1">1</label></td><td><input type="radio" name="maf3" value="2" id="maf3-2"><label for="maf3-2">2</label></td><td><input type="radio" name="maf3" value="3" id="maf3-3"><label for="maf3-3">3</label></td><td><input type="radio" name="maf3" value="4" id="maf3-4"><label for="maf3-4">4</label></td><td><input type="radio" name="maf3" value="5" id="maf3-5"><label for="maf3-5">5</label></td></tr>
+                  <tr><td>Comunicación y promoción de eventos y actividades culturales</td>
+                    <td><input type="radio" name="maf4" value="1" id="maf4-1"><label for="maf4-1">1</label></td><td><input type="radio" name="maf4" value="2" id="maf4-2"><label for="maf4-2">2</label></td><td><input type="radio" name="maf4" value="3" id="maf4-3"><label for="maf4-3">3</label></td><td><input type="radio" name="maf4" value="4" id="maf4-4"><label for="maf4-4">4</label></td><td><input type="radio" name="maf4" value="5" id="maf4-5"><label for="maf4-5">5</label></td></tr>
+                  <tr><td>Atención al estudiante con IA</td>
+                    <td><input type="radio" name="maf5" value="1" id="maf5-1"><label for="maf5-1">1</label></td><td><input type="radio" name="maf5" value="2" id="maf5-2"><label for="maf5-2">2</label></td><td><input type="radio" name="maf5" value="3" id="maf5-3"><label for="maf5-3">3</label></td><td><input type="radio" name="maf5" value="4" id="maf5-4"><label for="maf5-4">4</label></td><td><input type="radio" name="maf5" value="5" id="maf5-5"><label for="maf5-5">5</label></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+          </div>
+
+          <!-- MÓDULO T: TÉCNICOS -->
+          <div id="mod-tecnico" class="modulo-bloque" style="display:none">
+            <div class="q-block">
+              <p class="q-block__num">Preguntas de tu área · Escala 1-5</p>
+              <div class="q-likert"><table>
+                <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+                <tbody>
+                  <tr><td>MT-1. Uso IA en mi flujo de trabajo habitual.</td>
+                    <td><input type="radio" name="mt1" value="1" id="mt1-1"><label for="mt1-1">1</label></td><td><input type="radio" name="mt1" value="2" id="mt1-2"><label for="mt1-2">2</label></td><td><input type="radio" name="mt1" value="3" id="mt1-3"><label for="mt1-3">3</label></td><td><input type="radio" name="mt1" value="4" id="mt1-4"><label for="mt1-4">4</label></td><td><input type="radio" name="mt1" value="5" id="mt1-5"><label for="mt1-5">5</label></td></tr>
+                  <tr><td>MT-2. Uso IA para escribir, depurar o documentar código / crear contenidos visuales.</td>
+                    <td><input type="radio" name="mt2" value="1" id="mt2-1"><label for="mt2-1">1</label></td><td><input type="radio" name="mt2" value="2" id="mt2-2"><label for="mt2-2">2</label></td><td><input type="radio" name="mt2" value="3" id="mt2-3"><label for="mt2-3">3</label></td><td><input type="radio" name="mt2" value="4" id="mt2-4"><label for="mt2-4">4</label></td><td><input type="radio" name="mt2" value="5" id="mt2-5"><label for="mt2-5">5</label></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MT-3 · Abierta</p>
+              <p class="q-block__text">¿Qué procesos técnicos del CLM crees que podrían automatizarse o mejorarse con IA?</p>
+              <textarea class="q-open" name="mt3" placeholder="Escribe libremente…" rows="3"></textarea>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MT-4</p>
+              <p class="q-block__text">¿Ves riesgos de seguridad o privacidad en el uso institucional de IA en el CLM?</p>
+              <textarea class="q-open" name="mt4" placeholder="Describe los riesgos que percibes…" rows="3"></textarea>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MT-5</p>
+              <p class="q-block__text">¿Estarías dispuesto/a a participar en el diseño de una política de uso de IA para el CLM?</p>
+              <div class="q-options">
+                <label class="q-option"><input type="radio" name="mt5" value="Sí"><span class="q-option__box"></span><span class="q-option__label">Sí, me interesa participar.</span></label>
+                <label class="q-option"><input type="radio" name="mt5" value="Quizás"><span class="q-option__box"></span><span class="q-option__label">Quizás, dependiendo del alcance.</span></label>
+                <label class="q-option"><input type="radio" name="mt5" value="No"><span class="q-option__box"></span><span class="q-option__label">No, prefiero no implicarme en ese proceso.</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- MÓDULO G: DIRECCIÓN -->
+          <div id="mod-direccion" class="modulo-bloque" style="display:none">
+            <div class="q-block">
+              <p class="q-block__num">MG-1 · Abierta</p>
+              <p class="q-block__text">¿Cuál es tu visión sobre el papel de la IA en el CLM en los próximos 3 años?</p>
+              <textarea class="q-open" name="mg1" placeholder="Escribe libremente…" rows="4"></textarea>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MG-2 · Abierta</p>
+              <p class="q-block__text">¿Cuáles son los principales obstáculos que ves para implantar IA en el CLM?</p>
+              <textarea class="q-open" name="mg2" placeholder="Escribe libremente…" rows="3"></textarea>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MG-3</p>
+              <p class="q-block__text">¿Qué áreas del CLM crees que se beneficiarían más de la IA? (Selecciona hasta 3)</p>
+              <div class="q-options q-options--grid">
+                <label class="q-option q-option--check"><input type="checkbox" name="mg3" value="Docencia ELE"><span class="q-option__box"></span><span class="q-option__label">Docencia ELE</span></label>
+                <label class="q-option q-option--check"><input type="checkbox" name="mg3" value="Docencia lenguas modernas"><span class="q-option__box"></span><span class="q-option__label">Docencia lenguas modernas</span></label>
+                <label class="q-option q-option--check"><input type="checkbox" name="mg3" value="Administración"><span class="q-option__box"></span><span class="q-option__label">Administración</span></label>
+                <label class="q-option q-option--check"><input type="checkbox" name="mg3" value="Marketing"><span class="q-option__box"></span><span class="q-option__label">Marketing y comunicación</span></label>
+                <label class="q-option q-option--check"><input type="checkbox" name="mg3" value="Técnica"><span class="q-option__box"></span><span class="q-option__label">Área técnica</span></label>
+                <label class="q-option q-option--check"><input type="checkbox" name="mg3" value="Gestión estratégica"><span class="q-option__box"></span><span class="q-option__label">Gestión estratégica</span></label>
+              </div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MG-4</p>
+              <p class="q-block__text">¿Existe actualmente alguna política o criterio institucional sobre el uso de IA en el CLM?</p>
+              <div class="q-options">
+                <label class="q-option"><input type="radio" name="mg4" value="Sí"><span class="q-option__box"></span><span class="q-option__label">Sí, hay directrices establecidas.</span></label>
+                <label class="q-option"><input type="radio" name="mg4" value="En desarrollo"><span class="q-option__box"></span><span class="q-option__label">Está en desarrollo.</span></label>
+                <label class="q-option"><input type="radio" name="mg4" value="No"><span class="q-option__box"></span><span class="q-option__label">No existe ninguna política al respecto.</span></label>
+              </div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MG-5</p>
+              <p class="q-block__text">Valora la urgencia de tener un plan de implantación de IA en el CLM (1 = No urgente · 5 = Muy urgente)</p>
+              <div class="q-options">
+                <label class="q-option"><input type="radio" name="mg5" value="1"><span class="q-option__box"></span><span class="q-option__label">1 · No es urgente</span></label>
+                <label class="q-option"><input type="radio" name="mg5" value="2"><span class="q-option__box"></span><span class="q-option__label">2</span></label>
+                <label class="q-option"><input type="radio" name="mg5" value="3"><span class="q-option__box"></span><span class="q-option__label">3 · Moderadamente urgente</span></label>
+                <label class="q-option"><input type="radio" name="mg5" value="4"><span class="q-option__box"></span><span class="q-option__label">4</span></label>
+                <label class="q-option"><input type="radio" name="mg5" value="5"><span class="q-option__box"></span><span class="q-option__label">5 · Muy urgente</span></label>
+              </div>
+            </div>
+            <div class="q-block">
+              <p class="q-block__num">MG-6 · Abierta</p>
+              <p class="q-block__text">¿Hay algo más que quieras añadir sobre la implantación de IA en el CLM?</p>
+              <textarea class="q-open" name="mg6" placeholder="Escribe libremente…" rows="4"></textarea>
+            </div>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" id="btn6Prev">← Anterior</button><span class="q-nav__info">Bloque 6 de 7</span><button type="button" class="btn btn--primary" id="btn6Next">Siguiente →</button></div>
+        </div>
+
+        <!-- ══ BLOQUE 7: ACTITUDES ══ -->
+        <div class="q-section" id="section-7">
+          <div class="q-section__header">
+            <div class="q-section__letter" style="background:#6C3483">7</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Tus actitudes y preocupaciones ante la IA</p>
+              <p class="q-section__desc">1 = Totalmente en desacuerdo · 5 = Totalmente de acuerdo</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-likert"><table>
+              <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><td>P29. La IA puede ayudarme a ahorrar tiempo en tareas repetitivas.</td>
+                  <td><input type="radio" name="act1" value="1" id="act1-1"><label for="act1-1">1</label></td><td><input type="radio" name="act1" value="2" id="act1-2"><label for="act1-2">2</label></td><td><input type="radio" name="act1" value="3" id="act1-3"><label for="act1-3">3</label></td><td><input type="radio" name="act1" value="4" id="act1-4"><label for="act1-4">4</label></td><td><input type="radio" name="act1" value="5" id="act1-5"><label for="act1-5">5</label></td></tr>
+                <tr><td>P30. Me preocupa que la IA pueda reemplazar puestos de trabajo como el mío.</td>
+                  <td><input type="radio" name="act2" value="1" id="act2-1"><label for="act2-1">1</label></td><td><input type="radio" name="act2" value="2" id="act2-2"><label for="act2-2">2</label></td><td><input type="radio" name="act2" value="3" id="act2-3"><label for="act2-3">3</label></td><td><input type="radio" name="act2" value="4" id="act2-4"><label for="act2-4">4</label></td><td><input type="radio" name="act2" value="5" id="act2-5"><label for="act2-5">5</label></td></tr>
+                <tr><td>P31. El uso de IA debería regularse con normas claras en el CLM.</td>
+                  <td><input type="radio" name="act3" value="1" id="act3-1"><label for="act3-1">1</label></td><td><input type="radio" name="act3" value="2" id="act3-2"><label for="act3-2">2</label></td><td><input type="radio" name="act3" value="3" id="act3-3"><label for="act3-3">3</label></td><td><input type="radio" name="act3" value="4" id="act3-4"><label for="act3-4">4</label></td><td><input type="radio" name="act3" value="5" id="act3-5"><label for="act3-5">5</label></td></tr>
+                <tr><td>P32. Me preocupa la privacidad y la protección de datos al usar IA.</td>
+                  <td><input type="radio" name="act4" value="1" id="act4-1"><label for="act4-1">1</label></td><td><input type="radio" name="act4" value="2" id="act4-2"><label for="act4-2">2</label></td><td><input type="radio" name="act4" value="3" id="act4-3"><label for="act4-3">3</label></td><td><input type="radio" name="act4" value="4" id="act4-4"><label for="act4-4">4</label></td><td><input type="radio" name="act4" value="5" id="act4-5"><label for="act4-5">5</label></td></tr>
+                <tr><td>P33. Quien no aprenda a usar IA tendrá desventajas profesionales en los próximos años.</td>
+                  <td><input type="radio" name="act5" value="1" id="act5-1"><label for="act5-1">1</label></td><td><input type="radio" name="act5" value="2" id="act5-2"><label for="act5-2">2</label></td><td><input type="radio" name="act5" value="3" id="act5-3"><label for="act5-3">3</label></td><td><input type="radio" name="act5" value="4" id="act5-4"><label for="act5-4">4</label></td><td><input type="radio" name="act5" value="5" id="act5-5"><label for="act5-5">5</label></td></tr>
+                <tr><td>P34. Estoy dispuesto/a a cambiar mi forma de trabajar si la IA demuestra ser útil.</td>
+                  <td><input type="radio" name="act6" value="1" id="act6-1"><label for="act6-1">1</label></td><td><input type="radio" name="act6" value="2" id="act6-2"><label for="act6-2">2</label></td><td><input type="radio" name="act6" value="3" id="act6-3"><label for="act6-3">3</label></td><td><input type="radio" name="act6" value="4" id="act6-4"><label for="act6-4">4</label></td><td><input type="radio" name="act6" value="5" id="act6-5"><label for="act6-5">5</label></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 35</p>
+            <p class="q-block__text">¿Cuál es tu actitud general ante la IA en este momento?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="actitud_gen" value="Entusiasta"><span class="q-option__box"></span><span class="q-option__label">Entusiasta: quiero aprender y aplicarla cuanto antes.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_gen" value="Positiva y cauta"><span class="q-option__box"></span><span class="q-option__label">Positiva pero cauta: me interesa, pero quiero entender bien los riesgos primero.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_gen" value="Neutral"><span class="q-option__box"></span><span class="q-option__label">Neutral: todavía no tengo una opinión formada.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_gen" value="Escéptica"><span class="q-option__box"></span><span class="q-option__label">Escéptica: no estoy convencido/a de que aporte valor real a mi trabajo.</span></label>
+              <label class="q-option"><input type="radio" name="actitud_gen" value="Reticente"><span class="q-option__box"></span><span class="q-option__label">Reticente: prefiero no usarla, al menos de momento.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 36 · Abierta</p>
+            <p class="q-block__text">¿Hay algo concreto que quieras que se tenga en cuenta en el plan de implantación de IA del CLM?</p>
+            <textarea class="q-open" name="observaciones" placeholder="Escribe libremente…" rows="4"></textarea>
+          </div>
+
+          <div class="q-nav">
+            <button type="button" class="btn btn--outline" id="btn7Prev">← Anterior</button>
+            <span class="q-nav__info">Bloque 7 de 7</span>
+            <button type="submit" class="btn btn--primary" id="btnSubmit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Enviar diagnóstico
+            </button>
+          </div>
+        </div>
+
+      </form>
+      </div>
+
+      <div id="thankYou"><div id="resultados"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+(function() {
+  const TOTAL_SECTIONS = 7;
+  let currentSection = 1;
+
+  // Mapa de perfiles → módulo
+  const PERFIL_MODULO = {
+    'docente-ele':   { modulo: 'docente',   label: 'D', titulo: 'Preguntas para el Profesorado de ELE',            desc: 'Uso de IA en el aula, materiales y evaluación' },
+    'docente-lm':    { modulo: 'docente',   label: 'D', titulo: 'Preguntas para el Profesorado de Lenguas Modernas', desc: 'Uso de IA en el aula, materiales y evaluación' },
+    'administracion':{ modulo: 'admin',     label: 'A', titulo: 'Preguntas para Administración y Gestión',          desc: 'IA en procesos administrativos y atención al estudiante' },
+    'marketing':     { modulo: 'admin',     label: 'A', titulo: 'Preguntas para Marketing y Comunicación',          desc: 'IA en comunicación, contenidos y promoción de eventos' },
+    'conserjeria':   { modulo: 'admin',     label: 'A', titulo: 'Preguntas para Conserjería y Servicios',           desc: 'IA en atención presencial y servicios generales' },
+    'diseno':        { modulo: 'tecnico',   label: 'T', titulo: 'Preguntas para Diseño, Web y Audiovisual',         desc: 'IA generativa en diseño, imagen y producción audiovisual' },
+    'informatica':   { modulo: 'tecnico',   label: 'T', titulo: 'Preguntas para Informática y Sistemas',            desc: 'IA en infraestructura, automatización y seguridad' },
+    'programacion':  { modulo: 'tecnico',   label: 'T', titulo: 'Preguntas para Programación y Desarrollo',         desc: 'IA en desarrollo de software y plataformas' },
+    'biblioteca':    { modulo: 'tecnico',   label: 'T', titulo: 'Preguntas para Biblioteca',                        desc: 'IA en gestión de fondos y servicios documentales' },
+    'direccion':     { modulo: 'direccion', label: 'G', titulo: 'Preguntas para Dirección y Subdirecciones',        desc: 'Visión estratégica e implantación institucional de IA' },
+  };
+
+  function getSelectedPerfil() {
+    const r = document.querySelector('input[name="area_trabajo"]:checked');
+    return r ? r.value : null;
+  }
+
+  function activateModulo(perfil) {
+    // Ocultar todos
+    document.querySelectorAll('.modulo-bloque').forEach(m => m.style.display = 'none');
+    const info = PERFIL_MODULO[perfil];
+    if (!info) return;
+    // Mostrar el correcto
+    document.getElementById('mod-' + info.modulo).style.display = 'block';
+    // Actualizar header
+    document.getElementById('modulo-letra').textContent = info.label;
+    document.getElementById('modulo-titulo').textContent = info.titulo;
+    document.getElementById('modulo-desc').textContent = info.desc;
+    // Guardar en hidden field
+    document.getElementById('modulo_perfil_hidden').value = info.modulo;
+  }
+
+  function showSection(n) {
+    document.querySelectorAll('.q-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + n).classList.add('active');
+    // Tabs
+    document.querySelectorAll('.q-section-tab').forEach((t, i) => {
+      t.classList.remove('active', 'done');
+      if (i + 1 === n) t.classList.add('active');
+      if (i + 1 < n) t.classList.add('done');
+    });
+    // Progreso
+    const pct = Math.round(((n - 1) / TOTAL_SECTIONS) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    currentSection = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Navegación
+  document.getElementById('btn1Next').addEventListener('click', () => {
+    const perfil = getSelectedPerfil();
+    if (!perfil) { alert('Por favor, selecciona tu área de trabajo antes de continuar.'); return; }
+    activateModulo(perfil);
+    showSection(2);
+  });
+  document.getElementById('btn2Prev').addEventListener('click', () => showSection(1));
+  document.getElementById('btn2Next').addEventListener('click', () => showSection(3));
+  document.getElementById('btn3Prev').addEventListener('click', () => showSection(2));
+  document.getElementById('btn3Next').addEventListener('click', () => showSection(4));
+  document.getElementById('btn4Prev').addEventListener('click', () => showSection(3));
+  document.getElementById('btn4Next').addEventListener('click', () => showSection(5));
+  document.getElementById('btn5Prev').addEventListener('click', () => showSection(4));
+  document.getElementById('btn5Next').addEventListener('click', () => showSection(6));
+  document.getElementById('btn6Prev').addEventListener('click', () => showSection(5));
+  document.getElementById('btn6Next').addEventListener('click', () => showSection(7));
+  document.getElementById('btn7Prev').addEventListener('click', () => showSection(6));
+
+  // Envío del formulario
+  const form = document.getElementById('auditoriaForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    const fd = new FormData(form);
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
+      if (res.ok) {
+        document.getElementById('formWrapper').style.display = 'none';
+        document.querySelector('.q-progress').style.display = 'none';
+        document.querySelector('.q-sections').style.display = 'none';
+        document.getElementById('thankYou').style.display = 'block';
+        document.getElementById('resultados').innerHTML = `
+          <div style="text-align:center;padding:3rem 2rem;">
+            <div style="font-size:3rem;margin-bottom:1rem">✓</div>
+            <h2 style="font-family:var(--font-display);font-size:1.6rem;color:var(--blue);margin-bottom:.75rem">¡Gracias por tu participación!</h2>
+            <p style="color:var(--ink-soft);max-width:480px;margin:0 auto;line-height:1.7">Tus respuestas son anónimas y confidenciales. Los resultados se presentarán de forma agregada en el informe de diagnóstico institucional.</p>
+          </div>`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else { throw new Error(); }
+    } catch {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar diagnóstico';
+      alert('Ha habido un problema al enviar. Por favor, inténtalo de nuevo.');
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
