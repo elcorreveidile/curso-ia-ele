@@ -109,7 +109,7 @@
                 <span class="area-option__icon">📚</span>
                 <span class="area-option__info"><span class="area-option__label">Biblioteca</span><span class="area-option__desc">Gestión de fondos y servicios bibliotecarios</span></span>
               </label>
-              <label class="area-option"><input type="radio" name="area_trabajo" value="direccion" data-camino="tecnico">
+              <label class="area-option"><input type="radio" name="area_trabajo" value="direccion" data-camino="direccion">
                 <span class="area-option__icon">🎯</span>
                 <span class="area-option__info"><span class="area-option__label">Dirección y Subdirecciones</span><span class="area-option__desc">Dirección, gerencia y gestión estratégica</span></span>
               </label>
@@ -788,6 +788,160 @@
           </div>
         </div>
 
+
+        <!-- ══════════════════════════════════════════
+             CAMINO D: DIRECCIÓN Y SUBDIRECCIONES
+             Secciones: G1, G2, G3
+        ══════════════════════════════════════════ -->
+
+        <!-- G1: Contexto digital -->
+        <div class="q-section camino-direccion" id="section-G1">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--B">2</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Contexto digital del CLM</p>
+              <p class="q-section__desc">Punto de partida antes de hablar de estrategia</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 3</p>
+            <p class="q-block__text">¿Cuál es tu valoración general del nivel de digitalización actual del CLM?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="nivel_digital_clm" value="Bajo"><span class="q-option__box"></span><span class="q-option__label">Bajo: dependemos demasiado de procesos manuales.</span></label>
+              <label class="q-option"><input type="radio" name="nivel_digital_clm" value="Medio"><span class="q-option__box"></span><span class="q-option__label">Medio: tenemos herramientas digitales pero no están bien integradas.</span></label>
+              <label class="q-option"><input type="radio" name="nivel_digital_clm" value="Alto"><span class="q-option__box"></span><span class="q-option__label">Alto: el CLM tiene una infraestructura digital sólida y funcional.</span></label>
+              <label class="q-option"><input type="radio" name="nivel_digital_clm" value="No lo sé"><span class="q-option__box"></span><span class="q-option__label">No tengo una visión clara del estado actual.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 4</p>
+            <p class="q-block__text">El CLM dispone del sistema GAP para la gestión académica y de secretaría. ¿Crees que sería viable adaptarlo estratégicamente para integrar IA y mejorar la atención al estudiante?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="gap_estrategia" value="Sí prioritario"><span class="q-option__box"></span><span class="q-option__label">Sí, y debería ser una prioridad en el plan de digitalización.</span></label>
+              <label class="q-option"><input type="radio" name="gap_estrategia" value="Sí con recursos"><span class="q-option__box"></span><span class="q-option__label">Sí, pero requiere inversión en recursos técnicos y humanos.</span></label>
+              <label class="q-option"><input type="radio" name="gap_estrategia" value="Quizás a largo plazo"><span class="q-option__box"></span><span class="q-option__label">Quizás, pero no es una prioridad a corto plazo.</span></label>
+              <label class="q-option"><input type="radio" name="gap_estrategia" value="No conozco el GAP"><span class="q-option__box"></span><span class="q-option__label">No conozco el GAP con suficiente detalle para valorarlo.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 5</p>
+            <p class="q-block__text">¿Existe actualmente alguna política o criterio institucional sobre el uso de IA en el CLM?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="politica_ia" value="Sí establecida"><span class="q-option__box"></span><span class="q-option__label">Sí, hay directrices establecidas y conocidas.</span></label>
+              <label class="q-option"><input type="radio" name="politica_ia" value="En desarrollo"><span class="q-option__box"></span><span class="q-option__label">Está en desarrollo.</span></label>
+              <label class="q-option"><input type="radio" name="politica_ia" value="No existe"><span class="q-option__box"></span><span class="q-option__label">No existe ninguna política al respecto todavía.</span></label>
+            </div>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" data-prev="section-0">← Anterior</button><span class="q-nav__info"></span><button type="button" class="btn btn--primary" data-next="section-G2">Siguiente →</button></div>
+        </div>
+
+        <!-- G2: Visión estratégica -->
+        <div class="q-section camino-direccion" id="section-G2">
+          <div class="q-section__header">
+            <div class="q-section__letter q-section__letter--C">3</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Visión estratégica</p>
+              <p class="q-section__desc">Cómo debería implantarse la IA en el CLM</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 6 · Abierta</p>
+            <p class="q-block__text">¿Cuál es tu visión sobre el papel de la IA en el CLM en los próximos 3 años?</p>
+            <textarea class="q-open" name="vision_ia" placeholder="Escribe libremente…" rows="4"></textarea>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 7 · Abierta</p>
+            <p class="q-block__text">¿Cuáles son los principales obstáculos que ves para implantar IA en el CLM?</p>
+            <textarea class="q-open" name="obstaculos_ia" placeholder="Escribe libremente…" rows="3"></textarea>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 8</p>
+            <p class="q-block__text">¿Qué áreas del CLM crees que se beneficiarían más de la IA? (Selecciona hasta 3)</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="areas_beneficio" value="Docencia ELE"><span class="q-option__box"></span><span class="q-option__label">Docencia ELE</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="areas_beneficio" value="Docencia lenguas modernas"><span class="q-option__box"></span><span class="q-option__label">Docencia lenguas modernas</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="areas_beneficio" value="Administración y secretaría"><span class="q-option__box"></span><span class="q-option__label">Administración y secretaría</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="areas_beneficio" value="Atención al estudiante"><span class="q-option__box"></span><span class="q-option__label">Atención al estudiante</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="areas_beneficio" value="Marketing y comunicación"><span class="q-option__box"></span><span class="q-option__label">Marketing y comunicación</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="areas_beneficio" value="Gestión estratégica"><span class="q-option__box"></span><span class="q-option__label">Gestión estratégica y toma de decisiones</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 9 · 1 = Nada urgente · 5 = Muy urgente</p>
+            <div class="q-likert"><table>
+              <thead><tr><th>Enunciado</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><td>P9a. Urgencia de tener un plan de implantación de IA en el CLM.</td>
+                  <td><input type="radio" name="urg1" value="1" id="urg1-1"><label for="urg1-1">1</label></td><td><input type="radio" name="urg1" value="2" id="urg1-2"><label for="urg1-2">2</label></td><td><input type="radio" name="urg1" value="3" id="urg1-3"><label for="urg1-3">3</label></td><td><input type="radio" name="urg1" value="4" id="urg1-4"><label for="urg1-4">4</label></td><td><input type="radio" name="urg1" value="5" id="urg1-5"><label for="urg1-5">5</label></td></tr>
+                <tr><td>P9b. Urgencia de formar a la plantilla en el uso de IA.</td>
+                  <td><input type="radio" name="urg2" value="1" id="urg2-1"><label for="urg2-1">1</label></td><td><input type="radio" name="urg2" value="2" id="urg2-2"><label for="urg2-2">2</label></td><td><input type="radio" name="urg2" value="3" id="urg2-3"><label for="urg2-3">3</label></td><td><input type="radio" name="urg2" value="4" id="urg2-4"><label for="urg2-4">4</label></td><td><input type="radio" name="urg2" value="5" id="urg2-5"><label for="urg2-5">5</label></td></tr>
+                <tr><td>P9c. Urgencia de automatizar la atención al estudiante.</td>
+                  <td><input type="radio" name="urg3" value="1" id="urg3-1"><label for="urg3-1">1</label></td><td><input type="radio" name="urg3" value="2" id="urg3-2"><label for="urg3-2">2</label></td><td><input type="radio" name="urg3" value="3" id="urg3-3"><label for="urg3-3">3</label></td><td><input type="radio" name="urg3" value="4" id="urg3-4"><label for="urg3-4">4</label></td><td><input type="radio" name="urg3" value="5" id="urg3-5"><label for="urg3-5">5</label></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+
+          <div class="q-nav"><button type="button" class="btn btn--outline" data-prev="section-G1">← Anterior</button><span class="q-nav__info"></span><button type="button" class="btn btn--primary" data-next="section-G3">Siguiente →</button></div>
+        </div>
+
+        <!-- G3: Plan de acción -->
+        <div class="q-section camino-direccion" id="section-G3">
+          <div class="q-section__header">
+            <div class="q-section__letter" style="background:#6C3483">4</div>
+            <div class="q-section__info">
+              <p class="q-section__name">Plan de acción e implicación</p>
+              <p class="q-section__desc">Cómo avanzar y qué papel quieres tener</p>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 10</p>
+            <p class="q-block__text">¿Por dónde empezarías la implantación de IA en el CLM si tuvieras que decidirlo hoy?</p>
+            <div class="q-options">
+              <label class="q-option"><input type="radio" name="por_donde_empezar_dir" value="Agente atención"><span class="q-option__box"></span><span class="q-option__label">Agente de atención al estudiante (WhatsApp / teléfono / email).</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar_dir" value="Formación plantilla"><span class="q-option__box"></span><span class="q-option__label">Formación de la plantilla para uso autónomo de IA.</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar_dir" value="Automatización admin"><span class="q-option__box"></span><span class="q-option__label">Automatización de procesos administrativos internos.</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar_dir" value="Política primero"><span class="q-option__box"></span><span class="q-option__label">Primero definir una política institucional y luego implantar.</span></label>
+              <label class="q-option"><input type="radio" name="por_donde_empezar_dir" value="Piloto pequeño"><span class="q-option__box"></span><span class="q-option__label">Un piloto pequeño para validar antes de escalar.</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 11</p>
+            <p class="q-block__text">¿Qué tipo de soporte externo necesitaría el CLM para liderar este proceso?</p>
+            <div class="q-options q-options--grid">
+              <label class="q-option q-option--check"><input type="checkbox" name="soporte_necesario" value="Consultoría estratégica"><span class="q-option__box"></span><span class="q-option__label">Consultoría estratégica externa</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="soporte_necesario" value="Formación interna"><span class="q-option__box"></span><span class="q-option__label">Formación interna especializada</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="soporte_necesario" value="Desarrollo técnico"><span class="q-option__box"></span><span class="q-option__label">Desarrollo técnico propio o contratado</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="soporte_necesario" value="Coordinador interno"><span class="q-option__box"></span><span class="q-option__label">Un coordinador o responsable interno de IA</span></label>
+              <label class="q-option q-option--check"><input type="checkbox" name="soporte_necesario" value="Financiación UGR"><span class="q-option__box"></span><span class="q-option__label">Financiación o apoyo institucional de la UGR</span></label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <p class="q-block__num">Pregunta 12 · Abierta</p>
+            <p class="q-block__text">¿Hay algo más que quieras añadir sobre la implantación de IA en el CLM?</p>
+            <textarea class="q-open" name="observaciones" placeholder="Escribe libremente…" rows="4"></textarea>
+          </div>
+
+          <div class="q-nav">
+            <button type="button" class="btn btn--outline" data-prev="section-G2">← Anterior</button>
+            <span class="q-nav__info"></span>
+            <button type="submit" class="btn btn--primary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Enviar diagnóstico
+            </button>
+          </div>
+        </div>
+
       </form>
       </div>
       <div id="thankYou" style="display:none"><div id="resultados"></div></div>
@@ -816,10 +970,17 @@
       badge: '📋 4 bloques'
     },
     tecnico: {
-      label: 'Técnicos y Dirección',
+      label: 'Técnicos',
       tipo: 'auditoria-tecnicos-clm',
       secciones: ['section-0', 'section-T1', 'section-T2', 'section-T3'],
       tabs: ['Perfil', 'Uso IA', 'Infraestructura', 'Visión estratégica'],
+      badge: '📋 4 bloques'
+    },
+    direccion: {
+      label: 'Dirección y Subdirecciones',
+      tipo: 'auditoria-direccion-clm',
+      secciones: ['section-0', 'section-G1', 'section-G2', 'section-G3'],
+      tabs: ['Perfil', 'Contexto digital', 'Visión estratégica', 'Plan de acción'],
       badge: '📋 4 bloques'
     }
   };
