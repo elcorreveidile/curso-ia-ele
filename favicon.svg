@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#0A1628"/>
+  <!-- Left bracket [ -->
+  <rect x="5" y="5" width="6" height="2" fill="#F5A623"/>
+  <rect x="5" y="5" width="2" height="22" fill="#F5A623"/>
+  <rect x="5" y="25" width="6" height="2" fill="#F5A623"/>
+  <!-- Right bracket ] -->
+  <rect x="21" y="5" width="6" height="2" fill="#F5A623"/>
+  <rect x="25" y="5" width="2" height="22" fill="#F5A623"/>
+  <rect x="21" y="25" width="6" height="2" fill="#F5A623"/>
+  <!-- Pipe | -->
+  <rect x="14" y="8" width="4" height="16" fill="#F5A623"/>
+</svg>
