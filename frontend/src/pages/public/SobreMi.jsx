@@ -135,9 +135,9 @@ export default function SobreMi() {
                   <Link to="/precios" className="btn btn--primary" data-testid="sobre-cta-precios">
                     Ver precios e inscripción
                   </Link>
-                  <a href="mailto:curso@laclasedigital.com" className="btn" style={{ background: 'rgba(255,255,255,.1)', color: 'var(--white)', border: '1.5px solid rgba(255,255,255,.25)' }}>
+                  <Link to="/contacto" className="btn" style={{ background: 'rgba(255,255,255,.1)', color: 'var(--white)', border: '1.5px solid rgba(255,255,255,.25)' }} data-testid="sobre-cta-contacto">
                     ✉ Escríbeme
-                  </a>
+                  </Link>
                 </div>
               </div>
             </main>

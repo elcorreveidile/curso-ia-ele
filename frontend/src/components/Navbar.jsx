@@ -10,6 +10,7 @@ const publicLinks = [
   { to: '/metodologia', label: 'Metodología' },
   { to: '/precios', label: 'Precios' },
   { to: '/sobre-mi', label: 'Sobre mí' },
+  { to: '/contacto', label: 'Contacto' },
 ];
 
 export default function Navbar() {

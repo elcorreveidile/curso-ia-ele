@@ -18,8 +18,8 @@ export default function CheckEmail() {
             área y completar la inscripción.
           </p>
           <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', marginBottom: '1.25rem' }}>
-            ¿No lo recibes? Revisa la carpeta de spam o contáctanos en{' '}
-            <a href="mailto:curso@laclasedigital.com" style={{ color: 'var(--blue)' }}>curso@laclasedigital.com</a>.
+            ¿No lo recibes? Revisa la carpeta de spam o{' '}
+            <Link to="/contacto" style={{ color: 'var(--blue)' }}>escríbenos desde el formulario de contacto</Link>.
           </p>
           <Link to={next} className="btn btn--ghost" data-testid="check-email-back">Volver</Link>
         </div>

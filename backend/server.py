@@ -189,6 +189,13 @@ class ThreadPostIn(BaseModel):
     parent_id: Optional[str] = None
 
 
+class ContactIn(BaseModel):
+    nombre: str = Field(..., min_length=1, max_length=120)
+    email: EmailStr
+    asunto: str = Field("Otro", max_length=120)
+    mensaje: str = Field(..., min_length=5, max_length=5000)
+
+
 class AdminCourseUpdate(BaseModel):
     is_founder_edition: Optional[bool] = None
     founder_seats: Optional[int] = None
@@ -1113,6 +1120,69 @@ async def admin_reorder_module(
     await db.modules.update_one({"id": a["id"]}, {"$set": {"order": b["order"]}})
     await db.modules.update_one({"id": b["id"]}, {"$set": {"order": a["order"]}})
     return {"ok": True}
+
+
+# ─────────────────────────── Contact form ─────────────────────
+@api.post("/contact")
+async def contact(payload: ContactIn):
+    # Store for redundancy
+    await db.contact_messages.insert_one({
+        "id": new_id(),
+        "nombre": payload.nombre,
+        "email": payload.email,
+        "asunto": payload.asunto,
+        "mensaje": payload.mensaje,
+        "created_at": now_utc(),
+    })
+    # Forward to admin inbox — respects RESEND_REPLY_TO so the admin can
+    # reply directly to the visitor. We override reply_to here to the
+    # visitor's email so "Reply" in the admin mailbox goes straight to them.
+    html = wrap_email(
+        f"""
+        <h3 style="font-family:Georgia,serif;color:#0F4C81">Nuevo mensaje de contacto</h3>
+        <p><strong>De:</strong> {payload.nombre} &lt;{payload.email}&gt;</p>
+        <p><strong>Asunto:</strong> {payload.asunto}</p>
+        <div style="background:#F4F7FA;padding:16px;border-radius:6px;border-left:3px solid #F5A623;white-space:pre-wrap;font-size:14px;line-height:1.6;color:#1A2535">
+          {payload.mensaje}
+        </div>
+        <p style="font-size:12px;color:#6B82A0;margin-top:16px">
+          Responde a este correo y la respuesta llegará directamente a {payload.email}.
+        </p>
+        """
+    )
+    # Send with visitor as reply_to
+    await _send_email_with_reply(ADMIN_EMAIL, f"[Contacto] {payload.asunto} · {payload.nombre}", html, reply_to=payload.email)
+    return {"ok": True, "message": "Mensaje enviado. Te responderemos en menos de 48 horas."}
+
+
+async def _send_email_with_reply(to_email: str, subject: str, html: str, reply_to: Optional[str] = None) -> None:
+    if not RESEND_API_KEY:
+        log.warning("RESEND_API_KEY missing, skipping email to %s", to_email)
+        return
+    payload: dict[str, Any] = {
+        "from": f"{RESEND_FROM_NAME} <{RESEND_FROM}>",
+        "to": [to_email],
+        "subject": subject,
+        "html": html,
+    }
+    if reply_to:
+        payload["reply_to"] = reply_to
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            r = await client.post(
+                "https://api.resend.com/emails",
+                headers={
+                    "Authorization": f"Bearer {RESEND_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            if r.status_code >= 300:
+                log.error("Resend error %s: %s", r.status_code, r.text)
+            else:
+                log.info("Email sent to %s", to_email)
+    except Exception as exc:
+        log.exception("Email failure: %s", exc)
 
 
 # ─────────────────────────── Register router ───────────────────

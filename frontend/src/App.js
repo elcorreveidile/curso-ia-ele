@@ -27,6 +27,7 @@ import Forum from './pages/private/Forum';
 
 import Admin from './pages/admin/Admin';
 import Certificate from './pages/public/Certificate';
+import Contacto from './pages/public/Contacto';
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="/inscripcion/success" element={<Success />} />
 
             <Route path="/certificado/:certId" element={<Certificate />} />
+            <Route path="/contacto" element={<Contacto />} />
 
             {/* Private */}
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />

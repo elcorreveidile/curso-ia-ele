@@ -61,14 +61,14 @@ export default function Success() {
               <h1 className="auth-title">⏱ Estamos procesando el pago</h1>
               <p className="auth-desc">
                 Recibirás un email de confirmación en cuanto se complete. Si no lo ves en unos
-                minutos escríbenos a <a href="mailto:curso@laclasedigital.com">curso@laclasedigital.com</a>.
+                minutos, <Link to="/contacto" style={{ color: 'var(--blue)' }}>escríbenos desde el formulario de contacto</Link>.
               </p>
             </>
           )}
           {(status === 'error' || status === 'expired') && (
             <>
               <h1 className="auth-title">No hemos podido confirmar el pago</h1>
-              <p className="auth-desc">Contáctanos en <a href="mailto:curso@laclasedigital.com">curso@laclasedigital.com</a> y lo resolvemos.</p>
+              <p className="auth-desc"><Link to="/contacto" style={{ color: 'var(--blue)' }}>Escríbenos por el formulario</Link> y lo resolvemos.</p>
             </>
           )}
         </div>

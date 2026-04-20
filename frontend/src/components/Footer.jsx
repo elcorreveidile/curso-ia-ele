@@ -29,11 +29,11 @@ export default function Footer() {
           <p className="footer-col__title">Contacto</p>
           <p className="footer-contact">
             <strong>Javier Benítez Láinez</strong><br />
-            Docente de ELE · Granada (España)<br />
-            <a href="mailto:curso@laclasedigital.com" style={{ color: 'rgba(255,255,255,.7)' }}>
-              curso@laclasedigital.com
-            </a>
+            Docente de ELE · Granada (España)
           </p>
+          <div className="footer-col__links" style={{ marginTop: '.75rem' }}>
+            <Link to="/contacto" data-testid="footer-contact-link">✉ Escribir un mensaje</Link>
+          </div>
         </div>
       </div>
       <div className="footer-bottom">

@@ -106,7 +106,8 @@ export default function Precios() {
                 <li>Posibilidad de edición cerrada para tu equipo</li>
               </ul>
               <a
-                href="mailto:curso@laclasedigital.com?subject=Propuesta%20institucional"
+                href="#"
+                onClick={(e) => { e.preventDefault(); window.location.href = '/contacto'; }}
                 className="btn btn--primary"
                 style={{ justifyContent: 'center', background: 'var(--clm-red)', color: 'var(--ink)' }}
                 data-testid="precios-btn-institucional"
