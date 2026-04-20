@@ -471,7 +471,11 @@ async def get_course(slug: str):
 async def request_magic_link(payload: LoginRequest, request: Request):
     email = payload.email.lower()
     token = create_magic_token(email)
-    origin = request.headers.get("origin") or FRONTEND_ORIGIN
+    # Always use the configured public FRONTEND_ORIGIN. The Origin header can
+    # contain an internal cluster URL in preview environments (e.g.
+    # …emergentcf.cloud) which is not publicly reachable and returns 403.
+    origin = FRONTEND_ORIGIN or request.headers.get("origin") or ""
+    origin = origin.rstrip("/")
     link = f"{origin}/auth/verify?token={token}"
     html = wrap_email(
         f"""
