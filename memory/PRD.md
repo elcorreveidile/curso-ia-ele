@@ -34,6 +34,21 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 5 (2026-02 fork)
+- ✅ **Fix visor Markdown**: añadido `remark-gfm` a `<ReactMarkdown>` +
+  CSS `.lesson-body pre/code` con `overflow-x:auto` + `word-break:break-word`
+  de forma que los prompts largos scrollean DENTRO de su `<pre>` y no
+  desbordan la página.
+- ✅ **Fix generador PDF**: reescrito `MarkdownToPDF` en
+  `/app/frontend/src/pages/private/Resource.jsx` con buffers/flush para
+  ```fenced code``` y tablas GFM `|col|col|`. Verificado con
+  `plantillas-system-prompt-a1-c2` (18 code blocks) y
+  `rubrica-evaluacion-modulo-i` (7 tablas, 31 filas) — ambos
+  generan `blob:` URL válida sin errores.
+- ✅ **Testing agent v4 — frontend 5/5 pass**: plantilla, rúbrica con
+  tablas, recurso no descargable, segunda rúbrica, regresión dashboard.
+  Zero pageerror / console errors.
+
 ## Implementado en iteración 4 (2026-04-20)
 - ✅ **Sistema de recursos del curso** importado automáticamente desde
   `/app/legacy/materiales/**/*.md`. Colección `resources` en MongoDB.
