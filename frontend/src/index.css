@@ -1098,6 +1098,38 @@ footer {
 .reorder-btn:hover { background: var(--blue-light); color: var(--blue); }
 .reorder-btn:disabled { opacity: .3; cursor: not-allowed; }
 
+/* Quiz teaser on /precios */
+.quiz-teaser {
+  background: var(--white);
+  border: 1px solid var(--canvas-alt);
+  border-left: 3px solid var(--blue);
+  border-radius: var(--r-md);
+  padding: 1.5rem 1.75rem;
+  display: flex; gap: 1.5rem; align-items: center;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .25s, box-shadow .25s;
+}
+.quiz-teaser:hover {
+  border-left-color: var(--clm-red);
+  box-shadow: var(--shadow-md);
+}
+.quiz-teaser__body { flex: 1; min-width: 260px; }
+.quiz-teaser__tag {
+  font-size: .72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--blue-mid); margin-bottom: .35rem;
+}
+.quiz-teaser__title {
+  font-family: var(--font-display);
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--ink); margin-bottom: .4rem;
+  line-height: 1.25;
+}
+.quiz-teaser__text {
+  font-size: .88rem; color: var(--ink-soft); line-height: 1.55;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .inner-nav { padding: 0 1.25rem; height: 60px; }

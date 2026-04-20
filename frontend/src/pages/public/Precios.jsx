@@ -122,6 +122,23 @@ export default function Precios() {
           </div>
 
           <div style={{ marginBottom: '4rem' }}>
+            <div className="quiz-teaser" data-testid="precios-quiz-teaser">
+              <div className="quiz-teaser__body">
+                <p className="quiz-teaser__tag">🎯 Diagnóstico gratuito · 5 minutos</p>
+                <h3 className="quiz-teaser__title">¿No estás seguro/a de si este curso es para ti?</h3>
+                <p className="quiz-teaser__text">
+                  Responde un cuestionario breve sobre tu práctica docente y tu relación con la IA.
+                  Te devuelvo un diagnóstico personalizado con el perfil docente que mejor te describe
+                  y qué módulos te aportarán más valor.
+                </p>
+              </div>
+              <Link to="/cuestionario" className="btn btn--primary" data-testid="precios-quiz-cta">
+                Hacer el cuestionario →
+              </Link>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '4rem' }}>
             <p className="section__tag">Preguntas frecuentes</p>
             <h2 className="section__title" style={{ fontSize: '1.8rem', marginBottom: '1.5rem' }}>
               Dudas sobre la inscripción
