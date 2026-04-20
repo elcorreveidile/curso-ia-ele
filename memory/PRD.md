@@ -34,6 +34,26 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 2 (2026-04-20)
+- ✅ **Contador plazas fundador** global: banner fijo en el top con cierre
+  (session-based) y chip en la navbar con número de plazas restantes
+  animado y link a precios. Fuente: `GET /api/courses/ia-ele`.
+- ✅ **founder_seats_taken=3** registrado en DB (3 inscripciones reales
+  gestionadas directamente por el formador; se reflejan en todo el site).
+- ✅ **Stripe test keys reales** configuradas (`sk_test_91ZV...`) —
+  flujo de Checkout verificado end-to-end generando URLs reales.
+- ✅ **Subida real de archivos** en entregas con Cloudinary (drag-and-drop,
+  barra de progreso, hasta 20 MB). Endpoint `/api/upload` autenticado.
+- ✅ **Certificados PDF** con `@react-pdf/renderer`: emisión desde
+  `/admin` (botón 🏅 Emitir en cada inscripción), vista pública en
+  `/certificado/:id` con visor y descarga PDF. Diseño: franja ámbar,
+  símbolo `[|]`, nombre, curso, horas, fecha, ID de verificación.
+  Email automático al estudiante. Idempotente (no duplica).
+- ✅ **Reordenar módulos en admin** con botones ▲▼ junto a cada módulo.
+- ✅ **Email al admin al inscribirse** nuevo estudiante (además del de
+  bienvenida al estudiante).
+- ✅ Backend 100% (38/38 tests): 15 nuevos + 23 regresión.
+
 ## Implementado en iteración 1 (2026-04-20)
 - ✅ Migración fiel de la landing: `/`, `/descripcion`, `/programa`,
   `/calendario`, `/metodologia`, `/precios`, `/sobre-mi` (React).
