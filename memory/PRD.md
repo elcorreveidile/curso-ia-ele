@@ -34,6 +34,38 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 4 (2026-04-20)
+- ✅ **Sistema de recursos del curso** importado automáticamente desde
+  `/app/legacy/materiales/**/*.md`. Colección `resources` en MongoDB.
+  17 materiales activos: 4 M1 · 3 M2 · 5 M3 · 3 M4 · 2 transversales.
+  Excluidos: vídeos (uso personal del formador) y guías Moodle.
+- ✅ **Visor de recurso** `/recurso/:slug` con ReactMarkdown + botón
+  "📄 Descargar PDF" en plantillas/rúbricas/glosario (generación
+  on-the-fly con `@react-pdf/renderer` replicando el estilo de la
+  plantilla original: franja ámbar, cabecera/pie con nombre del
+  formador, tipografía Helvetica y colores `#F5A623` / `#0F4C81` /
+  `#FEF6DC`).
+- ✅ **Índice de materiales** `/curso/:slug/recursos` con recursos
+  agrupados por módulo + sección transversal. Cards con emoji por
+  tipo y hover con transición a ámbar.
+- ✅ **Sección "📚 Materiales de este módulo"** en cada página de
+  módulo, listando solo los recursos de ese módulo.
+- ✅ **Botón "📚 Materiales"** en dashboard junto al CTA del curso.
+- ✅ **Normalización inteligente de títulos**: salta "ÍNDICE",
+  convierte shouty-caps a sentence case pero respeta acrónimos
+  (ELE, IA, MCER, A1-C2).
+- ✅ **Eliminar inscripciones desde admin** con botón 🗑 — borra
+  todo lo relacionado (entregas, foros, progreso, certificados) y
+  restaura la plaza fundador si aplica.
+- ✅ **Reescanear materiales** con botón 🔄 en admin
+  (`POST /api/admin/resources/reseed`) para importar nuevos `.md`
+  sin reiniciar el servidor.
+- ✅ **Stripe + webhook** ahora usa el SDK oficial directamente
+  (bypass del wrapper que daba bugs de Pydantic con `StripeObject`).
+- ✅ **Reply-To dinámico en contacto y cuestionario**: el correo
+  del visitante se pone como Reply-To para que el admin responda
+  con un clic.
+
 ## Implementado en iteración 3 (2026-04-20)
 - ✅ **Cuestionario de diagnóstico** `/cuestionario` portado del legacy:
   27 preguntas en 4 bloques (perfil · práctica · IA · expectativas),

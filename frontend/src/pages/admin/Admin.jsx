@@ -60,6 +60,18 @@ export default function Admin() {
     }
   };
 
+  const [reseeding, setReseeding] = useState(false);
+  const reseedResources = async () => {
+    setReseeding(true);
+    try {
+      const r = await api.post('/admin/resources/reseed');
+      alert(`Reescaneo completado.\nTotal de recursos en la base: ${r.data.total}`);
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error reescaneando materiales');
+    }
+    setReseeding(false);
+  };
+
   if (!data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>Cargando…</div><Footer /></>;
 
   return (
@@ -219,6 +231,22 @@ export default function Admin() {
             </p>
             {/* Re-fetch modules through course content for display */}
             <ModulesControl />
+          </div>
+
+          <div className="dash-section">
+            <h2 className="dash-title">Materiales del curso</h2>
+            <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', marginBottom: '.75rem' }}>
+              Si añades o modificas archivos <code>.md</code> en <code>/app/legacy/materiales/</code>,
+              pulsa este botón para que la plataforma vuelva a leerlos sin reiniciar el servidor.
+            </p>
+            <button
+              className="btn btn--blue"
+              onClick={reseedResources}
+              disabled={reseeding}
+              data-testid="admin-reseed-resources"
+            >
+              {reseeding ? 'Reescaneando…' : '🔄 Reescanear materiales'}
+            </button>
           </div>
         </div>
       </div>
