@@ -35,19 +35,19 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Todo bajo `laclasedigital.com` (single domain).
 
 ## Implementado en iteración 5 (2026-02 fork)
-- ✅ **Fix visor Markdown**: añadido `remark-gfm` a `<ReactMarkdown>` +
-  CSS `.lesson-body pre/code` con `overflow-x:auto` + `word-break:break-word`
-  de forma que los prompts largos scrollean DENTRO de su `<pre>` y no
-  desbordan la página.
-- ✅ **Fix generador PDF**: reescrito `MarkdownToPDF` en
-  `/app/frontend/src/pages/private/Resource.jsx` con buffers/flush para
-  ```fenced code``` y tablas GFM `|col|col|`. Verificado con
-  `plantillas-system-prompt-a1-c2` (18 code blocks) y
-  `rubrica-evaluacion-modulo-i` (7 tablas, 31 filas) — ambos
-  generan `blob:` URL válida sin errores.
-- ✅ **Testing agent v4 — frontend 5/5 pass**: plantilla, rúbrica con
-  tablas, recurso no descargable, segunda rúbrica, regresión dashboard.
-  Zero pageerror / console errors.
+- ✅ **Navegación entre materiales** en `/recurso/:slug`:
+  - Sidebar sticky en desktop con los 17 materiales agrupados por módulo
+    (módulo actual → item activo en ámbar).
+  - Drawer deslizable en móvil con botón "📚 Índice de materiales".
+  - Breadcrumb clicable arriba: `Mis cursos › Curso › Módulo N › Título`.
+  - Botones **Anterior / Siguiente** al final del contenido con título
+    del recurso, respetando el orden del curso y marcando "primer/último".
+  - Backend: `/api/resource/{slug}` ahora incluye `course_slug`,
+    `course_title`, `module_order`, `module_title` para el contexto.
+- ✅ **Fix visor Markdown**: `remark-gfm` + CSS `overflow-x:auto` /
+  `word-break:break-word` en `<pre>/<code>`, los prompts largos no desbordan.
+- ✅ **Fix generador PDF**: `MarkdownToPDF` reescrito con buffers/flush para
+  fences y tablas GFM. Validado con testing agent v4 (5/5 frontend pass).
 
 ## Implementado en iteración 4 (2026-04-20)
 - ✅ **Sistema de recursos del curso** importado automáticamente desde

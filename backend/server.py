@@ -1226,6 +1226,7 @@ async def get_resource(slug: str, user: dict = Depends(current_user)):
     course = await db.courses.find_one({"id": r["course_id"]})
     if course:
         await _ensure_enrollment_for(user, course["slug"])
+    module = await db.modules.find_one({"id": r["module_id"]}) if r.get("module_id") else None
     return {
         "slug": r["slug"],
         "title": r["title"],
@@ -1233,6 +1234,10 @@ async def get_resource(slug: str, user: dict = Depends(current_user)):
         "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
         "content_md": r["content_md"],
         "module_id": r.get("module_id"),
+        "module_order": module.get("order") if module else None,
+        "module_title": module.get("title") if module else None,
+        "course_slug": course.get("slug") if course else None,
+        "course_title": course.get("title") if course else None,
         "updated_at": iso(r.get("updated_at")),
     }
 
