@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
@@ -63,7 +64,7 @@ export default function ModuleDetail() {
                   <iframe src={l.video_url} style={{ width: '100%', height: '100%', border: 'none', borderRadius: 'var(--r-md)' }} title={l.title} allow="fullscreen" />
                 </div>
               )}
-              <ReactMarkdown>{l.content_md || ''}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{l.content_md || ''}</ReactMarkdown>
             </div>
           ))}
 
@@ -71,7 +72,7 @@ export default function ModuleDetail() {
             <div className="lesson-body" style={{ borderLeft: '4px solid var(--clm-red)' }}>
               <p className="section__tag">📝 Tarea de este módulo</p>
               <h3 style={{ fontFamily: 'var(--font-display)', marginBottom: '.5rem' }}>{entry.task.title}</h3>
-              <ReactMarkdown>{entry.task.instructions_md || ''}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.task.instructions_md || ''}</ReactMarkdown>
               <Link
                 to={`/curso/${slug}/tarea/${entry.task.id}`}
                 className="btn btn--primary"

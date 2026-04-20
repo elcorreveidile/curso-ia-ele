@@ -893,6 +893,8 @@ body.has-founder-strip .home-hero { padding-top: 40px; }
   background: var(--white); border-radius: var(--r-lg);
   padding: 2rem; box-shadow: var(--shadow-sm);
   margin-bottom: 1rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .lesson-body h1, .lesson-body h2, .lesson-body h3 {
   font-family: var(--font-display);
@@ -906,8 +908,50 @@ body.has-founder-strip .home-hero { padding-top: 40px; }
 .lesson-body ul li { list-style: disc; margin-bottom: .25rem; }
 .lesson-body ol li { list-style: decimal; margin-bottom: .25rem; }
 .lesson-body code {
-  background: var(--canvas); padding: 2px 6px; border-radius: 4px; font-size: .9em;
+  background: var(--canvas); padding: 2px 6px; border-radius: 4px;
+  font-size: .9em; font-family: 'Courier New', monospace;
+  overflow-wrap: anywhere; word-break: break-word;
 }
+.lesson-body pre {
+  background: #0F2744; color: #E8EEF5;
+  padding: 1rem 1.25rem; border-radius: var(--r-sm);
+  overflow-x: auto; margin: 1rem 0;
+  font-size: .85rem; line-height: 1.6;
+  border-left: 3px solid var(--clm-red);
+}
+.lesson-body pre code {
+  background: transparent; color: inherit; padding: 0;
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;
+}
+.lesson-body blockquote {
+  border-left: 4px solid var(--clm-red);
+  padding: .75rem 1.25rem;
+  background: var(--clm-red-light);
+  margin: 1rem 0;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.lesson-body blockquote p { margin-bottom: 0; }
+.lesson-body table {
+  width: 100%; border-collapse: collapse;
+  margin: 1rem 0; font-size: .88rem;
+  display: block; overflow-x: auto; max-width: 100%;
+}
+.lesson-body thead { background: var(--canvas-alt); }
+.lesson-body th {
+  text-align: left; padding: .55rem .75rem;
+  font-weight: 700; color: var(--ink); border: 1px solid var(--canvas-alt);
+}
+.lesson-body td {
+  padding: .55rem .75rem;
+  border: 1px solid var(--canvas-alt);
+  color: var(--ink-soft);
+}
+.lesson-body hr { border: none; border-top: 1px solid var(--canvas-alt); margin: 1.5rem 0; }
+.lesson-body a { color: var(--blue); text-decoration: underline; }
+.lesson-body strong { color: var(--ink); font-weight: 700; }
 
 /* Forms */
 .form-group { margin-bottom: 1rem; }

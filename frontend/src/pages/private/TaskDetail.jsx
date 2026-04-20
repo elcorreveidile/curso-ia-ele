@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
@@ -49,7 +50,7 @@ export default function TaskDetail() {
 
           <div className="lesson-body" data-testid="task-instructions">
             <p className="section__tag">Instrucciones</p>
-            <ReactMarkdown>{data.task.instructions_md || ''}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.task.instructions_md || ''}</ReactMarkdown>
           </div>
 
           <div className="lesson-body">

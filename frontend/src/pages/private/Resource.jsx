@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -21,7 +22,7 @@ const pdfStyles = StyleSheet.create({
     fontSize: 8.5, color: '#46476A',
     paddingBottom: 6, borderBottom: '0.5pt solid #E0E2EA',
   },
-  headerLeft: { fontWeight: 700 },
+  headerLeft: { fontFamily: 'Helvetica-Bold' },
   footer: {
     position: 'absolute', bottom: 24, left: 54, right: 54,
     fontSize: 8, color: '#6B82A0',
@@ -42,6 +43,9 @@ const pdfStyles = StyleSheet.create({
   h2: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#0F4C81', marginTop: 12, marginBottom: 6 },
   h3: { fontSize: 11.5, fontFamily: 'Helvetica-Bold', color: '#1A2535', marginTop: 10, marginBottom: 4 },
   p: { marginBottom: 6 },
+  bold: { fontFamily: 'Helvetica-Bold' },
+  italic: { fontFamily: 'Helvetica-Oblique' },
+  inlineCode: { fontFamily: 'Courier', backgroundColor: '#F4F7FA', color: '#0F4C81' },
   listItem: { flexDirection: 'row', marginBottom: 3 },
   bullet: { width: 10, color: '#F5A623', fontFamily: 'Helvetica-Bold' },
   listText: { flex: 1 },
@@ -50,15 +54,43 @@ const pdfStyles = StyleSheet.create({
     backgroundColor: '#FEF6DC', borderLeft: '3pt solid #F5A623',
     fontSize: 10,
   },
-  code: { fontFamily: 'Courier', fontSize: 9.5, backgroundColor: '#F4F7FA', padding: 2 },
+  codeBlock: {
+    marginVertical: 8, padding: 10,
+    backgroundColor: '#0F2744', borderLeft: '3pt solid #F5A623',
+    borderRadius: 2,
+    fontFamily: 'Courier', fontSize: 8.5, color: '#E8EEF5', lineHeight: 1.4,
+  },
+  tableRow: { flexDirection: 'row', borderBottom: '0.5pt solid #E0E2EA' },
+  tableHeader: { backgroundColor: '#F4F7FA', fontFamily: 'Helvetica-Bold' },
+  tableCell: { flex: 1, padding: 4, fontSize: 9, borderRight: '0.5pt solid #E0E2EA' },
   hr: { borderBottom: '0.5pt solid #E0E2EA', marginVertical: 10 },
 });
 
-// Convert markdown into a sequence of PDF elements (minimal, safe subset)
+// Render inline formatting: **bold**, *italic*, `code` → <Text> spans
+function renderInline(text, keyPrefix = 'i') {
+  const parts = [];
+  const regex = /(\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|`[^`]+`)/g;
+  let lastIdx = 0; let m; let idx = 0;
+  while ((m = regex.exec(text)) !== null) {
+    if (m.index > lastIdx) parts.push(<Text key={`${keyPrefix}-${idx++}`}>{text.slice(lastIdx, m.index)}</Text>);
+    const token = m[0];
+    if (token.startsWith('**')) parts.push(<Text key={`${keyPrefix}-${idx++}`} style={pdfStyles.bold}>{token.slice(2, -2)}</Text>);
+    else if (token.startsWith('*') || token.startsWith('_')) parts.push(<Text key={`${keyPrefix}-${idx++}`} style={pdfStyles.italic}>{token.slice(1, -1)}</Text>);
+    else if (token.startsWith('`')) parts.push(<Text key={`${keyPrefix}-${idx++}`} style={pdfStyles.inlineCode}>{token.slice(1, -1)}</Text>);
+    lastIdx = m.index + token.length;
+  }
+  if (lastIdx < text.length) parts.push(<Text key={`${keyPrefix}-${idx++}`}>{text.slice(lastIdx)}</Text>);
+  return parts.length ? parts : [<Text key={`${keyPrefix}-0`}>{text}</Text>];
+}
+
 function MarkdownToPDF({ md }) {
   const lines = md.split('\n');
   const elements = [];
   let listBuffer = [];
+  let inCode = false;
+  let codeBuffer = [];
+  let tableBuffer = [];
+  let inTable = false;
 
   const flushList = () => {
     if (listBuffer.length) {
@@ -67,7 +99,7 @@ function MarkdownToPDF({ md }) {
           {listBuffer.map((t, i) => (
             <View key={i} style={pdfStyles.listItem}>
               <Text style={pdfStyles.bullet}>•</Text>
-              <Text style={pdfStyles.listText}>{t}</Text>
+              <Text style={pdfStyles.listText}>{renderInline(t, `li-${elements.length}-${i}`)}</Text>
             </View>
           ))}
         </View>
@@ -75,23 +107,72 @@ function MarkdownToPDF({ md }) {
       listBuffer = [];
     }
   };
+  const flushCode = () => {
+    if (codeBuffer.length) {
+      elements.push(
+        <View key={`code-${elements.length}`} style={pdfStyles.codeBlock}>
+          <Text>{codeBuffer.join('\n')}</Text>
+        </View>
+      );
+      codeBuffer = [];
+    }
+  };
+  const flushTable = () => {
+    if (tableBuffer.length >= 2) {
+      const rows = tableBuffer.filter((r) => !/^\s*\|?\s*[-:| ]+\|?\s*$/.test(r));
+      elements.push(
+        <View key={`tbl-${elements.length}`} style={{ marginVertical: 8 }}>
+          {rows.map((row, ri) => {
+            const cells = row.split('|').map((c) => c.trim()).filter((c, i, arr) => !(i === 0 && c === '') && !(i === arr.length - 1 && c === ''));
+            return (
+              <View key={ri} style={[pdfStyles.tableRow, ri === 0 ? pdfStyles.tableHeader : {}]}>
+                {cells.map((c, ci) => (
+                  <Text key={ci} style={pdfStyles.tableCell}>{renderInline(c, `tc-${ri}-${ci}`)}</Text>
+                ))}
+              </View>
+            );
+          })}
+        </View>
+      );
+    }
+    tableBuffer = [];
+    inTable = false;
+  };
 
   lines.forEach((raw, idx) => {
     const line = raw.trimEnd();
+
+    if (line.startsWith('```')) {
+      if (inCode) { flushCode(); inCode = false; }
+      else { flushList(); flushTable(); inCode = true; }
+      return;
+    }
+    if (inCode) { codeBuffer.push(line); return; }
+
+    // Detect table
+    if (line.includes('|') && line.trim().startsWith('|')) {
+      if (!inTable) { flushList(); inTable = true; }
+      tableBuffer.push(line);
+      return;
+    }
+    if (inTable) flushTable();
+
     if (!line.trim()) { flushList(); return; }
-    if (line.startsWith('# ')) { flushList(); elements.push(<Text key={idx} style={pdfStyles.h1}>{line.slice(2)}</Text>); return; }
-    if (line.startsWith('## ')) { flushList(); elements.push(<Text key={idx} style={pdfStyles.h2}>{line.slice(3)}</Text>); return; }
-    if (line.startsWith('### ')) { flushList(); elements.push(<Text key={idx} style={pdfStyles.h3}>{line.slice(4)}</Text>); return; }
-    if (line.startsWith('> ')) { flushList(); elements.push(<View key={idx} style={pdfStyles.quote}><Text>{line.slice(2)}</Text></View>); return; }
-    if (line === '---') { flushList(); elements.push(<View key={idx} style={pdfStyles.hr} />); return; }
+    if (line.startsWith('# ')) { flushList(); elements.push(<Text key={idx} style={pdfStyles.h1}>{renderInline(line.slice(2), `h1-${idx}`)}</Text>); return; }
+    if (line.startsWith('## ')) { flushList(); elements.push(<Text key={idx} style={pdfStyles.h2}>{renderInline(line.slice(3), `h2-${idx}`)}</Text>); return; }
+    if (line.startsWith('### ')) { flushList(); elements.push(<Text key={idx} style={pdfStyles.h3}>{renderInline(line.slice(4), `h3-${idx}`)}</Text>); return; }
+    if (line.startsWith('> ')) { flushList(); elements.push(<View key={idx} style={pdfStyles.quote}><Text>{renderInline(line.slice(2), `q-${idx}`)}</Text></View>); return; }
+    if (line === '---' || line === '***') { flushList(); elements.push(<View key={idx} style={pdfStyles.hr} />); return; }
     const bulletMatch = line.match(/^[-*]\s+(.*)/);
     const numMatch = line.match(/^\d+\.\s+(.*)/);
     if (bulletMatch) { listBuffer.push(bulletMatch[1]); return; }
     if (numMatch) { listBuffer.push(numMatch[1]); return; }
     flushList();
-    elements.push(<Text key={idx} style={pdfStyles.p}>{line}</Text>);
+    elements.push(<Text key={idx} style={pdfStyles.p}>{renderInline(line, `p-${idx}`)}</Text>);
   });
   flushList();
+  flushCode();
+  flushTable();
   return <>{elements}</>;
 }
 
@@ -144,7 +225,7 @@ export default function Resource() {
           title={data.title}
           desc={data.module_id ? `Material del curso · ${data.module_id.replace('mod-ia-', 'Módulo ').replace('01','I').replace('02','II').replace('03','III').replace('04','IV')}` : 'Material transversal del curso'}
         />
-        <div className="inner-content" style={{ maxWidth: 820 }}>
+        <div className="inner-content" style={{ maxWidth: 960 }}>
           <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '.75rem', flexWrap: 'wrap' }}>
             <Link to="/dashboard" style={{ color: 'var(--blue)', fontSize: '.875rem' }}>← Volver a mis cursos</Link>
             {downloadable && (
@@ -155,12 +236,15 @@ export default function Resource() {
                 style={{ fontSize: '.88rem', padding: '.55rem 1.2rem' }}
                 data-testid="resource-download-pdf"
               >
-                {({ loading }) => loading ? 'Preparando PDF…' : '📄 Descargar PDF'}
+                {({ loading, error }) => {
+                  if (error) return 'Error al generar PDF';
+                  return loading ? 'Preparando PDF…' : '📄 Descargar PDF';
+                }}
               </PDFDownloadLink>
             )}
           </div>
           <div className="lesson-body" data-testid="resource-body">
-            <ReactMarkdown>{data.content_md}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.content_md}</ReactMarkdown>
           </div>
         </div>
       </div>
