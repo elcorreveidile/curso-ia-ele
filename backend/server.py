@@ -637,9 +637,24 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
 @api.get("/checkout/status/{session_id}")
 async def checkout_status(session_id: str, request: Request):
     stripe = _stripe_for(request)
-    status_resp: CheckoutStatusResponse = await stripe.get_checkout_status(session_id)
-
     tx = await db.payment_transactions.find_one({"session_id": session_id})
+    user_email = (tx or {}).get("user_email") if tx else None
+
+    try:
+        status_resp: CheckoutStatusResponse = await stripe.get_checkout_status(session_id)
+    except Exception as exc:
+        log.warning("Stripe status check failed for %s: %s", session_id, exc)
+        # Fall back to DB-only view so the success page keeps polling gracefully
+        return {
+            "status": (tx or {}).get("status", "unknown"),
+            "payment_status": (tx or {}).get("payment_status", "unknown"),
+            "amount_total": (tx or {}).get("amount_cents"),
+            "currency": (tx or {}).get("currency", "eur"),
+            "enrollment": None,
+            "user_email": user_email,
+            "error": "stripe_unavailable",
+        }
+
     if tx:
         await db.payment_transactions.update_one(
             {"session_id": session_id},
@@ -653,9 +668,6 @@ async def checkout_status(session_id: str, request: Request):
     enrollment = None
     if status_resp.payment_status == "paid":
         enrollment = await _ensure_enrollment_from_session(session_id)
-
-    # Include user email to aid magic-link suggestion on success page
-    user_email = (tx or {}).get("user_email") if tx else None
 
     return {
         "status": status_resp.status,
