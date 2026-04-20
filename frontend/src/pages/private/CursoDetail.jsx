@@ -35,6 +35,16 @@ export default function CursoDetail() {
           desc={data.course.description}
         />
         <div className="inner-content">
+          <div style={{ marginBottom: '1rem' }}>
+            <Link
+              to={`/curso/${slug}/recursos`}
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-resources"
+            >
+              📚 Ver todos los materiales del curso
+            </Link>
+          </div>
           <div className="dash-section">
             <h2 className="dash-title">Módulos</h2>
             {data.modules.map((m) => (

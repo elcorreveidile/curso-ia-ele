@@ -9,13 +9,18 @@ import { api } from '../../lib/api';
 export default function ModuleDetail() {
   const { slug, moduleId } = useParams();
   const [data, setData] = useState(null);
+  const [resources, setResources] = useState([]);
   const [err, setErr] = useState('');
 
   useEffect(() => {
     api.get(`/course/${slug}/content`)
       .then((r) => setData(r.data))
       .catch((e) => setErr(e.response?.data?.detail || 'Error'));
-  }, [slug]);
+    api.get(`/course/${slug}/resources`).then((r) => {
+      const m = (r.data.modules || []).find((x) => x.module_id === moduleId);
+      setResources(m?.resources || []);
+    }).catch(() => {});
+  }, [slug, moduleId]);
 
   // Mark lessons as viewed when they appear on screen
   useEffect(() => {
@@ -33,6 +38,8 @@ export default function ModuleDetail() {
   const entry = data.modules.find((m) => m.module.id === moduleId);
   if (!entry) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>Módulo no encontrado.</div><Footer /></>;
   if (!entry.unlocked) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>🔒 Este módulo aún está bloqueado.</div><Footer /></>;
+
+  const moduleResources = resources;
 
   return (
     <>
@@ -73,6 +80,22 @@ export default function ModuleDetail() {
               >
                 Abrir tarea →
               </Link>
+            </div>
+          )}
+
+          {moduleResources.length > 0 && (
+            <div className="dash-section" style={{ marginTop: '2rem' }} data-testid="module-resources">
+              <h2 className="dash-title">📚 Materiales de este módulo</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '.75rem' }}>
+                {moduleResources.map((r) => (
+                  <Link key={r.slug} to={`/recurso/${r.slug}`} className="res-card" data-testid={`module-resource-${r.slug}`}>
+                    <span className="res-card__type">
+                      {r.type === 'lectura' ? '📖' : r.type === 'plantilla' ? '📝' : r.type === 'rubrica' ? '✅' : '📄'} {r.type_label}
+                    </span>
+                    <span className="res-card__title">{r.title}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </div>

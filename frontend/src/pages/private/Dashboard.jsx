@@ -75,6 +75,14 @@ export default function Dashboard() {
                     >
                       {p.percent > 0 ? 'Continuar curso →' : 'Entrar al curso →'}
                     </Link>
+                    <Link
+                      to={`/curso/${e.course?.slug}/recursos`}
+                      className="btn btn--ghost"
+                      style={{ fontSize: '.85rem' }}
+                      data-testid={`dashboard-resources-${e.course?.slug}`}
+                    >
+                      📚 Materiales
+                    </Link>
                   </div>
                 );
               })}

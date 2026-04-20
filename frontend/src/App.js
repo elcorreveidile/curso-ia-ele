@@ -29,6 +29,8 @@ import Admin from './pages/admin/Admin';
 import Certificate from './pages/public/Certificate';
 import Contacto from './pages/public/Contacto';
 import Cuestionario from './pages/public/Cuestionario';
+import Resource from './pages/private/Resource';
+import CourseResources from './pages/private/CourseResources';
 
 export default function App() {
   return (
@@ -63,6 +65,8 @@ export default function App() {
             <Route path="/curso/:slug/modulo/:moduleId" element={<Protected><ModuleDetail /></Protected>} />
             <Route path="/curso/:slug/tarea/:taskId" element={<Protected><TaskDetail /></Protected>} />
             <Route path="/curso/:slug/tarea/:taskId/foro" element={<Protected><Forum /></Protected>} />
+            <Route path="/curso/:slug/recursos" element={<Protected><CourseResources /></Protected>} />
+            <Route path="/recurso/:slug" element={<Protected><Resource /></Protected>} />
 
             <Route path="/admin" element={<Protected adminOnly><Admin /></Protected>} />
 

@@ -5,6 +5,7 @@ import asyncio
 import hashlib
 import logging
 import os
+import re
 import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -450,6 +451,131 @@ async def seed_database() -> None:
 @app.on_event("startup")
 async def on_startup() -> None:
     await seed_database()
+    await seed_resources()
+
+
+# ─────────────────────────── Resources (course materials) ─────
+RESOURCE_TYPES = {  # folder hints → type label
+    "lecturas": "lectura",
+    "casos-reales": "lectura",
+    "guias-comparativas": "lectura",
+    "guias-herramientas": "lectura",
+    "criterios-calidad": "lectura",
+    "banco-mcer": "lectura",
+    "tutoriales": "lectura",
+    "plantillas": "plantilla",
+    "rubricas": "rubrica",
+    "glosarios": "glosario",
+    "evaluacion": "encuesta",
+}
+
+RESOURCE_LABELS = {
+    "lectura": "Lectura",
+    "plantilla": "Plantilla",
+    "rubrica": "Rúbrica",
+    "glosario": "Glosario",
+    "encuesta": "Encuesta",
+}
+
+MODULE_BY_FOLDER = {
+    "modulo-01-etica": "mod-ia-01",
+    "modulo-02-asistentes": "mod-ia-02",
+    "modulo-03-planificacion": "mod-ia-03",
+    "modulo-04-recursos": "mod-ia-04",
+    "transversales": None,
+}
+
+SKIP_FOLDERS = {"videos", "propuesta"}
+SKIP_FILES = {"GUIA_IMPLEMENTACION_MOODLE_COMPLETA.md", "GUIA_INICIO_MOODLE.md"}
+
+
+def _slugify(name: str) -> str:
+    s = name.lower()
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s[:80] or "recurso"
+
+
+async def seed_resources() -> None:
+    base = Path("/app/legacy/materiales")
+    if not base.exists():
+        log.warning("No materials folder at %s, skipping resources seed", base)
+        return
+    count_new = 0
+    count_updated = 0
+    for md_file in base.rglob("*.md"):
+        rel = md_file.relative_to(base)
+        parts = rel.parts
+        if any(p in SKIP_FOLDERS for p in parts):
+            continue
+        if md_file.name in SKIP_FILES:
+            continue
+
+        top_folder = parts[0]
+        if top_folder not in MODULE_BY_FOLDER:
+            continue
+        module_id = MODULE_BY_FOLDER[top_folder]
+
+        # Detect type from the parent folder (second segment)
+        kind_folder = parts[1] if len(parts) > 2 else ""
+        rtype = RESOURCE_TYPES.get(kind_folder, "lectura")
+
+        content = md_file.read_text(encoding="utf-8", errors="ignore")
+        # Try several heading candidates; skip generic ones like "ÍNDICE", "TABLA", "TOC"
+        title = None
+        for m in re.finditer(r"^#\s+(.+)$", content, re.MULTILINE):
+            candidate = m.group(1).strip()
+            upper = candidate.upper().strip("·: .")
+            if upper in {"ÍNDICE", "INDICE", "TABLA DE CONTENIDOS", "CONTENIDO", "TOC", "TABLE OF CONTENTS"}:
+                continue
+            title = candidate
+            break
+        if not title:
+            title = md_file.stem.replace("_", " ").replace("-", " ").title()
+        # Normalize: if the title is all uppercase (shouty), apply smart title case
+        def _smart_case(s: str) -> str:
+            letters = [c for c in s if c.isalpha()]
+            if not letters:
+                return s
+            if all(c.isupper() for c in letters):
+                # Convert to Title Case but keep small connectors lowercase
+                small = {"de", "del", "la", "el", "los", "las", "y", "o", "u", "con",
+                         "para", "por", "en", "a", "al", "ele", "ia", "mcer"}
+                words = s.lower().split()
+                out = []
+                for i, w in enumerate(words):
+                    core = w.strip(":·.,;!?")
+                    if i > 0 and core in small:
+                        out.append(w)
+                    else:
+                        out.append(w[:1].upper() + w[1:])
+                res = " ".join(out)
+                # Re-uppercase acronyms
+                for ac in ("ELE", "IA", "MCER", "ChatGPT", "PDF", "A1", "A2", "B1", "B2", "C1", "C2"):
+                    res = re.sub(rf"\b{ac}\b", ac, res, flags=re.IGNORECASE)
+                return res
+            return s
+        title = _smart_case(title)
+
+        slug = _slugify(md_file.stem)
+        existing = await db.resources.find_one({"slug": slug})
+        doc = {
+            "slug": slug,
+            "title": title,
+            "type": rtype,
+            "module_id": module_id,  # None → transversal
+            "course_id": "course-ia-ele",
+            "content_md": content,
+            "source_path": str(rel),
+            "updated_at": now_utc(),
+        }
+        if existing:
+            await db.resources.update_one({"slug": slug}, {"$set": doc})
+            count_updated += 1
+        else:
+            doc.update({"id": new_id(), "created_at": now_utc()})
+            await db.resources.insert_one(doc)
+            count_new += 1
+    log.info("Resources seeded: %d new, %d updated", count_new, count_updated)
 
 
 # ─────────────────────────── Public routes ─────────────────────
@@ -1053,6 +1179,69 @@ async def admin_feedback(
         )
         await send_email(student["email"], "Feedback disponible · La Clase Digital", html)
     return clean_doc(await db.submissions.find_one({"id": submission_id}))
+
+
+# ─────────────────────────── Resources endpoints ──────────────
+@api.get("/course/{slug}/resources")
+async def list_course_resources(slug: str, user: dict = Depends(current_user)):
+    await _ensure_enrollment_for(user, slug)
+    course = await db.courses.find_one({"slug": slug})
+    if not course:
+        raise HTTPException(404, "Curso no encontrado")
+
+    # Group by module
+    modules = []
+    async for m in db.modules.find({"course_id": course["id"]}).sort("order", 1):
+        items = []
+        async for r in db.resources.find({"course_id": course["id"], "module_id": m["id"]}).sort([("type", 1), ("title", 1)]):
+            items.append({
+                "slug": r["slug"], "title": r["title"],
+                "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+                "module_id": m["id"],
+            })
+        modules.append({
+            "module_id": m["id"], "order": m["order"], "title": m["title"],
+            "unlocked": bool(m.get("unlocked_at")) or user.get("role") == "admin",
+            "resources": items,
+        })
+
+    # Transversal resources (module_id null)
+    transversal = []
+    async for r in db.resources.find({"course_id": course["id"], "module_id": None}).sort("title", 1):
+        transversal.append({
+            "slug": r["slug"], "title": r["title"],
+            "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+            "module_id": None,
+        })
+
+    return {"modules": modules, "transversal": transversal}
+
+
+@api.get("/resource/{slug}")
+async def get_resource(slug: str, user: dict = Depends(current_user)):
+    r = await db.resources.find_one({"slug": slug})
+    if not r:
+        raise HTTPException(404, "Recurso no encontrado")
+    # Validate enrollment (transversal resources still require enrollment)
+    course = await db.courses.find_one({"id": r["course_id"]})
+    if course:
+        await _ensure_enrollment_for(user, course["slug"])
+    return {
+        "slug": r["slug"],
+        "title": r["title"],
+        "type": r["type"],
+        "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+        "content_md": r["content_md"],
+        "module_id": r.get("module_id"),
+        "updated_at": iso(r.get("updated_at")),
+    }
+
+
+@api.post("/admin/resources/reseed")
+async def admin_reseed_resources(user: dict = Depends(current_admin)):
+    await seed_resources()
+    total = await db.resources.count_documents({})
+    return {"ok": True, "total": total}
 
 
 @api.delete("/admin/enrollment/{enrollment_id}")
