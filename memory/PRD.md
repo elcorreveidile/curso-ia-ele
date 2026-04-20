@@ -34,6 +34,28 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 3 (2026-04-20)
+- ✅ **Cuestionario de diagnóstico** `/cuestionario` portado del legacy:
+  27 preguntas en 4 bloques (perfil · práctica · IA · expectativas),
+  Likert 1-5, radio, checkbox, textarea. Scoring con 3 dimensiones
+  (práctica/actitud/uso) ponderadas 40/30/30 → 4 perfiles A/B/C/D
+  con descripción personalizada y módulos clave. Backend guarda en
+  `quiz_results` y envía email al admin con reply-to al visitante.
+- ✅ **Dashboard con barra de progreso por curso**: lecciones vistas
+  (`user_progress`), entregas enviadas/revisadas, porcentaje global.
+  Las lecciones se marcan como vistas automáticamente al entrar al módulo.
+  CTA cambia a "Continuar curso →" si hay progreso > 0.
+- ✅ **Exportar inscripciones a CSV** desde panel admin: GET
+  `/api/admin/export/enrollments.csv` con Content-Type correcto y
+  descarga automática con fetch+Bearer+Blob. Columnas:
+  `enrollment_id, email, nombre, curso, importe_eur, was_founder,
+   status, paid_at, stripe_payment_id`.
+- ✅ **Admin responsive refinado**: tabla con scroll horizontal en
+  móvil, botón export al lado del título de la sección.
+- ✅ **Nuevos formularios con fondo de Reply-To dinámico**: el contacto
+  y el quiz envían emails al admin con `reply_to` = email del visitante.
+- ✅ Backend 49/49 tests passed (11 nuevos + 38 regresión).
+
 ## Implementado en iteración 2 (2026-04-20)
 - ✅ **Contador plazas fundador** global: banner fijo en el top con cierre
   (session-based) y chip en la navbar con número de plazas restantes
