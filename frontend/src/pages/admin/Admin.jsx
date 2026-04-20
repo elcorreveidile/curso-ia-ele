@@ -50,6 +50,16 @@ export default function Admin() {
     }
   };
 
+  const deleteEnrollment = async (enrollmentId, email) => {
+    if (!window.confirm(`¿Eliminar definitivamente la inscripción de ${email}?\n\nSe borrarán también sus entregas, mensajes en foro, progreso y certificado.\nEsta acción no se puede deshacer.`)) return;
+    try {
+      await api.delete(`/admin/enrollment/${enrollmentId}`);
+      load();
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error eliminando inscripción');
+    }
+  };
+
   if (!data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>Cargando…</div><Footer /></>;
 
   return (
@@ -112,7 +122,7 @@ export default function Admin() {
             <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
               <table className="admin-table" data-testid="admin-enrollments-table">
                 <thead>
-                  <tr><th>Email</th><th>Curso</th><th>Importe</th><th>Tipo</th><th>Fecha</th><th>Certificado</th></tr>
+                  <tr><th>Email</th><th>Curso</th><th>Importe</th><th>Tipo</th><th>Fecha</th><th>Certificado</th><th></th></tr>
                 </thead>
                 <tbody>
                   {data.enrollments.map((e) => (
@@ -134,6 +144,17 @@ export default function Admin() {
                           data-testid={`admin-cert-${e.enrollment.id}`}
                         >
                           🏅 Emitir
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn--ghost"
+                          style={{ fontSize: '.78rem', padding: '.4rem .7rem', color: 'var(--clm-red)', borderColor: 'var(--clm-red-light)' }}
+                          onClick={() => deleteEnrollment(e.enrollment.id, e.user?.email || '')}
+                          title="Eliminar inscripción"
+                          data-testid={`admin-delete-enrollment-${e.enrollment.id}`}
+                        >
+                          🗑
                         </button>
                       </td>
                     </tr>

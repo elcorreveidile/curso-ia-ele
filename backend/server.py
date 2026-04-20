@@ -1055,6 +1055,51 @@ async def admin_feedback(
     return clean_doc(await db.submissions.find_one({"id": submission_id}))
 
 
+@api.delete("/admin/enrollment/{enrollment_id}")
+async def admin_delete_enrollment(enrollment_id: str, user: dict = Depends(current_admin)):
+    """Delete an enrollment and its related data (submissions, threads, progress, certificates).
+
+    If the enrollment used a founder seat, decrement founder_seats_taken and
+    re-activate is_founder_edition if it was flipped off because of this one.
+    The user document itself is preserved (they may re-enroll or be admin).
+    """
+    enrollment = await db.enrollments.find_one({"id": enrollment_id})
+    if not enrollment:
+        raise HTTPException(404, "Inscripción no encontrada")
+
+    user_id = enrollment["user_id"]
+    course_id = enrollment["course_id"]
+
+    # Clean related artefacts scoped to this user+course
+    module_ids = [m["id"] async for m in db.modules.find({"course_id": course_id}, {"id": 1})]
+    task_ids = [t["id"] async for t in db.tasks.find({"module_id": {"$in": module_ids}}, {"id": 1})]
+    lesson_ids = [le["id"] async for le in db.lessons.find({"module_id": {"$in": module_ids}}, {"id": 1})]
+
+    deleted = {
+        "submissions": (await db.submissions.delete_many({"user_id": user_id, "task_id": {"$in": task_ids}})).deleted_count if task_ids else 0,
+        "threads": (await db.threads.delete_many({"user_id": user_id, "task_id": {"$in": task_ids}})).deleted_count if task_ids else 0,
+        "user_progress": (await db.user_progress.delete_many({"user_id": user_id, "lesson_id": {"$in": lesson_ids}})).deleted_count if lesson_ids else 0,
+        "certificates": (await db.certificates.delete_many({"enrollment_id": enrollment_id})).deleted_count,
+        "payment_transactions": (await db.payment_transactions.delete_many({"enrollment_id": enrollment_id})).deleted_count,
+    }
+
+    # Restore founder seat if applicable
+    if enrollment.get("was_founder"):
+        course = await db.courses.find_one({"id": course_id})
+        if course:
+            new_taken = max(0, (course.get("founder_seats_taken") or 0) - 1)
+            update: dict[str, Any] = {"founder_seats_taken": new_taken}
+            # Re-open founder edition if we freed a seat and we were sold out
+            if new_taken < (course.get("founder_seats") or 0) and not course.get("is_founder_edition"):
+                update["is_founder_edition"] = True
+            await db.courses.update_one({"id": course_id}, {"$set": update})
+
+    # Finally delete the enrollment
+    await db.enrollments.delete_one({"id": enrollment_id})
+
+    return {"ok": True, "deleted": deleted}
+
+
 # ─────────────────────────── Upload (Cloudinary) ───────────────
 @api.post("/upload")
 async def upload_file(file: UploadFile = File(...), user: dict = Depends(current_user)):
