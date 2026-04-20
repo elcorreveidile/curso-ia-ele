@@ -406,7 +406,7 @@ En la actividad de este módulo, escribirás tu propia declaración de uso étic
 
 **En español:**
 - **UNESCO (2021):** "Recomendación sobre la ética de la inteligencia artificial"
-  - Disponible en: https://unesdoc.unesco.org/ark:/48223/pf0000386510_spa?posInSet=1&queryId=6947509f-b218-4625-ab8e-d505cefadd25
+  - Disponible en: https://unesdoc.unesco.org/ark:/48223/pf0000386510_spa?posInSet=1&queryId=teach-preview
   - Capítulo 4: Educación y formación.
 
 - **Instituto Cervantes (2023):** "La IA en la enseñanza de ELE: Jornadas"
