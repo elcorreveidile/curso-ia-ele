@@ -1,6 +1,7 @@
 """La Clase Digital - Backend FastAPI."""
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import logging
 import os
@@ -21,9 +22,9 @@ from pydantic import BaseModel, EmailStr, Field
 from emergentintegrations.payments.stripe.checkout import (
     CheckoutSessionRequest,
     CheckoutSessionResponse,
-    CheckoutStatusResponse,
     StripeCheckout,
 )
+import stripe as stripe_sdk
 
 import cloudinary
 import cloudinary.uploader
@@ -55,6 +56,9 @@ if CLOUDINARY_CLOUD_NAME:
         api_secret=CLOUDINARY_API_SECRET,
         secure=True,
     )
+
+# Configure official Stripe SDK (used for status checks / idempotent confirmation)
+stripe_sdk.api_key = STRIPE_API_KEY
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("laclasedigital")
@@ -693,15 +697,15 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
 
 @api.get("/checkout/status/{session_id}")
 async def checkout_status(session_id: str, request: Request):
-    stripe = _stripe_for(request)
     tx = await db.payment_transactions.find_one({"session_id": session_id})
     user_email = (tx or {}).get("user_email") if tx else None
 
     try:
-        status_resp: CheckoutStatusResponse = await stripe.get_checkout_status(session_id)
+        session = await asyncio.to_thread(
+            stripe_sdk.checkout.Session.retrieve, session_id
+        )
     except Exception as exc:
-        log.warning("Stripe status check failed for %s: %s", session_id, exc)
-        # Fall back to DB-only view so the success page keeps polling gracefully
+        log.warning("Stripe session retrieve failed for %s: %s", session_id, exc)
         return {
             "status": (tx or {}).get("status", "unknown"),
             "payment_status": (tx or {}).get("payment_status", "unknown"),
@@ -712,25 +716,30 @@ async def checkout_status(session_id: str, request: Request):
             "error": "stripe_unavailable",
         }
 
+    status_str = getattr(session, "status", None) or "open"
+    payment_status = getattr(session, "payment_status", None) or "unpaid"
+    amount_total = getattr(session, "amount_total", None)
+    currency = getattr(session, "currency", None) or "eur"
+
     if tx:
         await db.payment_transactions.update_one(
             {"session_id": session_id},
             {"$set": {
-                "status": status_resp.status,
-                "payment_status": status_resp.payment_status,
+                "status": status_str,
+                "payment_status": payment_status,
                 "updated_at": now_utc(),
             }},
         )
 
     enrollment = None
-    if status_resp.payment_status == "paid":
+    if payment_status == "paid":
         enrollment = await _ensure_enrollment_from_session(session_id)
 
     return {
-        "status": status_resp.status,
-        "payment_status": status_resp.payment_status,
-        "amount_total": status_resp.amount_total,
-        "currency": status_resp.currency,
+        "status": status_str,
+        "payment_status": payment_status,
+        "amount_total": amount_total,
+        "currency": currency,
         "enrollment": clean_doc(enrollment) if enrollment else None,
         "user_email": user_email,
     }
@@ -738,16 +747,42 @@ async def checkout_status(session_id: str, request: Request):
 
 @api.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
+    """Stripe webhook handler using official SDK directly.
+
+    Bypasses emergentintegrations wrapper (had Pydantic validation issues
+    with StripeObject → dict on metadata). We only care about
+    `checkout.session.completed` events to confirm enrollments.
+    """
     body = await request.body()
-    signature = request.headers.get("Stripe-Signature", "")
-    stripe = _stripe_for(request)
-    try:
-        event = await stripe.handle_webhook(body, signature)
-    except Exception as exc:
-        log.exception("Webhook error: %s", exc)
-        raise HTTPException(status_code=400, detail="Webhook inválido")
-    if event.payment_status == "paid" and event.session_id:
-        await _ensure_enrollment_from_session(event.session_id)
+    sig_header = request.headers.get("Stripe-Signature", "")
+    webhook_secret = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+
+    event_data: dict[str, Any]
+    if webhook_secret:
+        try:
+            event = stripe_sdk.Webhook.construct_event(body, sig_header, webhook_secret)
+            event_data = event["data"]["object"]
+            event_type = event["type"]
+        except Exception as exc:
+            log.exception("Webhook signature verification failed: %s", exc)
+            raise HTTPException(status_code=400, detail="Invalid webhook signature") from exc
+    else:
+        # Dev/test: accept unsigned events — DO NOT use in production without STRIPE_WEBHOOK_SECRET
+        import json as _json
+        try:
+            event_json = _json.loads(body.decode("utf-8"))
+            event_data = event_json["data"]["object"]
+            event_type = event_json.get("type", "")
+        except Exception as exc:
+            log.exception("Webhook parse error: %s", exc)
+            raise HTTPException(status_code=400, detail="Invalid webhook payload") from exc
+
+    if event_type == "checkout.session.completed":
+        session_id = event_data.get("id")
+        payment_status = event_data.get("payment_status")
+        if session_id and payment_status == "paid":
+            await _ensure_enrollment_from_session(session_id)
+
     return {"received": True}
 
 
