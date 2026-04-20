@@ -41,6 +41,7 @@ STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 RESEND_FROM = os.environ.get("RESEND_FROM", "curso@laclasedigital.com")
 RESEND_FROM_NAME = os.environ.get("RESEND_FROM_NAME", "La Clase Digital")
+RESEND_REPLY_TO = os.environ.get("RESEND_REPLY_TO", "")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "benitezl@go.ugr.es")
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "").rstrip("/")
 
@@ -91,6 +92,14 @@ async def send_email(to_email: str, subject: str, html: str) -> None:
     if not RESEND_API_KEY:
         log.warning("RESEND_API_KEY missing, skipping email to %s", to_email)
         return
+    payload: dict[str, Any] = {
+        "from": f"{RESEND_FROM_NAME} <{RESEND_FROM}>",
+        "to": [to_email],
+        "subject": subject,
+        "html": html,
+    }
+    if RESEND_REPLY_TO:
+        payload["reply_to"] = RESEND_REPLY_TO
     try:
         async with httpx.AsyncClient(timeout=15) as client:
             r = await client.post(
@@ -99,12 +108,7 @@ async def send_email(to_email: str, subject: str, html: str) -> None:
                     "Authorization": f"Bearer {RESEND_API_KEY}",
                     "Content-Type": "application/json",
                 },
-                json={
-                    "from": f"{RESEND_FROM_NAME} <{RESEND_FROM}>",
-                    "to": [to_email],
-                    "subject": subject,
-                    "html": html,
-                },
+                json=payload,
             )
             if r.status_code >= 300:
                 log.error("Resend error %s: %s", r.status_code, r.text)
