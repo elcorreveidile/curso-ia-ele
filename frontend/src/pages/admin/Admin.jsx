@@ -40,6 +40,16 @@ export default function Admin() {
     }
   };
 
+  const issueCertificate = async (enrollmentId) => {
+    try {
+      const r = await api.post('/admin/certificate/issue', { enrollment_id: enrollmentId, hours: 20 });
+      alert(`Certificado emitido · ID: ${r.data.id.slice(0, 8).toUpperCase()}\nEnlace público: /certificado/${r.data.id}`);
+      load();
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error emitiendo certificado');
+    }
+  };
+
   if (!data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>Cargando…</div><Footer /></>;
 
   return (
@@ -76,7 +86,7 @@ export default function Admin() {
             <div style={{ overflowX: 'auto' }}>
               <table className="admin-table" data-testid="admin-enrollments-table">
                 <thead>
-                  <tr><th>Email</th><th>Curso</th><th>Importe</th><th>Tipo</th><th>Fecha</th></tr>
+                  <tr><th>Email</th><th>Curso</th><th>Importe</th><th>Tipo</th><th>Fecha</th><th>Certificado</th></tr>
                 </thead>
                 <tbody>
                   {data.enrollments.map((e) => (
@@ -90,6 +100,16 @@ export default function Admin() {
                         </span>
                       </td>
                       <td>{new Date(e.enrollment.paid_at).toLocaleDateString('es-ES')}</td>
+                      <td>
+                        <button
+                          className="btn btn--ghost"
+                          style={{ fontSize: '.78rem', padding: '.4rem .9rem' }}
+                          onClick={() => issueCertificate(e.enrollment.id)}
+                          data-testid={`admin-cert-${e.enrollment.id}`}
+                        >
+                          🏅 Emitir
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -172,10 +192,31 @@ function ModulesControl() {
     load();
   };
 
+  const reorder = async (moduleId, direction) => {
+    await api.post('/admin/modules/reorder', { module_id: moduleId, direction });
+    load();
+  };
+
   return (
     <div>
-      {modules.map((m) => (
+      {modules.map((m, idx) => (
         <div key={m.module.id} className={`module-row ${m.module.unlocked_at ? 'module-row--unlocked' : 'module-row--locked'}`}>
+          <div className="reorder-btns">
+            <button
+              className="reorder-btn"
+              onClick={() => reorder(m.module.id, 'up')}
+              disabled={idx === 0}
+              aria-label="Subir"
+              data-testid={`admin-module-up-${m.module.order}`}
+            >▲</button>
+            <button
+              className="reorder-btn"
+              onClick={() => reorder(m.module.id, 'down')}
+              disabled={idx === modules.length - 1}
+              aria-label="Bajar"
+              data-testid={`admin-module-down-${m.module.order}`}
+            >▼</button>
+          </div>
           <div className="module-row__num">{m.module.order}</div>
           <div style={{ flex: 1 }}>
             <div className="module-row__title">{m.module.title}</div>

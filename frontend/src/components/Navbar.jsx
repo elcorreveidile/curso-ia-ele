@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { useCourse } from '../lib/course';
 
 const publicLinks = [
   { to: '/descripcion', label: 'El curso' },
@@ -15,7 +16,13 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { course } = useCourse();
   const navigate = useNavigate();
+
+  const seatsLeft = course
+    ? Math.max(0, course.founder_seats - course.founder_seats_taken)
+    : null;
+  const founderActive = course?.is_founder_edition && seatsLeft > 0;
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 20);
@@ -30,6 +37,19 @@ export default function Navbar() {
       <NavLink to="/" className="inner-nav__logo" onClick={close} data-testid="nav-logo">
         <span className="pipe">[|]</span>La Clase<span className="brand-chip">Digital</span>
       </NavLink>
+      {founderActive && (
+        <NavLink
+          to="/precios"
+          className="nav-seats-chip"
+          onClick={close}
+          data-testid="nav-seats-chip"
+          title={`Precio fundador ${(course.price_founder_eur / 100).toFixed(0)} €`}
+        >
+          <span className="nav-seats-chip__dot" />
+          <span className="nav-seats-chip__num">{seatsLeft}</span>
+          <span className="nav-seats-chip__label">/ {course.founder_seats} plazas fundador</span>
+        </NavLink>
+      )}
       <div className={`inner-nav__links${open ? ' open' : ''}`}>
         {publicLinks.map((l) => (
           <NavLink

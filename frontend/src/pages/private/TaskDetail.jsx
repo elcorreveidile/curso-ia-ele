@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
+import FileUpload from '../../components/FileUpload';
 import { api } from '../../lib/api';
 
 export default function TaskDetail() {
@@ -59,8 +60,16 @@ export default function TaskDetail() {
                 <textarea className="form-input" value={content} onChange={(e) => setContent(e.target.value)} required data-testid="task-submit-content" />
               </div>
               <div className="form-group">
-                <label>URL de archivo adjunto (opcional)</label>
-                <input type="url" className="form-input" placeholder="https://…" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} data-testid="task-submit-fileurl" />
+                <label>Archivo adjunto (opcional)</label>
+                <FileUpload
+                  testid="task-file-upload"
+                  onUploaded={(info) => setFileUrl(info?.url || '')}
+                />
+                {fileUrl && (
+                  <p style={{ fontSize: '.82rem', marginTop: '.4rem' }}>
+                    📎 <a href={fileUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }}>Ver archivo subido</a>
+                  </p>
+                )}
               </div>
               {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
               <button className="btn btn--primary" disabled={sending} data-testid="task-submit-btn">

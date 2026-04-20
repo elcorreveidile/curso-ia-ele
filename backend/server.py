@@ -25,6 +25,10 @@ from emergentintegrations.payments.stripe.checkout import (
     StripeCheckout,
 )
 
+import cloudinary
+import cloudinary.uploader
+from fastapi import UploadFile, File
+
 # ─────────────────────────── Config ────────────────────────────
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / ".env")
@@ -39,6 +43,17 @@ RESEND_FROM = os.environ.get("RESEND_FROM", "curso@laclasedigital.com")
 RESEND_FROM_NAME = os.environ.get("RESEND_FROM_NAME", "La Clase Digital")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "benitezl@go.ugr.es")
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "").rstrip("/")
+
+CLOUDINARY_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
+CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY", "")
+CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "")
+if CLOUDINARY_CLOUD_NAME:
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+        secure=True,
+    )
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("laclasedigital")
@@ -599,7 +614,7 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
                 update["is_founder_edition"] = False
             await db.courses.update_one({"id": course["id"]}, {"$set": update})
 
-        # Welcome email
+        # Welcome email to student
         amount_eur = tx["amount_cents"] / 100
         price_line = (
             f"<strong>{amount_eur:.2f} €</strong>"
@@ -621,6 +636,25 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             """
         )
         await send_email(user["email"], "Inscripción confirmada · La Clase Digital", html)
+
+        # Notify admin of new enrollment
+        admin_html = wrap_email(
+            f"""
+            <h3>Nueva inscripción</h3>
+            <p><strong>{user['email']}</strong> se ha inscrito en <strong>{course['title']}</strong>.</p>
+            <ul>
+              <li>Importe: {amount_eur:.2f} €</li>
+              <li>Tipo: {'Fundador' if tx.get('was_founder') else 'Estándar'}</li>
+              <li>Plazas fundador: {(course.get('founder_seats_taken') or 0) + (1 if tx.get('was_founder') else 0)}/{course.get('founder_seats')}</li>
+              <li>Session Stripe: <code>{session_id}</code></li>
+            </ul>
+            <p style="text-align:center;margin:20px 0">
+              <a href="{FRONTEND_ORIGIN}/admin" style="background:#0F4C81;color:#fff;
+                 text-decoration:none;padding:10px 20px;border-radius:6px">Ver en panel</a>
+            </p>
+            """
+        )
+        await send_email(ADMIN_EMAIL, f"Nueva inscripción: {user['email']}", admin_html)
 
     await db.payment_transactions.update_one(
         {"session_id": session_id},
@@ -953,6 +987,128 @@ async def admin_feedback(
         )
         await send_email(student["email"], "Feedback disponible · La Clase Digital", html)
     return clean_doc(await db.submissions.find_one({"id": submission_id}))
+
+
+# ─────────────────────────── Upload (Cloudinary) ───────────────
+@api.post("/upload")
+async def upload_file(file: UploadFile = File(...), user: dict = Depends(current_user)):
+    if not CLOUDINARY_CLOUD_NAME:
+        raise HTTPException(500, "Cloudinary no configurado")
+    max_bytes = 20 * 1024 * 1024  # 20 MB
+    data = await file.read()
+    if len(data) > max_bytes:
+        raise HTTPException(400, "Archivo demasiado grande (máx 20 MB)")
+    try:
+        result = cloudinary.uploader.upload(
+            data,
+            folder=f"laclasedigital/{user['id']}",
+            resource_type="auto",
+            use_filename=True,
+            unique_filename=True,
+        )
+    except Exception as exc:
+        log.exception("Cloudinary upload failed")
+        raise HTTPException(500, f"Error subiendo archivo: {exc}") from exc
+    return {
+        "url": result.get("secure_url"),
+        "public_id": result.get("public_id"),
+        "bytes": result.get("bytes"),
+        "format": result.get("format"),
+        "original_filename": result.get("original_filename"),
+    }
+
+
+# ─────────────────────────── Certificates ──────────────────────
+class CertificateIssueIn(BaseModel):
+    enrollment_id: str
+    hours: int = 20
+
+
+@api.post("/admin/certificate/issue")
+async def issue_certificate(payload: CertificateIssueIn, user: dict = Depends(current_admin)):
+    enrollment = await db.enrollments.find_one({"id": payload.enrollment_id})
+    if not enrollment:
+        raise HTTPException(404, "Inscripción no encontrada")
+    existing = await db.certificates.find_one({"enrollment_id": payload.enrollment_id})
+    if existing:
+        return clean_doc(existing)
+    cert_id = new_id()
+    cert = {
+        "id": cert_id,
+        "enrollment_id": payload.enrollment_id,
+        "user_id": enrollment["user_id"],
+        "course_id": enrollment["course_id"],
+        "hours": payload.hours,
+        "issued_at": now_utc(),
+        "pdf_url": None,  # Rendered client-side; PDF can be regenerated from data
+    }
+    await db.certificates.insert_one(cert)
+    # Mark enrollment as completed
+    await db.enrollments.update_one(
+        {"id": payload.enrollment_id},
+        {"$set": {"status": "completed", "completed_at": now_utc()}},
+    )
+    # Email student
+    student = await db.users.find_one({"id": enrollment["user_id"]})
+    course = await db.courses.find_one({"id": enrollment["course_id"]})
+    if student and course:
+        html = wrap_email(
+            f"""
+            <h2 style="font-family:Georgia,serif;color:#0F4C81">¡Tu certificado está listo! 🏅</h2>
+            <p>Has completado <strong>{course['title']}</strong>. Puedes ver y descargar tu
+               certificado en el siguiente enlace:</p>
+            <p style="text-align:center;margin:28px 0">
+              <a href="{FRONTEND_ORIGIN}/certificado/{cert_id}" style="background:#F5A623;color:#1A2535;
+                 text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:700">
+                Ver mi certificado
+              </a>
+            </p>
+            <p style="font-size:13px;color:#6B82A0">
+              El certificado es verificable por esta URL pública.
+            </p>
+            """
+        )
+        await send_email(student["email"], "Certificado emitido · La Clase Digital", html)
+    return clean_doc(cert)
+
+
+@api.get("/certificate/{cert_id}")
+async def get_certificate(cert_id: str):
+    cert = await db.certificates.find_one({"id": cert_id})
+    if not cert:
+        raise HTTPException(404, "Certificado no encontrado")
+    user = await db.users.find_one({"id": cert["user_id"]})
+    course = await db.courses.find_one({"id": cert["course_id"]})
+    return {
+        "certificate": clean_doc(cert),
+        "user": {"email": user.get("email"), "name": user.get("name")} if user else None,
+        "course": {"title": course.get("title"), "slug": course.get("slug"), "hours": course.get("hours", cert.get("hours", 20))} if course else None,
+    }
+
+
+# ─────────────────────────── Module reorder ────────────────────
+class ReorderRequest(BaseModel):
+    module_id: str
+    direction: Literal["up", "down"]
+
+
+@api.post("/admin/modules/reorder")
+async def admin_reorder_module(
+    payload: ReorderRequest, course_id: str = "course-ia-ele", user: dict = Depends(current_admin),
+):
+    mods = []
+    async for m in db.modules.find({"course_id": course_id}).sort("order", 1):
+        mods.append(m)
+    idx = next((i for i, m in enumerate(mods) if m["id"] == payload.module_id), None)
+    if idx is None:
+        raise HTTPException(404, "Módulo no encontrado")
+    swap = idx - 1 if payload.direction == "up" else idx + 1
+    if swap < 0 or swap >= len(mods):
+        return {"ok": True, "noop": True}
+    a, b = mods[idx], mods[swap]
+    await db.modules.update_one({"id": a["id"]}, {"$set": {"order": b["order"]}})
+    await db.modules.update_one({"id": b["id"]}, {"$set": {"order": a["order"]}})
+    return {"ok": True}
 
 
 # ─────────────────────────── Register router ───────────────────

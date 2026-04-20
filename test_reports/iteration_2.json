@@ -1,0 +1,55 @@
+{
+  "summary": "Iteration 2 — Backend only. All new endpoints pass: upload (Cloudinary), certificate issue (idempotent) + public GET, module reorder (up/down, no-op edges). Regression iter-1 also green: checkout/status 500 bug is fixed, 23/23 iter-1 tests pass. Total 38/38 tests passed against REACT_APP_BACKEND_URL.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/upload",
+        "issue": "`file` is fully read into memory (await file.read()) with only a 20 MB cap — fine for MVP, but streaming to Cloudinary or using tempfile would be safer for large uploads."
+      },
+      {
+        "endpoint": "POST /api/admin/modules/reorder",
+        "issue": "`course_id` defaults to the literal 'course-ia-ele' as a query-arg; accepted via query-string but not validated against a real course, and not taken from the JSON body. A future 2nd course would need an explicit ?course_id= query param. Consider moving it into the Pydantic body."
+      },
+      {
+        "endpoint": "POST /api/admin/modules/reorder",
+        "issue": "Swapping `order` values is done in two non-atomic update_one calls. If the second fails the DB is left inconsistent. Use a transaction or a single aggregation/bulkWrite."
+      },
+      {
+        "endpoint": "POST /api/auth/request-link & all transactional emails (iter-1 carryover)",
+        "issue": "Resend still returns 403 'domain not verified' — emails are swallowed silently. Same issue is in effect for admin notification email on new enrollment and for certificate-emitted email. Verify laclasedigital.com in Resend."
+      }
+    ]
+  },
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iter2_new_endpoints.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/iter2_results.xml",
+    "/app/test_reports/pytest/iter2_regression.xml"
+  ],
+  "action_items": [
+    "Verify laclasedigital.com in Resend so admin-notification + certificate-issued + magic-link emails actually deliver.",
+    "Make /api/admin/modules/reorder atomic (bulkWrite / transaction) and move course_id into the request body.",
+    "Consider refactoring server.py (1115 lines) into routers/services — auth, courses, admin, payments, certificates, uploads."
+  ],
+  "critical_code_review_comments": [
+    "server.py grew to 1115 lines — definitely time to split into routers/services modules.",
+    "Cloudinary upload endpoint: no MIME whitelist; any file type accepted (resource_type=auto). Add an allow-list (image/* and pdf) if user-uploaded files are served publicly.",
+    "Certificate issuance updates enrollment.status='completed' but does NOT decrement any counters — acceptable for MVP, just note that 'completed' is final.",
+    "GET /api/certificate/{cert_id} is public but returns user email. Confirm this is by design (certificates are typically public), otherwise consider redacting email.",
+    "_ensure_enrollment_from_session logs silently if admin email send fails (Resend 403) — still correct behavior for non-blocking notifications, but add a metric or alert in production.",
+    "Module reorder: two sequential update_one calls can leave the collection in an inconsistent state on partial failure (non-atomic swap)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter2_new_endpoints.py (new)"
+  ],
+  "success_rate": {"backend": "100% (38/38 — 15 new + 23 regression)", "frontend": "not tested (backend-only request)"},
+  "test_credentials": "Admin: benitezl@go.ugr.es (auto-seeded). JWTs generated programmatically in tests via MAGIC_LINK_SECRET → /api/auth/verify (see conftest make_magic_token).",
+  "seed_data_creation": "Created 1 certificate in DB (tied to existing enrolled_student test enrollment). enrolled_student fixture from iter 1 still creates a manual enrollment for test.student+<ts>@example.com when absent. Final state left intact: founder_seats_taken=3, modules ordered 1..4, 1 certificate row for the TEST student. No destructive changes to production data.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Run ALL backend tests with: `cd /app && REACT_APP_BACKEND_URL=https://teach-preview.preview.emergentagent.com python -m pytest backend/tests/ -v --junitxml=/app/test_reports/pytest/results.xml`. The iter-2 file (test_iter2_new_endpoints.py) loads REACT_APP_BACKEND_URL from frontend/.env automatically, but pytest still needs it in the process env (there is a fallback but direct env is safer). Module order is restored after reorder tests by a class-scoped finalizer. Founder seats invariant (=3) and certificates idempotency are both verified.",
+  "rca of the issue": "No new bugs. Iter-1 RCA (checkout/status 500) is fixed and verified: server.py lines 677-690 wrap stripe.get_checkout_status in try/except and fall back to DB-only view with error='stripe_unavailable' when Stripe cannot retrieve the session — TestCheckout::test_checkout_status now returns 200 with status/payment_status fields."
+}
