@@ -164,51 +164,55 @@ function buildFlatList(indexData) {
 
 function SidebarContent({ indexData, currentSlug, onClickItem }) {
   if (!indexData) return <div style={{ padding: '1rem', color: 'var(--ink-muted)', fontSize: '.85rem' }}>Cargando índice…</div>;
+  const renderItem = (r) => (
+    <li key={r.slug}>
+      <Link
+        to={`/recurso/${r.slug}`}
+        onClick={onClickItem}
+        className={`res-sidebar__item ${r.slug === currentSlug ? 'res-sidebar__item--active' : ''} ${r.viewed ? 'res-sidebar__item--viewed' : ''}`}
+        data-testid={`resource-sidebar-item-${r.slug}`}
+      >
+        <span className="res-sidebar__status" aria-hidden="true">
+          {r.viewed ? <span className="res-sidebar__check" title="Leído">✓</span> : <span className="res-sidebar__dot" />}
+        </span>
+        <span className="res-sidebar__emoji">{TYPE_EMOJI[r.type] || '📄'}</span>
+        <span className="res-sidebar__label">{r.title}</span>
+      </Link>
+    </li>
+  );
   return (
     <nav className="res-sidebar__nav" data-testid="resource-sidebar-nav">
       {indexData.modules.map((m) => (
         m.resources.length > 0 && (
           <div key={m.module_id} className="res-sidebar__group">
             <div className="res-sidebar__group-title">Módulo {m.order} · {m.title}</div>
-            <ul className="res-sidebar__list">
-              {m.resources.map((r) => (
-                <li key={r.slug}>
-                  <Link
-                    to={`/recurso/${r.slug}`}
-                    onClick={onClickItem}
-                    className={`res-sidebar__item ${r.slug === currentSlug ? 'res-sidebar__item--active' : ''}`}
-                    data-testid={`resource-sidebar-item-${r.slug}`}
-                  >
-                    <span className="res-sidebar__emoji">{TYPE_EMOJI[r.type] || '📄'}</span>
-                    <span className="res-sidebar__label">{r.title}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <ul className="res-sidebar__list">{m.resources.map(renderItem)}</ul>
           </div>
         )
       ))}
       {indexData.transversal.length > 0 && (
         <div className="res-sidebar__group">
           <div className="res-sidebar__group-title">Transversales</div>
-          <ul className="res-sidebar__list">
-            {indexData.transversal.map((r) => (
-              <li key={r.slug}>
-                <Link
-                  to={`/recurso/${r.slug}`}
-                  onClick={onClickItem}
-                  className={`res-sidebar__item ${r.slug === currentSlug ? 'res-sidebar__item--active' : ''}`}
-                  data-testid={`resource-sidebar-item-${r.slug}`}
-                >
-                  <span className="res-sidebar__emoji">{TYPE_EMOJI[r.type] || '📄'}</span>
-                  <span className="res-sidebar__label">{r.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <ul className="res-sidebar__list">{indexData.transversal.map(renderItem)}</ul>
         </div>
       )}
     </nav>
+  );
+}
+
+function ProgressBar({ viewed, total }) {
+  if (!total) return null;
+  const pct = Math.round((viewed / total) * 100);
+  return (
+    <div className="res-progress" data-testid="resource-progress">
+      <div className="res-progress__label">
+        <span>📖 Leídos</span>
+        <span className="res-progress__count">{viewed} / {total}</span>
+      </div>
+      <div className="res-progress__track">
+        <div className="res-progress__fill" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
   );
 }
 
@@ -229,14 +233,15 @@ export default function Resource() {
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
   }, [slug]);
 
-  // Once we know the course_slug, load the course-wide resource index (only when it changes)
+  // Once we know the course_slug, load the course-wide resource index.
+  // Refetch whenever `slug` changes so the "viewed" state for the current
+  // resource gets updated (the backend auto-marks it as viewed on GET).
   useEffect(() => {
     if (!data?.course_slug) return;
-    if (indexData && indexData._course === data.course_slug) return;
     api.get(`/course/${data.course_slug}/resources`)
       .then((r) => setIndexData({ ...r.data, _course: data.course_slug }))
       .catch(() => {});
-  }, [data?.course_slug, indexData]);
+  }, [data?.course_slug, slug]);
 
   const flat = useMemo(() => buildFlatList(indexData), [indexData]);
   const currentIdx = useMemo(() => flat.findIndex((r) => r.slug === slug), [flat, slug]);
@@ -264,6 +269,7 @@ export default function Resource() {
             <div className="res-sidebar__header">
               <Link to={`/curso/${courseSlug}/recursos`} className="res-sidebar__back">📚 Todos los materiales</Link>
             </div>
+            {indexData && <ProgressBar viewed={indexData.viewed_count || 0} total={indexData.total_count || 0} />}
             <SidebarContent indexData={indexData} currentSlug={slug} />
           </aside>
 
@@ -358,6 +364,7 @@ export default function Resource() {
                 ✕
               </button>
             </div>
+            {indexData && <div style={{ padding: '0 1rem' }}><ProgressBar viewed={indexData.viewed_count || 0} total={indexData.total_count || 0} /></div>}
             <SidebarContent indexData={indexData} currentSlug={slug} onClickItem={() => setDrawerOpen(false)} />
           </aside>
         </div>

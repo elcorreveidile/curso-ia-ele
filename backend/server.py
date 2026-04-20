@@ -1189,6 +1189,15 @@ async def list_course_resources(slug: str, user: dict = Depends(current_user)):
     if not course:
         raise HTTPException(404, "Curso no encontrado")
 
+    # Which resources has this user already viewed?
+    viewed_slugs = set()
+    async for row in db.user_progress.find(
+        {"user_id": user["id"], "course_id": course["id"], "resource_slug": {"$exists": True}},
+        {"resource_slug": 1},
+    ):
+        if row.get("resource_slug"):
+            viewed_slugs.add(row["resource_slug"])
+
     # Group by module
     modules = []
     async for m in db.modules.find({"course_id": course["id"]}).sort("order", 1):
@@ -1198,6 +1207,7 @@ async def list_course_resources(slug: str, user: dict = Depends(current_user)):
                 "slug": r["slug"], "title": r["title"],
                 "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
                 "module_id": m["id"],
+                "viewed": r["slug"] in viewed_slugs,
             })
         modules.append({
             "module_id": m["id"], "order": m["order"], "title": m["title"],
@@ -1212,9 +1222,16 @@ async def list_course_resources(slug: str, user: dict = Depends(current_user)):
             "slug": r["slug"], "title": r["title"],
             "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
             "module_id": None,
+            "viewed": r["slug"] in viewed_slugs,
         })
 
-    return {"modules": modules, "transversal": transversal}
+    total_res = sum(len(m["resources"]) for m in modules) + len(transversal)
+    return {
+        "modules": modules,
+        "transversal": transversal,
+        "viewed_count": len(viewed_slugs & {r["slug"] for m in modules for r in m["resources"]} | viewed_slugs & {r["slug"] for r in transversal}),
+        "total_count": total_res,
+    }
 
 
 @api.get("/resource/{slug}")
@@ -1227,6 +1244,18 @@ async def get_resource(slug: str, user: dict = Depends(current_user)):
     if course:
         await _ensure_enrollment_for(user, course["slug"])
     module = await db.modules.find_one({"id": r["module_id"]}) if r.get("module_id") else None
+    # Mark as viewed (idempotent) — only for real students, not admins
+    if course and user.get("role") != "admin":
+        await db.user_progress.update_one(
+            {"user_id": user["id"], "resource_slug": r["slug"]},
+            {"$set": {
+                "user_id": user["id"],
+                "resource_slug": r["slug"],
+                "course_id": course["id"],
+                "viewed_at": now_utc(),
+            }},
+            upsert=True,
+        )
     return {
         "slug": r["slug"],
         "title": r["title"],
@@ -1272,7 +1301,13 @@ async def admin_delete_enrollment(enrollment_id: str, user: dict = Depends(curre
     deleted = {
         "submissions": (await db.submissions.delete_many({"user_id": user_id, "task_id": {"$in": task_ids}})).deleted_count if task_ids else 0,
         "threads": (await db.threads.delete_many({"user_id": user_id, "task_id": {"$in": task_ids}})).deleted_count if task_ids else 0,
-        "user_progress": (await db.user_progress.delete_many({"user_id": user_id, "lesson_id": {"$in": lesson_ids}})).deleted_count if lesson_ids else 0,
+        "user_progress": (await db.user_progress.delete_many({
+            "user_id": user_id,
+            "$or": [
+                {"lesson_id": {"$in": lesson_ids}} if lesson_ids else {"lesson_id": "__none__"},
+                {"course_id": course_id, "resource_slug": {"$exists": True}},
+            ],
+        })).deleted_count,
         "certificates": (await db.certificates.delete_many({"enrollment_id": enrollment_id})).deleted_count,
         "payment_transactions": (await db.payment_transactions.delete_many({"enrollment_id": enrollment_id})).deleted_count,
     }

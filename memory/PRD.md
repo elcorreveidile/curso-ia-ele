@@ -35,19 +35,24 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Todo bajo `laclasedigital.com` (single domain).
 
 ## Implementado en iteración 5 (2026-02 fork)
+- ✅ **Check "Leído" + progreso** en materiales:
+  - Auto-marcado idempotente al abrir cualquier recurso (estudiantes, no admins).
+  - Sidebar y drawer muestran ✓ verde en cada material leído y un dot
+    vacío en los no leídos; el contador "X / 17 leídos" con barra de
+    progreso ámbar→verde.
+  - Índice `/curso/:slug/recursos` muestra banner "Has leído X de Y
+    materiales" + badge ✓ en cada card leído.
+  - Backend: `user_progress` reutilizado con `resource_slug`; limpieza
+    al borrar inscripción incluye los rows de recursos.
 - ✅ **Navegación entre materiales** en `/recurso/:slug`:
-  - Sidebar sticky en desktop con los 17 materiales agrupados por módulo
-    (módulo actual → item activo en ámbar).
+  - Sidebar sticky en desktop con los 17 materiales agrupados por módulo.
   - Drawer deslizable en móvil con botón "📚 Índice de materiales".
-  - Breadcrumb clicable arriba: `Mis cursos › Curso › Módulo N › Título`.
-  - Botones **Anterior / Siguiente** al final del contenido con título
-    del recurso, respetando el orden del curso y marcando "primer/último".
-  - Backend: `/api/resource/{slug}` ahora incluye `course_slug`,
-    `course_title`, `module_order`, `module_title` para el contexto.
-- ✅ **Fix visor Markdown**: `remark-gfm` + CSS `overflow-x:auto` /
-  `word-break:break-word` en `<pre>/<code>`, los prompts largos no desbordan.
-- ✅ **Fix generador PDF**: `MarkdownToPDF` reescrito con buffers/flush para
-  fences y tablas GFM. Validado con testing agent v4 (5/5 frontend pass).
+  - Breadcrumb clicable: `Mis cursos › Curso › Módulo N › Título`.
+  - Botones Anterior / Siguiente con título del recurso.
+  - `/api/resource/{slug}` devuelve `course_slug`, `course_title`,
+    `module_order`, `module_title`.
+- ✅ **Fix visor Markdown**: `remark-gfm` + CSS overflow. Validado 5/5.
+- ✅ **Fix generador PDF**: soporte fences + tablas GFM.
 
 ## Implementado en iteración 4 (2026-04-20)
 - ✅ **Sistema de recursos del curso** importado automáticamente desde

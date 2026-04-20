@@ -34,6 +34,17 @@ export default function CourseResources() {
           <Link to={`/curso/${slug}`} style={{ color: 'var(--blue)', fontSize: '.875rem', marginBottom: '1rem', display: 'inline-block' }}>
             ← Volver al curso
           </Link>
+          {typeof data.total_count === 'number' && data.total_count > 0 && (
+            <div className="res-overview" data-testid="resources-overview">
+              <div className="res-overview__label">
+                <span>📖 Has leído</span>
+                <span className="res-overview__count">{data.viewed_count || 0} de {data.total_count} materiales</span>
+              </div>
+              <div className="res-overview__track">
+                <div className="res-overview__fill" style={{ width: `${Math.round(((data.viewed_count || 0) / data.total_count) * 100)}%` }} />
+              </div>
+            </div>
+          )}
           {data.modules.map((m) => (
             <div key={m.module_id} className="dash-section" data-testid={`resources-module-${m.order}`}>
               <h2 className="dash-title">
@@ -45,7 +56,8 @@ export default function CourseResources() {
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '.75rem' }}>
                   {m.resources.map((r) => (
-                    <Link key={r.slug} to={`/recurso/${r.slug}`} className="res-card" data-testid={`resource-card-${r.slug}`}>
+                    <Link key={r.slug} to={`/recurso/${r.slug}`} className={`res-card ${r.viewed ? 'res-card--viewed' : ''}`} data-testid={`resource-card-${r.slug}`}>
+                      {r.viewed && <span className="res-card__check" title="Leído">✓</span>}
                       <span className="res-card__type">{TYPE_EMOJI[r.type] || '📄'} {r.type_label}</span>
                       <span className="res-card__title">{r.title}</span>
                     </Link>
@@ -59,7 +71,8 @@ export default function CourseResources() {
               <h2 className="dash-title">Materiales transversales</h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '.75rem' }}>
                 {data.transversal.map((r) => (
-                  <Link key={r.slug} to={`/recurso/${r.slug}`} className="res-card">
+                  <Link key={r.slug} to={`/recurso/${r.slug}`} className={`res-card ${r.viewed ? 'res-card--viewed' : ''}`}>
+                    {r.viewed && <span className="res-card__check" title="Leído">✓</span>}
                     <span className="res-card__type">{TYPE_EMOJI[r.type] || '📄'} {r.type_label}</span>
                     <span className="res-card__title">{r.title}</span>
                   </Link>
