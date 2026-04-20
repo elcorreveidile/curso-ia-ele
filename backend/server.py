@@ -196,6 +196,18 @@ class ContactIn(BaseModel):
     mensaje: str = Field(..., min_length=5, max_length=5000)
 
 
+class LessonViewIn(BaseModel):
+    lesson_id: str
+
+
+class QuizSubmitIn(BaseModel):
+    nombre: str = ""
+    email: str = ""
+    answers: dict[str, Any] = {}
+    profile_key: str = ""
+    total_score: int = 0
+
+
 class AdminCourseUpdate(BaseModel):
     is_founder_edition: Optional[bool] = None
     founder_seats: Optional[int] = None
@@ -754,6 +766,10 @@ async def _user_enrollments(user_id: str) -> list[dict]:
 @api.get("/dashboard")
 async def dashboard(user: dict = Depends(current_user)):
     enrollments = await _user_enrollments(user["id"])
+    # Attach progress for each enrolled course
+    for row in enrollments:
+        if row["course"]:
+            row["progress"] = await _progress_for(user, row["course"])
     return {"user": user, "enrollments": enrollments}
 
 
@@ -1183,6 +1199,123 @@ async def _send_email_with_reply(to_email: str, subject: str, html: str, reply_t
                 log.info("Email sent to %s", to_email)
     except Exception as exc:
         log.exception("Email failure: %s", exc)
+
+
+# ─────────────────────────── Quiz (diagnóstico) ────────────────
+@api.post("/quiz/submit")
+async def quiz_submit(payload: QuizSubmitIn):
+    doc = {
+        "id": new_id(),
+        "nombre": payload.nombre,
+        "email": payload.email,
+        "answers": payload.answers,
+        "profile_key": payload.profile_key,
+        "total_score": payload.total_score,
+        "created_at": now_utc(),
+    }
+    await db.quiz_results.insert_one(doc)
+    if ADMIN_EMAIL and payload.email:
+        summary_rows = "".join(
+            f"<tr><td style='padding:4px 8px;border-bottom:1px solid #E8EEF5;font-size:12px;color:#6B82A0'>{k}</td>"
+            f"<td style='padding:4px 8px;border-bottom:1px solid #E8EEF5;font-size:12px;color:#1A2535'>{v if not isinstance(v, list) else ', '.join(v)}</td></tr>"
+            for k, v in payload.answers.items()
+        )
+        html = wrap_email(
+            f"""
+            <h3>Nuevo cuestionario de diagnóstico</h3>
+            <p><strong>{payload.nombre}</strong> &lt;{payload.email}&gt;</p>
+            <p>Perfil: <strong>{payload.profile_key}</strong> · Puntuación: {payload.total_score}/100</p>
+            <table style='width:100%;border-collapse:collapse;margin-top:12px'>{summary_rows}</table>
+            """
+        )
+        await _send_email_with_reply(ADMIN_EMAIL, f"[Cuestionario] {payload.nombre}", html, reply_to=payload.email)
+    return {"ok": True, "id": doc["id"]}
+
+
+# ─────────────────────────── Student progress ─────────────────
+@api.post("/course/{slug}/lesson/view")
+async def mark_lesson_view(slug: str, payload: LessonViewIn, user: dict = Depends(current_user)):
+    ctx = await _ensure_enrollment_for(user, slug)
+    # Upsert a user_progress row per user+lesson
+    await db.user_progress.update_one(
+        {"user_id": user["id"], "lesson_id": payload.lesson_id},
+        {"$set": {
+            "user_id": user["id"],
+            "lesson_id": payload.lesson_id,
+            "course_id": ctx["course"]["id"],
+            "viewed_at": now_utc(),
+        }},
+        upsert=True,
+    )
+    return {"ok": True}
+
+
+async def _progress_for(user: dict, course: dict) -> dict:
+    """Compute a progress summary for a user+course."""
+    module_ids = [m["id"] async for m in db.modules.find({"course_id": course["id"]}, {"id": 1})]
+    lesson_ids = [le["id"] async for le in db.lessons.find({"module_id": {"$in": module_ids}}, {"id": 1})]
+    task_ids = [t["id"] async for t in db.tasks.find({"module_id": {"$in": module_ids}}, {"id": 1})]
+
+    viewed = await db.user_progress.count_documents({
+        "user_id": user["id"], "lesson_id": {"$in": lesson_ids},
+    }) if lesson_ids else 0
+    submitted = len(set([
+        s["task_id"] async for s in db.submissions.find({
+            "user_id": user["id"], "task_id": {"$in": task_ids},
+        }, {"task_id": 1})
+    ])) if task_ids else 0
+    reviewed = await db.submissions.count_documents({
+        "user_id": user["id"], "task_id": {"$in": task_ids}, "status": "reviewed",
+    }) if task_ids else 0
+
+    total_items = len(lesson_ids) + len(task_ids)
+    done_items = viewed + submitted
+    percent = round((done_items / total_items) * 100) if total_items else 0
+    return {
+        "lessons_total": len(lesson_ids),
+        "lessons_viewed": viewed,
+        "tasks_total": len(task_ids),
+        "tasks_submitted": submitted,
+        "tasks_reviewed": reviewed,
+        "percent": percent,
+    }
+
+
+# ─────────────────────────── Admin: CSV export ─────────────────
+@api.get("/admin/export/enrollments.csv")
+async def admin_export_enrollments(user: dict = Depends(current_admin)):
+    from fastapi.responses import Response
+    import csv
+    import io
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow([
+        "enrollment_id", "email", "nombre", "curso", "importe_eur",
+        "was_founder", "status", "paid_at", "stripe_payment_id",
+    ])
+    async for e in db.enrollments.find({}).sort("paid_at", -1):
+        u = await db.users.find_one({"id": e["user_id"]}) or {}
+        c = await db.courses.find_one({"id": e["course_id"]}) or {}
+        writer.writerow([
+            e.get("id", ""),
+            u.get("email", ""),
+            u.get("name", "") or "",
+            c.get("title", ""),
+            f"{(e.get('amount_paid_eur', 0) / 100):.2f}",
+            "Yes" if e.get("was_founder") else "No",
+            e.get("status", ""),
+            iso(e.get("paid_at")) or "",
+            e.get("stripe_payment_id", ""),
+        ])
+    csv_content = buf.getvalue()
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f'attachment; filename="inscripciones-{now_utc().strftime("%Y%m%d")}.csv"'
+        },
+    )
 
 
 # ─────────────────────────── Register router ───────────────────

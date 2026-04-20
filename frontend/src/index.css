@@ -964,10 +964,16 @@ textarea.form-input {
   text-align: left; padding: .75rem 1rem;
   background: var(--canvas-alt); color: var(--ink);
   font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+  white-space: nowrap;
 }
 .admin-table td {
   padding: .75rem 1rem; border-top: 1px solid var(--canvas-alt);
   font-size: .9rem; color: var(--ink-soft);
+}
+
+@media (max-width: 700px) {
+  .admin-table { font-size: .82rem; }
+  .admin-table th, .admin-table td { padding: .55rem .7rem; white-space: nowrap; }
 }
 
 /* Badges */

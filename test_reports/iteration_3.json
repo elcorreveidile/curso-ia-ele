@@ -1,0 +1,65 @@
+{
+  "summary": "Iteration 3 — Backend only. All NEW endpoints verified end-to-end against REACT_APP_BACKEND_URL: POST /api/quiz/submit (public, persists to db.quiz_results), POST /api/course/ia-ele/lesson/view (auth+enrollment, idempotent upsert verified by direct Mongo count), GET /api/dashboard now returns a `progress` object per enrollment with all 6 keys (lessons_total, lessons_viewed, tasks_total, tasks_submitted, tasks_reviewed, percent) and counter increments after marking views, GET /api/admin/export/enrollments.csv returns text/csv with the exact header and at least one data row (admin only — student gets 403, no-auth gets 401/403). Brief regression: /api/contact, /api/checkout/create (Stripe URL returned), /api/courses/ia-ele founder_seats_taken=3 — all green. Combined suite (iter1+2+3) = 49/49 tests passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/quiz/submit",
+        "issue": "Endpoint accepts a fully-empty payload ({}) and still inserts a quiz_results row with email='' and total_score=0. Consider requiring at least email+profile_key (Pydantic Field(min_length=1)) to avoid spam/empty rows in the analytics collection."
+      },
+      {
+        "endpoint": "POST /api/quiz/submit",
+        "issue": "No rate-limit / captcha — public, unauthenticated endpoint that triggers an outbound email to ADMIN_EMAIL on every call. Trivial to abuse for email-bombing the admin inbox."
+      },
+      {
+        "endpoint": "GET /api/dashboard",
+        "issue": "_progress_for is called inside a per-enrollment loop and runs ~6 sequential Mongo queries per course. With many enrollments this is N×6 queries — fine for MVP but consider $lookup/aggregation if a user has >5 courses."
+      },
+      {
+        "endpoint": "GET /api/admin/export/enrollments.csv",
+        "issue": "Issues a per-row find_one on users and courses (N+1 query pattern). For a few hundred enrollments it's fine; batch via $in or aggregation $lookup for scale. Also: no streaming — entire CSV is built in memory."
+      },
+      {
+        "endpoint": "POST /api/course/{slug}/lesson/view",
+        "issue": "lesson_id is NOT validated against actual lessons in the course. A client can post any arbitrary string (including a lesson_id from a different course) and the row is inserted, inflating the lessons_viewed counter only because _progress_for filters by lesson_ids in the course — so it self-corrects there, but db.user_progress accumulates orphan rows. Add a `db.lessons.find_one({id, module_id in course's modules})` guard."
+      }
+    ]
+  },
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iter3_new_endpoints.py",
+    "/app/backend/tests/test_iter2_new_endpoints.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/iter3_results.xml",
+    "/app/test_reports/pytest/iter3_full.xml"
+  ],
+  "action_items": [
+    "Add basic input validation to /api/quiz/submit (require email + profile_key, length limits) and a simple rate limit / captcha — currently abusable.",
+    "Validate `lesson_id` belongs to the course in /api/course/{slug}/lesson/view to prevent orphan user_progress rows.",
+    "Optimize dashboard progress aggregation (single aggregation pipeline instead of N×6 per-enrollment Mongo round-trips) once a user can hold multiple courses.",
+    "Consider streaming the CSV export and using $lookup to avoid the N+1 user/course lookups in /api/admin/export/enrollments.csv.",
+    "Server.py is now ~1323 lines — split into routers (auth, courses, dashboard, admin, quiz, payments, certificates) before iteration 4."
+  ],
+  "critical_code_review_comments": [
+    "/api/quiz/submit: Pydantic model QuizSubmitIn defaults nombre/email/profile_key to '' — defeats validation. Use EmailStr + min_length=1 fields.",
+    "/api/quiz/submit triggers a transactional admin email synchronously in the request path; if Resend is slow or returns 403 the user still gets ok:true (good), but the latency cost is paid on every submit. Move to a background task (FastAPI BackgroundTasks).",
+    "/api/course/{slug}/lesson/view: no upper bound on user_progress collection — admins (role='admin') bypass enrollment but rows still get inserted with their user_id (could pollute progress queries if any admin clicks 'mark viewed' from the preview).",
+    "_progress_for: lesson_ids and task_ids are fetched into Python lists and then used as $in filters — efficient enough for <500 lessons/course; add an index on user_progress(user_id, lesson_id) and submissions(user_id, task_id) if not already present. (Did not verify indexes — please confirm.)",
+    "/api/admin/export/enrollments.csv: 'curso' column writes course.title only; if a course is later deleted the row shows '' silently. Consider including course slug as a stable identifier.",
+    "/api/admin/export/enrollments.csv: filename 'inscripciones-YYYYMMDD.csv' uses server-local date (UTC). Document this for the admin so daily exports don't clash across timezones."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter3_new_endpoints.py (new — 11 tests)"
+  ],
+  "success_rate": {
+    "backend": "100% (49/49 across iter1+2+3 — 11 new iter3 tests + 38 regression)",
+    "frontend": "not tested (backend-only request)"
+  },
+  "test_credentials": "Admin: benitezl@go.ugr.es (auto-seeded). JWT generated programmatically via MAGIC_LINK_SECRET → /api/auth/verify (see conftest.make_magic_token). Student tokens are minted per-session.",
+  "seed_data_creation": "Created: 2 quiz_results rows (TEST_Quiz_User + 1 minimal-payload row); user_progress rows for the test student during the lesson-view test are created and then cleaned up by the test (purge at start and end). 1 fresh non-enrolled test user (TEST_noenroll_*@example.com) created to verify the 403 branch on /lesson/view. Existing enrollment from iter1/2 fixture re-used — no duplicate seats consumed (founder_seats_taken still = 3).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Run full suite with: `cd /app && REACT_APP_BACKEND_URL=$(grep REACT_APP_BACKEND_URL frontend/.env | cut -d= -f2) python -m pytest backend/tests/ -v --junitxml=/app/test_reports/pytest/results.xml`. The iter3 file uses asyncio.new_event_loop().run_until_complete for direct Mongo verification (same pattern as iter2). The lesson-view idempotency test purges user_progress rows for the test student before AND after to keep state clean. CSV export header asserted EXACTLY: enrollment_id,email,nombre,curso,importe_eur,was_founder,status,paid_at,stripe_payment_id. Quiz submit emits an admin email per call — Resend still 403 (domain not verified) so emails are logged-and-swallowed; tests treat ok:true as success regardless of email delivery.",
+  "rca of the issue": "No new bugs surfaced in iter3. All 4 new endpoints behave per spec including idempotency (verified via Mongo count_documents == 1 after 2 sequential POSTs to /lesson/view) and admin-auth gating on the CSV export."
+}

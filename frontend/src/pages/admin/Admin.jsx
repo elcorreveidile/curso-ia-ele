@@ -82,8 +82,34 @@ export default function Admin() {
           </div>
 
           <div className="dash-section">
-            <h2 className="dash-title">Inscripciones ({data.enrollments.length})</h2>
-            <div style={{ overflowX: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '.5rem' }}>
+              <h2 className="dash-title" style={{ marginBottom: 0 }}>Inscripciones ({data.enrollments.length})</h2>
+              <a
+                href={`${process.env.REACT_APP_BACKEND_URL}/api/admin/export/enrollments.csv`}
+                download
+                className="btn btn--ghost"
+                style={{ fontSize: '.82rem', padding: '.45rem 1rem' }}
+                onClick={(e) => {
+                  const token = localStorage.getItem('lcd_token');
+                  if (!token) return;
+                  e.preventDefault();
+                  fetch(e.currentTarget.href, { headers: { Authorization: `Bearer ${token}` } })
+                    .then((r) => r.blob())
+                    .then((b) => {
+                      const url = URL.createObjectURL(b);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `inscripciones-${new Date().toISOString().slice(0,10)}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    });
+                }}
+                data-testid="admin-export-csv"
+              >
+                📥 Exportar a CSV
+              </a>
+            </div>
+            <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
               <table className="admin-table" data-testid="admin-enrollments-table">
                 <thead>
                   <tr><th>Email</th><th>Curso</th><th>Importe</th><th>Tipo</th><th>Fecha</th><th>Certificado</th></tr>

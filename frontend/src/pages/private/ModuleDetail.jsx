@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import Navbar from '../../components/Navbar';
@@ -16,6 +16,16 @@ export default function ModuleDetail() {
       .then((r) => setData(r.data))
       .catch((e) => setErr(e.response?.data?.detail || 'Error'));
   }, [slug]);
+
+  // Mark lessons as viewed when they appear on screen
+  useEffect(() => {
+    if (!data) return;
+    const entry = data.modules.find((m) => m.module.id === moduleId);
+    if (!entry || !entry.unlocked) return;
+    entry.lessons.forEach((l) => {
+      api.post(`/course/${slug}/lesson/view`, { lesson_id: l.id }).catch(() => {});
+    });
+  }, [data, moduleId, slug]);
 
   if (err) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem', color: 'var(--clm-red)' }}>{err}</div><Footer /></>;
   if (!data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>Cargando…</div><Footer /></>;

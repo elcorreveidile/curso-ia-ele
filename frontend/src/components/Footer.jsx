@@ -23,6 +23,7 @@ export default function Footer() {
             <Link to="/metodologia">Metodología</Link>
             <Link to="/precios">Precios e inscripción</Link>
             <Link to="/sobre-mi">Sobre el formador</Link>
+            <Link to="/cuestionario" style={{ color: 'rgba(255,255,255,.35)', fontSize: '.78rem', marginTop: '.5rem' }}>Cuestionario de inicio</Link>
           </div>
         </div>
         <div>

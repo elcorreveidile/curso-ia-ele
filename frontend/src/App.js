@@ -28,6 +28,7 @@ import Forum from './pages/private/Forum';
 import Admin from './pages/admin/Admin';
 import Certificate from './pages/public/Certificate';
 import Contacto from './pages/public/Contacto';
+import Cuestionario from './pages/public/Cuestionario';
 
 export default function App() {
   return (
@@ -54,6 +55,7 @@ export default function App() {
 
             <Route path="/certificado/:certId" element={<Certificate />} />
             <Route path="/contacto" element={<Contacto />} />
+            <Route path="/cuestionario" element={<Cuestionario />} />
 
             {/* Private */}
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
