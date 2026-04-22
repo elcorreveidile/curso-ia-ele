@@ -257,6 +257,8 @@ export default function Admin() {
 
 function ModulesControl() {
   const [modules, setModules] = useState([]);
+  const [editingVideo, setEditingVideo] = useState(null); // module.id
+  const [videoDraft, setVideoDraft] = useState('');
   const load = useCallback(() => {
     api.get('/course/ia-ele/content').then((r) => setModules(r.data.modules || []));
   }, []);
@@ -272,38 +274,54 @@ function ModulesControl() {
     load();
   };
 
+  const startEditVideo = (m) => {
+    setEditingVideo(m.module.id);
+    setVideoDraft(m.module.video_youtube_id || '');
+  };
+
+  const saveVideo = async (id) => {
+    await api.patch(`/admin/module/${id}`, { video_youtube_id: videoDraft.trim() });
+    setEditingVideo(null);
+    setVideoDraft('');
+    load();
+  };
+
   return (
     <div>
       {modules.map((m, idx) => (
         <div key={m.module.id} className={`module-row ${m.module.unlocked_at ? 'module-row--unlocked' : 'module-row--locked'}`}>
           <div className="reorder-btns">
-            <button
-              className="reorder-btn"
-              onClick={() => reorder(m.module.id, 'up')}
-              disabled={idx === 0}
-              aria-label="Subir"
-              data-testid={`admin-module-up-${m.module.order}`}
-            >▲</button>
-            <button
-              className="reorder-btn"
-              onClick={() => reorder(m.module.id, 'down')}
-              disabled={idx === modules.length - 1}
-              aria-label="Bajar"
-              data-testid={`admin-module-down-${m.module.order}`}
-            >▼</button>
+            <button className="reorder-btn" onClick={() => reorder(m.module.id, 'up')} disabled={idx === 0} aria-label="Subir" data-testid={`admin-module-up-${m.module.order}`}>▲</button>
+            <button className="reorder-btn" onClick={() => reorder(m.module.id, 'down')} disabled={idx === modules.length - 1} aria-label="Bajar" data-testid={`admin-module-down-${m.module.order}`}>▼</button>
           </div>
           <div className="module-row__num">{m.module.order}</div>
           <div style={{ flex: 1 }}>
             <div className="module-row__title">{m.module.title}</div>
-            <div className="module-row__desc">
-              {m.module.unlocked_at ? 'Desbloqueado' : 'Bloqueado'}
+            <div className="module-row__desc" style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span>{m.module.unlocked_at ? 'Desbloqueado' : 'Bloqueado'}</span>
+              <span>·</span>
+              {editingVideo === m.module.id ? (
+                <span style={{ display: 'flex', gap: '.4rem', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ padding: '.3rem .5rem', fontSize: '.82rem', maxWidth: 200 }}
+                    placeholder="Video ID (ej: dQw4w9WgXcQ)"
+                    value={videoDraft}
+                    onChange={(e) => setVideoDraft(e.target.value)}
+                    data-testid={`admin-module-video-input-${m.module.order}`}
+                  />
+                  <button className="btn btn--primary" style={{ padding: '.3rem .7rem', fontSize: '.78rem' }} onClick={() => saveVideo(m.module.id)} data-testid={`admin-module-video-save-${m.module.order}`}>Guardar</button>
+                  <button className="btn btn--ghost" style={{ padding: '.3rem .6rem', fontSize: '.78rem' }} onClick={() => { setEditingVideo(null); setVideoDraft(''); }}>Cancelar</button>
+                </span>
+              ) : (
+                <button className="linkish" style={{ color: 'var(--blue)', fontSize: '.82rem' }} onClick={() => startEditVideo(m)} data-testid={`admin-module-video-edit-${m.module.order}`}>
+                  🎥 {m.module.video_youtube_id ? `YT: ${m.module.video_youtube_id}` : 'Añadir vídeo YouTube'}
+                </button>
+              )}
             </div>
           </div>
-          <button
-            className="btn btn--ghost"
-            onClick={() => toggle(m.module.id, !!m.module.unlocked_at)}
-            data-testid={`admin-toggle-module-${m.module.order}`}
-          >
+          <button className="btn btn--ghost" onClick={() => toggle(m.module.id, !!m.module.unlocked_at)} data-testid={`admin-toggle-module-${m.module.order}`}>
             {m.module.unlocked_at ? 'Bloquear' : 'Desbloquear'}
           </button>
         </div>

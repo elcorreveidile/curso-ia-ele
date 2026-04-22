@@ -32,6 +32,8 @@ import Cuestionario from './pages/public/Cuestionario';
 import Resource from './pages/private/Resource';
 import CourseResources from './pages/private/CourseResources';
 import Profile from './pages/private/Profile';
+import Ebook from './pages/private/Ebook';
+import EbookChapter from './pages/private/EbookChapter';
 
 export default function App() {
   return (
@@ -63,6 +65,8 @@ export default function App() {
             {/* Private */}
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
             <Route path="/mi-area/perfil" element={<Protected><Profile /></Protected>} />
+            <Route path="/libro" element={<Protected><Ebook /></Protected>} />
+            <Route path="/libro/:slug" element={<Protected><EbookChapter /></Protected>} />
             <Route path="/curso/:slug" element={<Protected><CursoDetail /></Protected>} />
             <Route path="/curso/:slug/modulo/:moduleId" element={<Protected><ModuleDetail /></Protected>} />
             <Route path="/curso/:slug/tarea/:taskId" element={<Protected><TaskDetail /></Protected>} />

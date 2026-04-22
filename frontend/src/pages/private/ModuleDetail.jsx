@@ -56,6 +56,17 @@ export default function ModuleDetail() {
             ← Volver al curso
           </Link>
 
+          {entry.module.video_youtube_id && (
+            <div className="module-video" data-testid="module-video">
+              <iframe
+                src={`https://www.youtube.com/embed/${entry.module.video_youtube_id}?rel=0&modestbranding=1`}
+                title={`Vídeo del módulo ${entry.module.order}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          )}
+
           {entry.lessons.map((l) => (
             <div key={l.id} className="lesson-body" data-testid={`module-lesson-${l.order}`}>
               <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}>{l.title}</h2>

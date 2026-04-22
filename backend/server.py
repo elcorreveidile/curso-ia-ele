@@ -224,11 +224,13 @@ class AdminCourseUpdate(BaseModel):
     founder_seats: Optional[int] = None
     founder_seats_taken: Optional[int] = None
     active: Optional[bool] = None
+    intro_video_youtube_id: Optional[str] = None
 
 
 class AdminModuleUpdate(BaseModel):
     order: Optional[int] = None
     unlocked: Optional[bool] = None  # sets/clears unlocked_at
+    video_youtube_id: Optional[str] = None
 
 
 # ─────────────────────────── Auth ──────────────────────────────
@@ -458,6 +460,7 @@ async def seed_database() -> None:
 async def on_startup() -> None:
     await seed_database()
     await seed_resources()
+    await seed_ebook()
 
 
 # ─────────────────────────── Resources (course materials) ─────
@@ -582,6 +585,78 @@ async def seed_resources() -> None:
             await db.resources.insert_one(doc)
             count_new += 1
     log.info("Resources seeded: %d new, %d updated", count_new, count_updated)
+
+
+# ─────────────────────────── Ebook seeding ─────────────────────
+# Book: "Prompts que funcionan" — legacy/ebook/ has 31 MD chapters.
+EBOOK_PART_META = {
+    "00": {"order": 0, "label": "Introducción"},
+    "parte1": {"order": 1, "label": "Parte 1 · Fundamentos"},
+    "parte2": {"order": 2, "label": "Parte 2 · Por niveles"},
+    "parte3": {"order": 3, "label": "Parte 3 · Por destrezas"},
+    "parte4": {"order": 4, "label": "Parte 4 · Por géneros textuales"},
+    "parte5": {"order": 5, "label": "Parte 5 · Aplicaciones docentes"},
+    "apendices": {"order": 6, "label": "Apéndices"},
+}
+
+
+def _ebook_title_from_md(md: str, fallback: str) -> str:
+    for ln in md.splitlines():
+        ln = ln.strip()
+        if ln.startswith("# "):
+            return ln[2:].strip()
+        if ln.startswith("## "):
+            return ln[3:].strip()
+    return fallback
+
+
+async def seed_ebook() -> None:
+    base = Path("/app/legacy/ebook")
+    if not base.exists():
+        log.warning("No ebook folder at %s, skipping ebook seed", base)
+        return
+    new_count = 0
+    upd_count = 0
+    for md_path in sorted(base.rglob("*.md")):
+        rel = md_path.relative_to(base)
+        parts = rel.parts
+        if parts[0] in ("00_INTRODUCCION.md",):
+            part_key = "00"
+            order_in_part = 0
+        elif len(parts) == 2:
+            part_key = parts[0]
+            # order: first numeric chars of filename
+            name = parts[1]
+            order_in_part = int(name.split("_")[0]) if name[0].isdigit() else 0
+        else:
+            continue
+        meta = EBOOK_PART_META.get(part_key)
+        if not meta:
+            continue
+        content = md_path.read_text(encoding="utf-8")
+        default_title = md_path.stem.replace("_", " ").title()
+        title = _ebook_title_from_md(content, default_title)
+        slug = _slugify(f"{part_key}-{md_path.stem}")
+        doc = {
+            "slug": slug,
+            "part_key": part_key,
+            "part_order": meta["order"],
+            "part_label": meta["label"],
+            "order_in_part": order_in_part,
+            "title": title,
+            "content_md": content,
+            "source_path": str(rel),
+            "updated_at": now_utc(),
+        }
+        existing = await db.ebook_chapters.find_one({"slug": slug})
+        if existing:
+            await db.ebook_chapters.update_one({"slug": slug}, {"$set": doc})
+            upd_count += 1
+        else:
+            doc.update({"id": new_id(), "created_at": now_utc()})
+            await db.ebook_chapters.insert_one(doc)
+            new_count += 1
+    log.info("Ebook seeded: %d new, %d updated", new_count, upd_count)
 
 
 # ─────────────────────────── Public routes ─────────────────────
@@ -1177,7 +1252,14 @@ async def admin_overview(user: dict = Depends(current_admin)):
 async def admin_update_course(
     course_id: str, payload: AdminCourseUpdate, user: dict = Depends(current_admin),
 ):
-    update = {k: v for k, v in payload.dict().items() if v is not None}
+    update: dict[str, Any] = {}
+    for k, v in payload.dict().items():
+        if v is None:
+            continue
+        if k == "intro_video_youtube_id":
+            update[k] = v.strip() or None
+        else:
+            update[k] = v
     if not update:
         raise HTTPException(400, "Nada que actualizar")
     await db.courses.update_one({"id": course_id}, {"$set": update})
@@ -1193,6 +1275,9 @@ async def admin_update_module(
         update["order"] = payload.order
     if payload.unlocked is not None:
         update["unlocked_at"] = now_utc() if payload.unlocked else None
+    if payload.video_youtube_id is not None:
+        vid = payload.video_youtube_id.strip()
+        update["video_youtube_id"] = vid or None
     if not update:
         raise HTTPException(400, "Nada que actualizar")
     await db.modules.update_one({"id": module_id}, {"$set": update})
@@ -1345,6 +1430,238 @@ async def admin_reseed_resources(user: dict = Depends(current_admin)):
     await seed_resources()
     total = await db.resources.count_documents({})
     return {"ok": True, "total": total}
+
+
+@api.post("/admin/ebook/reseed")
+async def admin_reseed_ebook(user: dict = Depends(current_admin)):
+    await seed_ebook()
+    total = await db.ebook_chapters.count_documents({})
+    return {"ok": True, "total": total}
+
+
+# ─────────────────────────── Ebook (students) ──────────────────
+async def _ensure_any_enrollment(user: dict) -> None:
+    """Ebook is a student perk — require at least one active enrollment.
+    Admins bypass."""
+    if user.get("role") == "admin":
+        return
+    exists = await db.enrollments.find_one(
+        {"user_id": user["id"], "status": "active", "payment_status": "paid"}
+    )
+    if not exists:
+        raise HTTPException(403, "El libro está disponible solo para estudiantes inscritos")
+
+
+@api.get("/ebook")
+async def get_ebook_toc(user: dict = Depends(current_user)):
+    await _ensure_any_enrollment(user)
+    parts_map: dict[int, dict] = {}
+    total = 0
+    async for c in db.ebook_chapters.find({}, {
+        "slug": 1, "title": 1, "part_key": 1, "part_order": 1, "part_label": 1, "order_in_part": 1,
+    }).sort([("part_order", 1), ("order_in_part", 1)]):
+        p = parts_map.setdefault(c["part_order"], {
+            "part_order": c["part_order"],
+            "part_key": c["part_key"],
+            "part_label": c["part_label"],
+            "chapters": [],
+        })
+        p["chapters"].append({
+            "slug": c["slug"], "title": c["title"],
+            "order_in_part": c.get("order_in_part", 0),
+        })
+        total += 1
+    return {
+        "title": "Prompts que funcionan",
+        "subtitle": "Guía de ingeniería de prompts para docentes de ELE",
+        "author": "Javier Benítez Láinez",
+        "parts": [parts_map[k] for k in sorted(parts_map.keys())],
+        "total_chapters": total,
+    }
+
+
+@api.get("/ebook/{slug}")
+async def get_ebook_chapter(slug: str, user: dict = Depends(current_user)):
+    await _ensure_any_enrollment(user)
+    c = await db.ebook_chapters.find_one({"slug": slug})
+    if not c:
+        raise HTTPException(404, "Capítulo no encontrado")
+    return {
+        "slug": c["slug"],
+        "title": c["title"],
+        "content_md": c["content_md"],
+        "part_key": c.get("part_key"),
+        "part_label": c.get("part_label"),
+        "part_order": c.get("part_order"),
+        "order_in_part": c.get("order_in_part"),
+        "updated_at": iso(c.get("updated_at")),
+    }
+
+
+@api.get("/ebook.pdf")
+async def download_ebook_pdf(user: dict = Depends(current_user)):
+    """Generate the full book as a single styled PDF."""
+    await _ensure_any_enrollment(user)
+    from fastapi.responses import Response
+    import markdown as md_lib
+    import weasyprint
+
+    chapters = []
+    async for c in db.ebook_chapters.find({}).sort([("part_order", 1), ("order_in_part", 1)]):
+        chapters.append(c)
+
+    # Group into parts
+    parts: dict[int, dict] = {}
+    for c in chapters:
+        p = parts.setdefault(c["part_order"], {
+            "order": c["part_order"], "label": c["part_label"], "chapters": [],
+        })
+        p["chapters"].append(c)
+    part_list = [parts[k] for k in sorted(parts.keys())]
+
+    md = md_lib.Markdown(
+        extensions=["extra", "tables", "fenced_code", "toc", "sane_lists"],
+    )
+
+    def render_md(text: str) -> str:
+        md.reset()
+        return md.convert(text)
+
+    # Build HTML body
+    cover_html = """
+<section class="cover">
+  <div class="cover__mark">[ | ]</div>
+  <div class="cover__kicker">La Clase Digital</div>
+  <h1 class="cover__title">Prompts que funcionan</h1>
+  <p class="cover__subtitle">Guía de ingeniería de prompts<br/>para docentes de ELE</p>
+  <div class="cover__meta">
+    <p>Por <strong>Javier Benítez Láinez</strong></p>
+    <p class="cover__domain">laclasedigital.com</p>
+  </div>
+</section>
+"""
+
+    # TOC (auto using CSS target-counter)
+    toc_items = []
+    for part in part_list:
+        toc_items.append(
+            f'<li class="toc-part"><span>{part["label"]}</span></li>'
+        )
+        for ch in part["chapters"]:
+            anchor = f"ch-{ch['slug']}"
+            toc_items.append(
+                f'<li class="toc-chapter">'
+                f'<a href="#{anchor}">{ch["title"]}</a>'
+                f'<span class="toc-leader"></span>'
+                f'<a class="toc-page" href="#{anchor}"></a>'
+                f"</li>"
+            )
+    toc_html = (
+        '<section class="toc"><h1>Índice</h1><ul class="toc-list">'
+        + "".join(toc_items)
+        + "</ul></section>"
+    )
+
+    # Chapters
+    body_parts = []
+    for part in part_list:
+        body_parts.append(
+            f'<section class="part-sep"><div class="part-sep__kicker">Parte {part["order"]}</div>'
+            f'<h1 class="part-sep__title">{part["label"].split(" · ", 1)[-1]}</h1></section>'
+        )
+        for ch in part["chapters"]:
+            anchor = f"ch-{ch['slug']}"
+            html_body = render_md(ch["content_md"])
+            body_parts.append(
+                f'<section class="chapter" id="{anchor}">'
+                f'<h1 class="chapter__title">{ch["title"]}</h1>'
+                f'<div class="chapter__body">{html_body}</div>'
+                f"</section>"
+            )
+
+    css = """
+    @page {
+      size: A4;
+      margin: 26mm 22mm 24mm 22mm;
+      @top-left { content: "[ | ]  La Clase Digital"; font-family: 'Helvetica', sans-serif; font-size: 8.5pt; color: #46476A; }
+      @top-right { content: "Prompts que funcionan"; font-family: 'Helvetica', sans-serif; font-size: 8.5pt; color: #46476A; }
+      @bottom-center { content: counter(page); font-family: 'Helvetica', sans-serif; font-size: 9pt; color: #6B82A0; }
+    }
+    @page cover {
+      margin: 0;
+      @top-left { content: none; } @top-right { content: none; } @bottom-center { content: none; }
+    }
+    @page part-sep { @top-left { content: none; } @top-right { content: none; } }
+    html { font-family: 'Helvetica', sans-serif; font-size: 10.5pt; color: #1A2535; line-height: 1.55; }
+    body { margin: 0; }
+    .cover { page: cover; page-break-after: always;
+      background: linear-gradient(160deg, #0A1628 0%, #0F4C81 100%);
+      color: #fff; height: 297mm; width: 210mm; padding: 45mm 28mm 38mm; box-sizing: border-box;
+      display: block; position: relative;
+    }
+    .cover__mark { font-family: Georgia, serif; font-size: 40pt; letter-spacing: -2px; color: #F5A623; opacity: .95; }
+    .cover__kicker { margin-top: 6mm; font-size: 10pt; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: #F5A623; }
+    .cover__title { font-size: 44pt; line-height: 1.05; margin: 14mm 0 8mm; font-weight: 800; }
+    .cover__subtitle { font-size: 16pt; line-height: 1.35; font-weight: 300; color: #E8EEF5; max-width: 120mm; }
+    .cover__meta { position: absolute; bottom: 38mm; left: 28mm; right: 28mm; color: #E8EEF5; font-size: 11pt; }
+    .cover__meta strong { color: #F5A623; }
+    .cover__domain { margin-top: 3mm; font-size: 9.5pt; letter-spacing: 2px; color: #F5A623; text-transform: uppercase; }
+
+    .toc { page-break-after: always; }
+    .toc h1 { font-size: 22pt; color: #0F4C81; margin: 0 0 8mm; border-left: 4pt solid #F5A623; padding-left: 4mm; }
+    .toc-list { list-style: none; padding: 0; margin: 0; }
+    .toc-part { font-weight: 700; color: #F5A623; text-transform: uppercase; letter-spacing: 1.5px; font-size: 9pt; margin: 5mm 0 2mm; }
+    .toc-chapter { display: flex; align-items: baseline; margin: 1.5mm 0; font-size: 10.5pt; color: #1A2535; page-break-inside: avoid; }
+    .toc-chapter a { text-decoration: none; color: inherit; }
+    .toc-chapter .toc-leader { flex: 1; border-bottom: 0.3pt dotted #A7B3C4; margin: 0 2mm; transform: translateY(-2px); }
+    .toc-chapter .toc-page::before { content: target-counter(attr(href), page); font-variant-numeric: tabular-nums; color: #0F4C81; font-weight: 600; }
+
+    .part-sep { page: part-sep; page-break-before: always; page-break-after: always;
+      height: 240mm; display: flex; flex-direction: column; justify-content: center;
+      border-top: 4pt solid #F5A623; padding-top: 60mm;
+    }
+    .part-sep__kicker { color: #F5A623; font-size: 11pt; font-weight: 700; letter-spacing: 6px; text-transform: uppercase; }
+    .part-sep__title { font-size: 36pt; color: #0F4C81; margin-top: 8mm; line-height: 1.1; font-weight: 800; }
+
+    .chapter { page-break-before: always; }
+    .chapter__title { font-size: 20pt; color: #0F4C81; margin: 0 0 6mm; line-height: 1.2; border-left: 4pt solid #F5A623; padding-left: 4mm; }
+    .chapter__body h1, .chapter__body h2, .chapter__body h3 { color: #0F4C81; line-height: 1.25; margin-top: 7mm; page-break-after: avoid; }
+    .chapter__body h1 { font-size: 15pt; }
+    .chapter__body h2 { font-size: 12.5pt; }
+    .chapter__body h3 { font-size: 11pt; color: #1A2535; }
+    .chapter__body p { margin: 0 0 3.2mm; text-align: justify; hyphens: auto; orphans: 3; widows: 3; }
+    .chapter__body ul, .chapter__body ol { margin: 2mm 0 4mm 5mm; padding: 0; }
+    .chapter__body li { margin: 0.6mm 0; }
+    .chapter__body strong { color: #1A2535; }
+    .chapter__body em { color: #46476A; }
+    .chapter__body blockquote { margin: 4mm 0; padding: 3mm 5mm; background: #FEF6DC; border-left: 3pt solid #F5A623; font-style: italic; color: #46476A; page-break-inside: avoid; }
+    .chapter__body code { font-family: 'Courier', monospace; background: #F4F7FA; color: #0F4C81; padding: 0.3mm 1mm; border-radius: 1mm; font-size: 9.5pt; }
+    .chapter__body pre { background: #0F2744; color: #E8EEF5; padding: 4mm 5mm; border-left: 3pt solid #F5A623; border-radius: 1mm; margin: 4mm 0; font-family: 'Courier', monospace; font-size: 8.8pt; line-height: 1.45; white-space: pre-wrap; word-wrap: break-word; page-break-inside: avoid; }
+    .chapter__body pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+    .chapter__body table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9.5pt; page-break-inside: avoid; }
+    .chapter__body th { background: #F4F7FA; padding: 1.8mm 2.5mm; border: 0.25pt solid #C8D1DD; text-align: left; font-weight: 700; color: #0F4C81; }
+    .chapter__body td { padding: 1.8mm 2.5mm; border: 0.25pt solid #E0E2EA; color: #1A2535; vertical-align: top; }
+    .chapter__body hr { border: none; border-top: 0.3pt solid #E0E2EA; margin: 5mm 0; }
+    .chapter__body a { color: #0F4C81; text-decoration: none; border-bottom: 0.3pt dotted #0F4C81; }
+    """
+
+    html = f"""<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>Prompts que funcionan</title>
+<style>{css}</style></head>
+<body>
+{cover_html}
+{toc_html}
+{''.join(body_parts)}
+</body></html>"""
+
+    pdf_bytes = weasyprint.HTML(string=html).write_pdf()
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="prompts-que-funcionan.pdf"'
+        },
+    )
 
 
 @api.delete("/admin/enrollment/{enrollment_id}")
