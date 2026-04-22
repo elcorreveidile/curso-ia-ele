@@ -873,7 +873,17 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             f"<strong>{amount_eur:.2f} €</strong>"
             + (" · precio fundador 🎉" if tx.get("was_founder") else "")
         )
-        first_name = (user.get("name") or user["email"].split("@")[0]).split()[0].capitalize()
+        # Prefer the stored user.name; fall back to a clean local-part if
+        # it looks like a real name (letters only), else a generic greeting.
+        raw_name = (user.get("name") or "").strip()
+        if raw_name:
+            first_name = raw_name.split()[0].capitalize()
+        else:
+            local = user["email"].split("@")[0]
+            if local.replace("-", "").replace(".", "").isalpha():
+                first_name = local.split(".")[0].split("-")[0].capitalize()
+            else:
+                first_name = "docente"
         founder_badge = (
             '<div style="display:inline-block;background:#F5A623;color:#0A1628;padding:6px 14px;'
             'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
@@ -1112,8 +1122,11 @@ async def course_content(slug: str, user: dict = Depends(current_user)):
         async for le in db.lessons.find({"module_id": m["id"], "visible": True}).sort("order", 1):
             lessons.append(clean_doc(le))
         task = await db.tasks.find_one({"module_id": m["id"]})
+        m_clean = clean_doc(m)
+        # Normalize video_youtube_id so the key always exists on every module
+        m_clean.setdefault("video_youtube_id", None)
         modules.append({
-            "module": clean_doc(m),
+            "module": m_clean,
             "unlocked": bool(m.get("unlocked_at")) or user.get("role") == "admin",
             "lessons": lessons,
             "task": clean_doc(task),

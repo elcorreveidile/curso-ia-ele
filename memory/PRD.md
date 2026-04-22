@@ -34,6 +34,28 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 8 (2026-02 fork, sprint 4 · bugfix producción)
+- ✅ **PDF del libro en producción** (BUG FIX CRÍTICO): WeasyPrint no
+  funcionaba en el deploy nativo porque necesita libs del sistema
+  (cairo, pango, gdk-pixbuf). Reescrito `/api/ebook.pdf` con **ReportLab**
+  (pure Python, sin system deps). Incluye portada navy + marca ámbar,
+  TOC, separadores de parte, headers/footers con número de página.
+  Resultado: 557 KB · 246 páginas verificado.
+- ✅ **Email de bienvenida mejorado** (post inscripción Stripe):
+  saludo por primer nombre (con fallback sensato si el email no parece
+  nombre real), badge fundador si corresponde, caja del regalo del
+  libro, 4 pasos para empezar, importe + referencia Stripe, CTA a
+  login. Envío via send_email(Resend) desde webhook.
+- ✅ **Normalización API**: `video_youtube_id` siempre presente (None)
+  en todos los módulos del endpoint `/api/course/{slug}/content`.
+- ✅ **Testing iter8**: backend 12/12 pytest + frontend 5/5 Playwright.
+
+## Refactor pendiente (prioridad baja)
+Dividir `/app/backend/server.py` (~2300 líneas) en routers FastAPI
+modulares: auth, courses, dashboard, tasks, ebook, payments, admin,
+public. Mejora mantenibilidad y velocidad del IDE. Cero cambio visible
+al usuario.
+
 ## Implementado en iteración 7 (2026-02 fork, sprint 3)
 - ✅ **Regalo del libro en landing**: banner "📘 Incluye de regalo el libro
   *Prompts que funcionan*" en Home hero (contraste ámbar sobre oscuro)
