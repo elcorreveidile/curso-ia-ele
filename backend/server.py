@@ -1277,6 +1277,10 @@ async def admin_update_module(
         update["unlocked_at"] = now_utc() if payload.unlocked else None
     if payload.video_youtube_id is not None:
         vid = payload.video_youtube_id.strip()
+        if vid:
+            import re as _re
+            if not _re.match(r"^[A-Za-z0-9_-]{11}$", vid):
+                raise HTTPException(400, "ID de vídeo YouTube no válido (esperado 11 caracteres alfanuméricos)")
         update["video_youtube_id"] = vid or None
     if not update:
         raise HTTPException(400, "Nada que actualizar")

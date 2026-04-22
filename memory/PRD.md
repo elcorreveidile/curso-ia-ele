@@ -34,6 +34,48 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 6 (2026-02 fork, sprint 2)
+- ✅ **Libro "Prompts que funcionan"** completo integrado:
+  - Seed automático de 31 capítulos desde `/app/legacy/ebook/**/*.md`
+    en 7 partes (Intro · P1 Fundamentos · P2 Niveles · P3 Destrezas
+    · P4 Géneros · P5 Aplicaciones · Apéndices).
+  - Nuevas páginas `/libro` (TOC con banner + descarga) y
+    `/libro/:slug` (lector con sidebar desktop + drawer móvil +
+    breadcrumb + Anterior/Siguiente).
+  - **PDF descargable generado con WeasyPrint**: portada azul
+    degradado con marca `[ | ]` y acento ámbar, índice paginado con
+    `target-counter`, separadores por parte, tipografía Helvetica,
+    ~150 páginas, 1.7 MB. Endpoint `GET /api/ebook.pdf`.
+  - Acceso solo a estudiantes con enrollment activo+paid
+    (admin bypass).
+  - Link destacado "📘 Mi libro" en Dashboard.
+- ✅ **Vídeos de YouTube por módulo**:
+  - Campo `video_youtube_id` en `modules` editable desde admin
+    (validación regex `^[A-Za-z0-9_-]{11}$` para evitar XSS).
+  - Embed iframe con `?rel=0&modestbranding=1` arriba de la página
+    del módulo cuando está definido.
+- ✅ **Fix botón "Acceder"**: visible sin hover (fondo ámbar con
+  `!important` para ganar especificidad).
+- ✅ **Perfil + nombre/apellidos**:
+  - Modelo `UserOut` extendido con `surname`.
+  - `PUT /api/auth/profile` con validación.
+  - Onboarding: tras magic-link, si falta nombre → redirección a
+    `/mi-area/perfil?onboarding=1` con form pre-focused.
+  - Dashboard saluda con `name` y muestra banner "Completa tu
+    perfil" si incompleto.
+  - Página `/mi-area/perfil` con datos personales editables + panel
+    "Mi inscripción" (curso, fecha, importe, badge fundador, ref pago).
+- ✅ **Bloqueo de tarea hasta leer materiales**:
+  - `/api/course/{slug}/task/{id}` devuelve `module_resources`,
+    `pending_resources`, `can_submit`.
+  - `POST /submit` devuelve 400 con lista de materiales pendientes
+    si quedan sin leer.
+  - UI: banner rojo con lista clicable + textarea y botón
+    deshabilitados ("Lee primero los materiales"); banner verde
+    "✓ Has leído todos los materiales" cuando está listo.
+  - Admin bypass.
+- ✅ **Testing iter6**: backend 19/19 pytest + frontend 7/7 Playwright.
+
 ## Implementado en iteración 5 (2026-02 fork)
 - ✅ **Check "Leído" + progreso** en materiales:
   - Auto-marcado idempotente al abrir cualquier recurso (estudiantes, no admins).
