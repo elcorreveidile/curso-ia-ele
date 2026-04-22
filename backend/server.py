@@ -461,6 +461,7 @@ async def on_startup() -> None:
     await seed_database()
     await seed_resources()
     await seed_ebook()
+    start_inactivity_scheduler()
 
 
 # ─────────────────────────── Resources (course materials) ─────
@@ -2019,6 +2020,122 @@ async def admin_export_enrollments(user: dict = Depends(current_admin)):
             "Content-Disposition": f'attachment; filename="inscripciones-{now_utc().strftime("%Y%m%d")}.csv"'
         },
     )
+
+
+# ─────────────────────── Inactivity nudge scheduler ────────────
+# Sends a friendly nudge email to enrolled students who haven't
+# opened any course material for >= 7 days. Runs daily and is
+# idempotent per-day via `last_nudge_at` on the user.
+_INACTIVITY_DAYS = int(os.environ.get("INACTIVITY_NUDGE_DAYS", "7"))
+_scheduler_started = False
+
+
+def _nudge_email_html(name: str | None, course_title: str, first_name: str | None) -> str:
+    greeting = first_name or (name or "docente")
+    inner_url = FRONTEND_ORIGIN or "https://laclasedigital.com"
+    return f"""
+<div style="max-width:560px;margin:0 auto;padding:24px;font-family:-apple-system,Segoe UI,Helvetica,sans-serif;color:#1A2535;background:#FFFCF4;">
+  <p style="font-size:20px;margin:0 0 12px;color:#F5A623;font-weight:800;">Hola, {greeting} 👋</p>
+  <p>He notado que llevas unos días sin entrar en <strong>{course_title}</strong>.
+  Sé que combinar la formación con tu día a día no es fácil, así que te dejo un empujón para retomar con energía.</p>
+  <p style="margin:18px 0;">👉 <a href="{inner_url}/dashboard" style="color:#0F4C81;text-decoration:underline;font-weight:600;">Entrar a mi área y continuar</a></p>
+  <p>Recuerda que tienes a tu disposición:</p>
+  <ul style="padding-left:20px;">
+    <li>📘 El libro <em>«Prompts que funcionan»</em> (31 capítulos)</li>
+    <li>📚 Todos los materiales del curso ordenados por módulo</li>
+    <li>🎥 Las videotutorías grabadas</li>
+  </ul>
+  <p style="margin-top:20px;font-size:13px;color:#6B82A0;">— Javier Benítez Láinez · <a href="{inner_url}" style="color:#0F4C81;">laclasedigital.com</a></p>
+</div>
+"""
+
+
+def _aware(dt: Optional[datetime]) -> Optional[datetime]:
+    """MongoDB motor returns naive datetimes — coerce to UTC-aware for safe compares."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+async def run_inactivity_nudge() -> dict[str, Any]:
+    """Find enrolled students with no resource/lesson activity in the last N days
+    and email them a gentle reminder. Returns a summary dict."""
+    now = now_utc()
+    cutoff = now - timedelta(days=_INACTIVITY_DAYS)
+    # Skip users already nudged in the last 7 days (idempotency)
+    recent_nudge_cutoff = now - timedelta(days=_INACTIVITY_DAYS)
+
+    sent = 0
+    skipped = 0
+    checked = 0
+
+    # Iterate active-paid enrollments only
+    async for en in db.enrollments.find({"status": "active", "payment_status": "paid"}):
+        checked += 1
+        user = await db.users.find_one({"id": en["user_id"]})
+        if not user or user.get("role") == "admin":
+            continue
+        # Respect idempotency: if already nudged recently, skip
+        last_nudge = _aware(user.get("last_nudge_at"))
+        if last_nudge and last_nudge > recent_nudge_cutoff:
+            skipped += 1
+            continue
+        # Any activity in the last N days?
+        recent = await db.user_progress.find_one(
+            {"user_id": user["id"], "viewed_at": {"$gte": cutoff}},
+            {"_id": 1},
+        )
+        if recent:
+            continue
+        # Enrollment too fresh? Give them a week of grace.
+        paid_at = _aware(en.get("paid_at"))
+        if paid_at and paid_at > cutoff:
+            continue
+
+        course = await db.courses.find_one({"id": en["course_id"]})
+        if not course:
+            continue
+        subject = f"¿Retomamos {course['title']}? Tu curso te espera"
+        html = _nudge_email_html(user.get("name"), course["title"], user.get("name"))
+        try:
+            await send_email(user["email"], subject, html)
+            await db.users.update_one(
+                {"id": user["id"]}, {"$set": {"last_nudge_at": now}}
+            )
+            sent += 1
+        except Exception as e:  # pragma: no cover
+            log.error("Failed to send nudge to %s: %s", user.get("email"), e)
+    log.info("Inactivity nudge run: checked=%d sent=%d skipped=%d", checked, sent, skipped)
+    return {"checked": checked, "sent": sent, "skipped": skipped}
+
+
+def start_inactivity_scheduler() -> None:
+    global _scheduler_started
+    if _scheduler_started:
+        return
+    if os.environ.get("INACTIVITY_NUDGE_ENABLED", "1") != "1":
+        log.info("Inactivity nudge scheduler disabled via env")
+        return
+    try:
+        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+        from apscheduler.triggers.cron import CronTrigger
+    except Exception as e:  # pragma: no cover
+        log.warning("APScheduler not available: %s", e)
+        return
+    sch = AsyncIOScheduler(timezone="Europe/Madrid")
+    # Daily at 09:00 Madrid time
+    sch.add_job(run_inactivity_nudge, CronTrigger(hour=9, minute=0))
+    sch.start()
+    _scheduler_started = True
+    log.info("Inactivity nudge scheduler started (every day 09:00 Europe/Madrid)")
+
+
+@api.post("/admin/inactivity/run")
+async def admin_run_inactivity_nudge(user: dict = Depends(current_admin)):
+    """Manual trigger for the nudge job (used in testing and admin-forced runs)."""
+    return await run_inactivity_nudge()
 
 
 # ─────────────────────────── Register router ───────────────────
