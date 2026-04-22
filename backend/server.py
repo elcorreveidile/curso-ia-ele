@@ -1659,7 +1659,7 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
     p_cover_sub = ParagraphStyle("cs", fontName="Helvetica", fontSize=14, leading=19, textColor=colors.HexColor("#E8EEF5"), spaceBefore=16)
     p_cover_author = ParagraphStyle("ca", fontName="Helvetica", fontSize=11, leading=14, textColor=colors.HexColor("#E8EEF5"))
     p_cover_domain = ParagraphStyle("cd", fontName="Helvetica-Bold", fontSize=9, leading=12, textColor=AMBER)
-    p_quote = ParagraphStyle("q", fontName="Helvetica-Oblique", fontSize=10, leading=14, textColor=INK_SOFT, leftIndent=12, rightIndent=12, spaceBefore=6, spaceAfter=8, backColor=QUOTE_BG, borderPadding=(8, 10, 8, 10))
+    p_quote_text = ParagraphStyle("qt", fontName="Helvetica-Oblique", fontSize=10, leading=14, textColor=INK_SOFT)
     p_list = ParagraphStyle("li", fontName="Helvetica", fontSize=10.5, leading=14, textColor=INK, leftIndent=18, bulletIndent=6, spaceAfter=2)
 
     # ── Markdown → flowables (simple parser) ──
@@ -1695,13 +1695,31 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
         def flush_code() -> None:
             nonlocal code_buf
             if code_buf:
+                # Use a single-cell Table so the dark background actually
+                # paints under the code (ParagraphStyle.backColor is unreliable
+                # for multi-line code blocks in reportlab).
                 code_style = ParagraphStyle(
-                    "code", fontName="Courier", fontSize=8.5, leading=11,
-                    textColor=CODE_FG, backColor=CODE_BG, leftIndent=10, rightIndent=10,
-                    spaceBefore=6, spaceAfter=8, borderPadding=(8, 10, 8, 10),
+                    "code", fontName="Courier", fontSize=8.5, leading=12,
+                    textColor=CODE_FG, leftIndent=0, rightIndent=0,
                 )
                 txt = "\n".join(code_buf).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                flows.append(Preformatted(txt, code_style))
+                inner = Preformatted(txt, code_style)
+                tbl = Table(
+                    [[inner]],
+                    colWidths=[18 * cm],
+                    hAlign="LEFT",
+                )
+                tbl.setStyle(TableStyle([
+                    ("BACKGROUND", (0, 0), (-1, -1), CODE_BG),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 10),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+                    ("TOPPADDING", (0, 0), (-1, -1), 8),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+                    ("LINEBEFORE", (0, 0), (0, -1), 3, AMBER),
+                ]))
+                flows.append(Spacer(1, 4))
+                flows.append(tbl)
+                flows.append(Spacer(1, 6))
                 code_buf = []
 
         def flush_table() -> None:
@@ -1759,7 +1777,21 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
             if ln.startswith("### "):
                 flush_list(); flows.append(Paragraph(render_inline(ln[4:]), p_h3)); continue
             if ln.startswith("> "):
-                flush_list(); flows.append(Paragraph(render_inline(ln[2:]), p_quote)); continue
+                flush_list()
+                quote_inner = Paragraph(render_inline(ln[2:]), p_quote_text)
+                qtbl = Table([[quote_inner]], colWidths=[18 * cm], hAlign="LEFT")
+                qtbl.setStyle(TableStyle([
+                    ("BACKGROUND", (0, 0), (-1, -1), QUOTE_BG),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 10),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                    ("LINEBEFORE", (0, 0), (0, -1), 3, AMBER),
+                ]))
+                flows.append(Spacer(1, 3))
+                flows.append(qtbl)
+                flows.append(Spacer(1, 6))
+                continue
             if ln.strip() in ("---", "***"):
                 flush_list()
                 hr_style = ParagraphStyle("hr", fontSize=1, leading=1, backColor=LINE, spaceBefore=6, spaceAfter=6)
