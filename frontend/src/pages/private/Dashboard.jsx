@@ -14,16 +14,30 @@ export default function Dashboard() {
     api.get('/dashboard').then((r) => setData(r.data));
   }, []);
 
+  const displayName = user?.name || user?.email?.split('@')[0] || 'docente';
+  const profileIncomplete = user && (!user.name || !user.surname);
+
   return (
     <>
       <Navbar />
       <div className="inner-page">
         <PageHero
           tag="Mi área privada"
-          title={`Hola, ${user?.name || user?.email?.split('@')[0] || 'docente'}`}
+          title={`Hola, ${displayName}`}
           desc="Desde aquí puedes acceder a tus cursos, entregar tareas y consultar tu feedback."
         />
         <div className="inner-content">
+          {profileIncomplete && (
+            <div className="info-box" style={{ borderLeft: '4px solid var(--amber)', marginBottom: '1.25rem' }} data-testid="dashboard-complete-profile-banner">
+              <p className="info-box__title">👋 Completa tu perfil</p>
+              <p style={{ marginBottom: '.75rem' }}>
+                Añade tu nombre y apellidos para que podamos personalizar tu experiencia y tu certificado.
+              </p>
+              <Link to="/mi-area/perfil?onboarding=1" className="btn btn--primary" data-testid="dashboard-complete-profile-cta">
+                Completar mi perfil →
+              </Link>
+            </div>
+          )}
           {!data ? (
             <p>Cargando…</p>
           ) : data.enrollments.length === 0 ? (
@@ -37,8 +51,14 @@ export default function Dashboard() {
               </Link>
             </div>
           ) : (
-            <div className="dash-section">
-              <h2 className="dash-title">Mis cursos</h2>
+            <>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '.5rem' }}>
+                <Link to="/mi-area/perfil" className="btn btn--ghost" style={{ fontSize: '.85rem' }} data-testid="dashboard-profile-link">
+                  ⚙️ Mi perfil
+                </Link>
+              </div>
+              <div className="dash-section">
+                <h2 className="dash-title">Mis cursos</h2>
               {data.enrollments.map((e) => {
                 const p = e.progress || { percent: 0, lessons_viewed: 0, lessons_total: 0, tasks_submitted: 0, tasks_total: 0, tasks_reviewed: 0 };
                 return (
@@ -86,7 +106,8 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            </>
           )}
         </div>
       </div>

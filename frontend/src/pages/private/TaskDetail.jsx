@@ -38,6 +38,9 @@ export default function TaskDetail() {
   if (err && !data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem', color: 'var(--clm-red)' }}>{err}</div><Footer /></>;
   if (!data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>Cargando…</div><Footer /></>;
 
+  const pending = data.pending_resources || [];
+  const canSubmit = data.can_submit !== false;
+
   return (
     <>
       <Navbar />
@@ -53,12 +56,38 @@ export default function TaskDetail() {
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.task.instructions_md || ''}</ReactMarkdown>
           </div>
 
+          {!canSubmit && pending.length > 0 && (
+            <div className="info-box" style={{ borderLeft: '4px solid var(--clm-red)', marginBottom: '1.25rem' }} data-testid="task-gate-banner">
+              <p className="info-box__title">📖 Antes de entregar, lee los materiales del módulo</p>
+              <p style={{ marginBottom: '.75rem' }}>
+                Te quedan <strong>{pending.length}</strong> {pending.length === 1 ? 'material por leer' : 'materiales por leer'} de este módulo.
+                Una vez los leas, podrás enviar tu entrega.
+              </p>
+              <ul style={{ margin: 0, paddingLeft: '1.25rem' }} data-testid="task-gate-list">
+                {pending.map((r) => (
+                  <li key={r.slug} style={{ marginBottom: '.35rem' }}>
+                    <Link to={`/recurso/${r.slug}`} style={{ color: 'var(--blue)' }} data-testid={`task-gate-item-${r.slug}`}>
+                      {r.title}
+                    </Link>
+                    <span style={{ fontSize: '.78rem', color: 'var(--ink-muted)', marginLeft: '.4rem' }}>· {r.type_label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {canSubmit && pending.length === 0 && (data.module_resources || []).length > 0 && (
+            <div className="info-box" style={{ borderLeft: '4px solid #16A34A', marginBottom: '1.25rem' }} data-testid="task-gate-ok">
+              <p style={{ margin: 0 }}>✓ Has leído todos los materiales del módulo. ¡Puedes entregar la tarea!</p>
+            </div>
+          )}
+
           <div className="lesson-body">
             <p className="section__tag">Entregar</p>
             <form onSubmit={submit} data-testid="task-submit-form">
               <div className="form-group">
                 <label>Contenido de tu entrega (Markdown)</label>
-                <textarea className="form-input" value={content} onChange={(e) => setContent(e.target.value)} required data-testid="task-submit-content" />
+                <textarea className="form-input" value={content} onChange={(e) => setContent(e.target.value)} required disabled={!canSubmit} data-testid="task-submit-content" />
               </div>
               <div className="form-group">
                 <label>Archivo adjunto (opcional)</label>
@@ -73,8 +102,8 @@ export default function TaskDetail() {
                 )}
               </div>
               {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
-              <button className="btn btn--primary" disabled={sending} data-testid="task-submit-btn">
-                {sending ? 'Enviando…' : 'Enviar entrega'}
+              <button className="btn btn--primary" disabled={sending || !canSubmit} data-testid="task-submit-btn">
+                {sending ? 'Enviando…' : canSubmit ? 'Enviar entrega' : 'Lee primero los materiales'}
               </button>
             </form>
           </div>

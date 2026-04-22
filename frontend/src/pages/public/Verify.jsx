@@ -20,7 +20,16 @@ export default function Verify() {
         const r = await api.post('/auth/verify', { token });
         setToken(r.data.token);
         setStatus('ok');
-        setTimeout(() => navigate('/dashboard'), 800);
+        setTimeout(async () => {
+          try {
+            const me = await api.get('/auth/me');
+            if (!me.data?.name || !me.data?.surname) {
+              navigate('/mi-area/perfil?onboarding=1');
+              return;
+            }
+          } catch { /* noop */ }
+          navigate('/dashboard');
+        }, 800);
       } catch (err) {
         setStatus('error');
         setError(err.response?.data?.detail || 'Enlace no válido.');

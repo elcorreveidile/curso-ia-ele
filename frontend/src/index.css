@@ -212,13 +212,13 @@ body.has-founder-strip .home-hero { padding-top: 40px; }
 .inner-nav__links a.active::after { transform: scaleX(1); }
 .inner-nav__links a.active { color: var(--ink); font-weight: 600; }
 .inner-nav__cta {
-  background: var(--clm-red); color: var(--white) !important;
+  background: var(--clm-red) !important; color: var(--white) !important;
   padding: .4rem 1rem; border-radius: var(--r-sm);
   font-weight: 600 !important; font-size: .825rem !important;
   transition: background .2s !important;
 }
 .inner-nav__cta::after { display: none !important; }
-.inner-nav__cta:hover { background: var(--clm-red-dark) !important; }
+.inner-nav__cta:hover { background: var(--clm-red-dark) !important; color: var(--white) !important; }
 
 .inner-nav__burger {
   display: none;

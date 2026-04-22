@@ -155,8 +155,14 @@ class UserOut(BaseModel):
     id: str
     email: str
     name: Optional[str] = None
+    surname: Optional[str] = None
     role: Literal["student", "admin"] = "student"
     created_at: str
+
+
+class ProfileUpdate(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
+    surname: str = Field(min_length=1, max_length=120)
 
 
 class CourseOut(BaseModel):
@@ -649,6 +655,20 @@ async def me(user: dict = Depends(current_user)):
     return UserOut(**user)
 
 
+@api.put("/auth/profile", response_model=UserOut)
+async def update_profile(payload: ProfileUpdate, user: dict = Depends(current_user)):
+    name = payload.name.strip()
+    surname = payload.surname.strip()
+    if not name or not surname:
+        raise HTTPException(400, "Nombre y apellido son obligatorios")
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"name": name, "surname": surname, "updated_at": now_utc()}},
+    )
+    updated = await db.users.find_one({"id": user["id"]})
+    return UserOut(**clean_doc(updated))
+
+
 # ─────────────────────────── Enrollment / Stripe ───────────────
 def _stripe_for(request: Request) -> StripeCheckout:
     # Host URL for the webhook
@@ -985,10 +1005,40 @@ async def task_detail(slug: str, task_id: str, user: dict = Depends(current_user
     submissions = []
     async for s in db.submissions.find({"task_id": task_id, "user_id": user["id"]}).sort("submitted_at", -1):
         submissions.append(clean_doc(s))
+
+    # Module resources gate: list unread resources from this module so the
+    # student must read the materials before submitting the task.
+    module_resources = []
+    pending_resources = []
+    if mod:
+        viewed_slugs = set()
+        async for row in db.user_progress.find(
+            {"user_id": user["id"], "resource_slug": {"$exists": True}},
+            {"resource_slug": 1},
+        ):
+            if row.get("resource_slug"):
+                viewed_slugs.add(row["resource_slug"])
+        async for r in db.resources.find(
+            {"module_id": mod["id"]}
+        ).sort([("type", 1), ("title", 1)]):
+            item = {
+                "slug": r["slug"], "title": r["title"],
+                "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+                "viewed": r["slug"] in viewed_slugs,
+            }
+            module_resources.append(item)
+            if not item["viewed"]:
+                pending_resources.append(item)
+    # Admins are never gated
+    can_submit = (user.get("role") == "admin") or (len(pending_resources) == 0)
+
     return {
         "task": clean_doc(task),
         "module": clean_doc(mod),
         "submissions": submissions,
+        "module_resources": module_resources,
+        "pending_resources": pending_resources,
+        "can_submit": can_submit,
     }
 
 
@@ -1000,6 +1050,25 @@ async def submit_task(
     task = await db.tasks.find_one({"id": task_id})
     if not task:
         raise HTTPException(404, "Tarea no encontrada")
+    # Gate: require all module resources to be viewed (admins bypass)
+    if user.get("role") != "admin" and task.get("module_id"):
+        viewed_slugs = set()
+        async for row in db.user_progress.find(
+            {"user_id": user["id"], "resource_slug": {"$exists": True}},
+            {"resource_slug": 1},
+        ):
+            if row.get("resource_slug"):
+                viewed_slugs.add(row["resource_slug"])
+        pending = []
+        async for r in db.resources.find({"module_id": task["module_id"]}, {"slug": 1, "title": 1}):
+            if r["slug"] not in viewed_slugs:
+                pending.append(r["title"])
+        if pending:
+            raise HTTPException(
+                400,
+                f"Antes de entregar debes leer los materiales del módulo: {', '.join(pending[:5])}"
+                + (" …" if len(pending) > 5 else ""),
+            )
     sid = new_id()
     doc = {
         "id": sid,
