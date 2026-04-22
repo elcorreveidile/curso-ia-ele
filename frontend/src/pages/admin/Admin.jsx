@@ -104,6 +104,11 @@ export default function Admin() {
           </div>
 
           <div className="dash-section">
+            <h2 className="dash-title">Matricular manualmente</h2>
+            <ManualEnrollForm onDone={load} />
+          </div>
+
+          <div className="dash-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '.5rem' }}>
               <h2 className="dash-title" style={{ marginBottom: 0 }}>Inscripciones ({data.enrollments.length})</h2>
               <a
@@ -329,3 +334,97 @@ function ModulesControl() {
     </div>
   );
 }
+
+function ManualEnrollForm({ onDone }) {
+  const [email, setEmail] = useState('');
+  const [asFounder, setAsFounder] = useState(false);
+  const [amountEur, setAmountEur] = useState('0');
+  const [note, setNote] = useState('');
+  const [sendEmail, setSendEmail] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+  const [err, setErr] = useState('');
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true); setErr(''); setResult(null);
+    try {
+      const r = await api.post('/admin/enrollment/manual', {
+        email: email.trim(),
+        course_slug: 'ia-ele',
+        as_founder: asFounder,
+        amount_eur: Number(amountEur) || 0,
+        note: note.trim(),
+        send_welcome_email: sendEmail,
+      });
+      setResult(r.data);
+      setEmail(''); setAmountEur('0'); setNote(''); setAsFounder(false);
+      onDone && onDone();
+    } catch (ex) {
+      setErr(ex.response?.data?.detail || 'Error al matricular');
+    }
+    setBusy(false);
+  };
+
+  return (
+    <form onSubmit={submit} data-testid="admin-manual-enroll-form">
+      <p style={{ fontSize: '.88rem', color: 'var(--ink-muted)', margin: '0 0 1rem' }}>
+        Inscribe a alguien sin pasar por Stripe (pago recibido por otra vía, plaza gratuita, reseña, etc.).
+        Se crea la cuenta si no existe y se envía el email de bienvenida igual que con pago.
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '.75rem' }}>
+        <div className="form-group">
+          <label>Email del alumno</label>
+          <input
+            type="email" className="form-input" required
+            value={email}
+            onChange={(ev) => setEmail(ev.target.value)}
+            placeholder="nombre@email.com"
+            data-testid="admin-manual-enroll-email"
+          />
+        </div>
+        <div className="form-group">
+          <label>Importe pagado (€)</label>
+          <input
+            type="number" step="0.01" min="0" className="form-input"
+            value={amountEur}
+            onChange={(ev) => setAmountEur(ev.target.value)}
+            data-testid="admin-manual-enroll-amount"
+          />
+          <small style={{ color: 'var(--ink-muted)', fontSize: '.75rem' }}>0 = plaza gratuita</small>
+        </div>
+      </div>
+      <div className="form-group">
+        <label>Nota interna (opcional)</label>
+        <input
+          type="text" className="form-input" maxLength={200}
+          value={note} onChange={(ev) => setNote(ev.target.value)}
+          placeholder="Ej. Pago por Bizum · Revisora editorial · Beca"
+          data-testid="admin-manual-enroll-note"
+        />
+      </div>
+      <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', margin: '.5rem 0 1rem' }}>
+        <label style={{ display: 'flex', gap: '.4rem', alignItems: 'center', fontSize: '.88rem', cursor: 'pointer' }}>
+          <input type="checkbox" checked={asFounder} onChange={(e) => setAsFounder(e.target.checked)} data-testid="admin-manual-enroll-founder" />
+          ⭐ Asignar plaza fundador
+        </label>
+        <label style={{ display: 'flex', gap: '.4rem', alignItems: 'center', fontSize: '.88rem', cursor: 'pointer' }}>
+          <input type="checkbox" checked={sendEmail} onChange={(e) => setSendEmail(e.target.checked)} data-testid="admin-manual-enroll-send-email" />
+          📧 Enviar email de bienvenida
+        </label>
+      </div>
+      {err && <p style={{ color: 'var(--clm-red)', marginBottom: '.5rem' }} data-testid="admin-manual-enroll-error">{err}</p>}
+      {result && (
+        <div className="info-box" style={{ borderLeft: '4px solid #16A34A', marginBottom: '.75rem' }} data-testid="admin-manual-enroll-success">
+          <p style={{ margin: 0 }}>
+            ✓ {result.created ? 'Matriculado' : 'Ya estaba matriculado'} · Referencia <strong>{result.payment_reference}</strong>
+          </p>
+        </div>
+      )}
+      <button type="submit" className="btn btn--primary" disabled={busy} data-testid="admin-manual-enroll-submit">
+        {busy ? 'Matriculando…' : 'Matricular alumno'}
+      </button>
+    </form>
+  );
+}
+

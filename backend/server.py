@@ -233,6 +233,15 @@ class AdminModuleUpdate(BaseModel):
     video_youtube_id: Optional[str] = None
 
 
+class AdminManualEnrollment(BaseModel):
+    email: EmailStr
+    course_slug: str = "ia-ele"
+    as_founder: bool = False
+    amount_eur: float = 0.0  # 0 = free/sponsored; otherwise arbitrary amount paid outside Stripe
+    note: str = ""
+    send_welcome_email: bool = True
+
+
 # ─────────────────────────── Auth ──────────────────────────────
 def create_session_jwt(user_id: str, email: str, role: str) -> str:
     payload = {
@@ -1672,7 +1681,7 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
         text = _re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", text)
         text = _re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<i>\1</i>", text)
         text = _re.sub(r"_([^_]+)_", r"<i>\1</i>", text)
-        text = _re.sub(r"`([^`]+)`", r'<font face="Courier" color="#0F4C81" backColor="#F4F7FA"> \1 </font>', text)
+        text = _re.sub(r"`([^`]+)`", r'<font face="Courier" color="#0F4C81"> \1 </font>', text)
         return text
 
     def md_to_flowables(md: str) -> list:
@@ -1695,12 +1704,11 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
         def flush_code() -> None:
             nonlocal code_buf
             if code_buf:
-                # Use a single-cell Table so the dark background actually
-                # paints under the code (ParagraphStyle.backColor is unreliable
-                # for multi-line code blocks in reportlab).
+                # Dark text on light background — always readable regardless
+                # of how reportlab renders the Table BACKGROUND.
                 code_style = ParagraphStyle(
-                    "code", fontName="Courier", fontSize=8.5, leading=12,
-                    textColor=CODE_FG, leftIndent=0, rightIndent=0,
+                    "code", fontName="Courier", fontSize=8.8, leading=12,
+                    textColor=INK, leftIndent=0, rightIndent=0,
                 )
                 txt = "\n".join(code_buf).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 inner = Preformatted(txt, code_style)
@@ -1710,12 +1718,13 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
                     hAlign="LEFT",
                 )
                 tbl.setStyle(TableStyle([
-                    ("BACKGROUND", (0, 0), (-1, -1), CODE_BG),
+                    ("BACKGROUND", (0, 0), (-1, -1), LIGHT_BG),
                     ("LEFTPADDING", (0, 0), (-1, -1), 10),
                     ("RIGHTPADDING", (0, 0), (-1, -1), 10),
                     ("TOPPADDING", (0, 0), (-1, -1), 8),
                     ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
                     ("LINEBEFORE", (0, 0), (0, -1), 3, AMBER),
+                    ("BOX", (0, 0), (-1, -1), 0.3, LINE),
                 ]))
                 flows.append(Spacer(1, 4))
                 flows.append(tbl)
@@ -1896,6 +1905,167 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
         media_type="application/pdf",
         headers={"Content-Disposition": 'attachment; filename="prompts-que-funcionan.pdf"'},
     )
+
+
+@api.post("/admin/enrollment/manual")
+async def admin_create_manual_enrollment(
+    payload: AdminManualEnrollment, user: dict = Depends(current_admin),
+):
+    """Manually enroll a student without going through Stripe.
+
+    Use cases:
+    - Payment received outside Stripe (bank transfer, cash, voucher).
+    - Comped / free seat (amount_eur=0).
+    - Friends & family or press review copies.
+
+    Idempotent: if an active enrollment already exists for (user, course),
+    returns it without duplicating.
+    """
+    email = payload.email.lower().strip()
+    course = await db.courses.find_one({"slug": payload.course_slug})
+    if not course:
+        raise HTTPException(404, "Curso no encontrado")
+
+    # Resolve or create the user
+    u = await db.users.find_one({"email": email})
+    if not u:
+        uid = new_id()
+        await db.users.insert_one({
+            "id": uid, "email": email, "role": "student",
+            "created_at": now_utc(),
+        })
+        u = await db.users.find_one({"id": uid})
+
+    # Reuse existing active enrollment if present
+    existing = await db.enrollments.find_one(
+        {"user_id": u["id"], "course_id": course["id"], "status": "active"}
+    )
+    if existing and existing.get("payment_status") == "paid":
+        return {
+            "enrollment": clean_doc(existing),
+            "created": False,
+            "user_id": u["id"],
+        }
+
+    # Honor founder seat if requested and still available
+    was_founder = bool(payload.as_founder) and (
+        course.get("founder_seats_taken", 0) < course.get("founder_seats", 0)
+    )
+    amount_cents = int(round(payload.amount_eur * 100))
+    payment_ref = f"MANUAL-{new_id()[:8].upper()}"
+
+    enrollment_doc = existing or {
+        "id": new_id(),
+        "user_id": u["id"],
+        "course_id": course["id"],
+        "created_at": now_utc(),
+    }
+    enrollment_doc.update({
+        "status": "active",
+        "payment_status": "paid",
+        "paid_at": now_utc(),
+        "stripe_payment_id": payment_ref,
+        "amount_paid_eur": amount_cents,
+        "was_founder": was_founder,
+        "manual": True,
+        "manual_note": payload.note or None,
+        "manual_by": user["email"],
+    })
+    if existing:
+        await db.enrollments.update_one({"id": existing["id"]}, {"$set": enrollment_doc})
+    else:
+        await db.enrollments.insert_one(enrollment_doc)
+    if was_founder:
+        await db.courses.update_one(
+            {"id": course["id"]}, {"$inc": {"founder_seats_taken": 1}}
+        )
+
+    # Send welcome email (reuse the same template as paid enrollments)
+    if payload.send_welcome_email:
+        try:
+            amount_eur = amount_cents / 100
+            price_line = (
+                "<strong>Gratis</strong>" if amount_cents == 0
+                else f"<strong>{amount_eur:.2f} €</strong>"
+                + (" · precio fundador 🎉" if was_founder else "")
+            )
+            raw_name = (u.get("name") or "").strip()
+            if raw_name:
+                first_name = raw_name.split()[0].capitalize()
+            else:
+                local = email.split("@")[0]
+                first_name = local.split(".")[0].split("-")[0].capitalize() if local.replace("-", "").replace(".", "").isalpha() else "docente"
+            founder_badge = (
+                '<div style="display:inline-block;background:#F5A623;color:#0A1628;padding:6px 14px;'
+                'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
+                'text-transform:uppercase;margin-top:6px">⭐ Fundador/a · plaza única</div>'
+                if was_founder else ""
+            )
+            html = wrap_email(
+                f"""
+                <div style="text-align:center;margin-bottom:24px">
+                  <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
+                  <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
+                </div>
+
+                <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:26px;line-height:1.2;margin:0 0 8px">
+                  ¡Bienvenido/a, {first_name}! 👋
+                </h2>
+                <p style="color:#46476A;font-size:16px;margin:0 0 4px">
+                  Te he inscrito manualmente en
+                  <strong style="color:#1A2535">{course['title']}</strong>.
+                </p>
+                {founder_badge}
+
+                <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:16px 20px;margin:28px 0;border-radius:4px">
+                  <p style="margin:0;font-weight:700;color:#1A2535">📘 ¡Regalo incluido!</p>
+                  <p style="margin:6px 0 0;font-size:14px;color:#46476A">
+                    El libro <em>«Prompts que funcionan»</em> — 31 capítulos de ingeniería de prompts
+                    para docentes de ELE — ya está disponible en tu área privada.
+                  </p>
+                </div>
+
+                <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
+                <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
+                  <li><strong>Completa tu perfil</strong> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
+                  <li><strong>Echa un vistazo al libro</strong> y al <strong>Módulo 1</strong>.</li>
+                  <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>.</li>
+                </ol>
+
+                <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
+                  <p style="margin:0;font-size:14px;color:#46476A"><strong>Inscripción:</strong> {price_line}</p>
+                  <p style="margin:6px 0 0;font-size:13px;color:#6B82A0">Referencia: {payment_ref}</p>
+                </div>
+
+                <p style="text-align:center;margin:32px 0 16px">
+                  <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
+                     text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
+                     display:inline-block;font-size:15px">
+                    Acceder a mi área privada →
+                  </a>
+                </p>
+                <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
+                  Entras con tu email ({email}) — te enviaremos un enlace mágico cada vez.
+                </p>
+
+                <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
+                <p style="font-size:14px;color:#46476A;margin:0">
+                  Si tienes cualquier duda, responde directamente a este correo y te leo sin falta.<br>
+                  Un abrazo,<br>
+                  <strong style="color:#1A2535">Javier</strong>
+                </p>
+                """
+            )
+            await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+        except Exception as e:
+            log.error("Welcome email failed for manual enrollment of %s: %s", email, e)
+
+    return {
+        "enrollment": clean_doc(enrollment_doc),
+        "created": existing is None,
+        "user_id": u["id"],
+        "payment_reference": payment_ref,
+    }
 
 
 @api.delete("/admin/enrollment/{enrollment_id}")
