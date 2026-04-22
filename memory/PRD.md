@@ -34,6 +34,50 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 7 (2026-02 fork, sprint 3)
+- ✅ **Regalo del libro en landing**: banner "📘 Incluye de regalo el libro
+  *Prompts que funcionan*" en Home hero (contraste ámbar sobre oscuro)
+  y bullet en el precio fundador de Precios.
+- ✅ **SEO + Open Graph**:
+  - Meta tags OG (site_name, locale, image 1200x630, alt) + Twitter Card.
+  - JSON-LD con `@graph` Organization + Person (Javier) + Course +
+    CourseInstance + Offer (149 €, LimitedAvailability).
+  - Generada `public/og-image.png` (91 KB, azul degradado + branding).
+  - `public/sitemap.xml` con 9 rutas prioridad 0.6-1.0.
+  - `public/robots.txt` permitiendo rutas públicas y bloqueando /api,
+    /dashboard, /admin, /libro, /recurso.
+- ✅ **Animaciones scroll-reveal**: hook `useScrollReveal` con
+  IntersectionObserver, marca above-the-fold como visible inmediatamente
+  y aplica fade+slide a elementos below-fold. Aplicado en Home y Precios.
+- ✅ **Resultado del cuestionario visual**: tarjeta con emoji + título,
+  barras animadas por dimensión (Práctica / Actitud / Uso) con color
+  propio cada una, módulos clave con ✓ verde, bloque "Próximos pasos"
+  mencionando el libro, botón "Reservar plaza →".
+- ✅ **Contador de plazas live**: CourseProvider con polling 60 s +
+  refresh al volver de otra pestaña (`visibilitychange`).
+- ✅ **Email semanal automático** (APScheduler + Resend):
+  - Cron diario 09:00 Europe/Madrid, función `run_inactivity_nudge`.
+  - Detecta estudiantes inscritos sin `user_progress.viewed_at` en 7 días,
+    respeta grace week para recién inscritos y idempotencia por
+    `user.last_nudge_at`.
+  - Endpoint admin `POST /api/admin/inactivity/run` para disparo manual.
+  - Email HTML con saludo personalizado + CTA "Entrar a mi área".
+- ✅ **Modo oscuro** con toggle + `prefers-color-scheme`:
+  - Componente `ThemeToggle` en Navbar (☀️/🌙).
+  - Variable CSS `--surface` para fondos de tarjetas (evita romper los
+    títulos blancos que usaban `var(--white)`).
+  - Script inline en `index.html` previene FOUC aplicando `data-theme`
+    antes de React.
+  - Persistencia en `localStorage.lcd_theme`, respeta `prefers-color-scheme`.
+- ✅ **Bugfix contraste**: en iter7.1 arreglé dos reportes del usuario:
+  (1) el regalo del libro usaba `color: var(--ink)` que quedaba oscuro
+  sobre el hero → ahora texto `#F3F7FC`; (2) en modo oscuro los títulos
+  blancos desaparecían porque `--white` se sobrescribía → introducido
+  `--surface` para separar "fondo de card" de "color blanco puro".
+- ✅ **Testing iter7**: backend 19/19 pytest + frontend 6/6 Playwright
+  (nudge idempotency, SEO meta/JSON-LD, sitemap/robots/og-image,
+  theme toggle persistencia, cuestionario full flow, regalo landing).
+
 ## Implementado en iteración 6 (2026-02 fork, sprint 2)
 - ✅ **Libro "Prompts que funcionan"** completo integrado:
   - Seed automático de 31 capítulos desde `/app/legacy/ebook/**/*.md`

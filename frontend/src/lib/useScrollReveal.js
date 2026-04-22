@@ -8,11 +8,21 @@ import { useEffect } from 'react';
  */
 export function useScrollReveal() {
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal:not(.is-visible)');
+    const els = Array.from(document.querySelectorAll('.reveal:not(.is-visible)'));
     if (!('IntersectionObserver' in window) || els.length === 0) {
       els.forEach((el) => el.classList.add('is-visible'));
       return;
     }
+    // Mark above-the-fold elements as visible immediately (no scroll needed).
+    // Anything that starts below the viewport bottom keeps the reveal effect.
+    const viewportH = window.innerHeight || 800;
+    const belowFold = [];
+    els.forEach((el) => {
+      const top = el.getBoundingClientRect().top;
+      if (top < viewportH - 40) el.classList.add('is-visible');
+      else belowFold.push(el);
+    });
+    if (belowFold.length === 0) return;
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -22,9 +32,9 @@ export function useScrollReveal() {
           }
         });
       },
-      { rootMargin: '0px 0px -60px 0px', threshold: 0.08 }
+      { rootMargin: '0px 0px -80px 0px', threshold: 0.1 }
     );
-    els.forEach((el) => io.observe(el));
+    belowFold.forEach((el) => io.observe(el));
     return () => io.disconnect();
   });
 }

@@ -12,13 +12,19 @@ function getInitialTheme() {
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState('light');
+  // Synchronously mirror the theme the inline script in index.html already set.
+  // This avoids a flash of light theme for dark-mode users.
+  const [theme, setTheme] = useState(() => {
+    if (typeof document !== 'undefined') {
+      const t = document.documentElement.getAttribute('data-theme');
+      if (t === 'dark' || t === 'light') return t;
+    }
+    return getInitialTheme();
+  });
 
   useEffect(() => {
-    const initial = getInitialTheme();
-    setTheme(initial);
-    document.documentElement.setAttribute('data-theme', initial);
-  }, []);
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const flip = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
