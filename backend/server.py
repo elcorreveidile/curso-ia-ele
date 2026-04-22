@@ -871,24 +871,78 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
         amount_eur = tx["amount_cents"] / 100
         price_line = (
             f"<strong>{amount_eur:.2f} €</strong>"
-            + (" (precio fundador)" if tx.get("was_founder") else "")
+            + (" · precio fundador 🎉" if tx.get("was_founder") else "")
+        )
+        first_name = (user.get("name") or user["email"].split("@")[0]).split()[0].capitalize()
+        founder_badge = (
+            '<div style="display:inline-block;background:#F5A623;color:#0A1628;padding:6px 14px;'
+            'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
+            'text-transform:uppercase;margin-top:6px">⭐ Fundador/a · plaza única</div>'
+            if tx.get("was_founder") else ""
         )
         html = wrap_email(
             f"""
-            <h2 style="font-family:Georgia,serif;color:#0F4C81">¡Bienvenido/a, {user['email']}!</h2>
-            <p>Te has inscrito correctamente en <strong>{course['title']}</strong>.</p>
-            <p>Importe pagado: {price_line}</p>
-            <p>Ya puedes acceder a tu área privada con tu email. Te esperamos el
-               <strong>4 de mayo de 2026</strong> en la primera videotutoría.</p>
-            <p style="text-align:center;margin:28px 0">
-              <a href="{FRONTEND_ORIGIN}/login" style="background:#0F4C81;color:#fff;
-                 text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">
-                Acceder a mi área privada
+            <div style="text-align:center;margin-bottom:24px">
+              <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
+              <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
+            </div>
+
+            <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:26px;line-height:1.2;margin:0 0 8px">
+              ¡Bienvenido/a, {first_name}! 👋
+            </h2>
+            <p style="color:#46476A;font-size:16px;margin:0 0 4px">
+              Gracias por confiar en mí para esta primera edición de
+              <strong style="color:#1A2535">{course['title']}</strong>.
+            </p>
+            {founder_badge}
+
+            <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:16px 20px;margin:28px 0;border-radius:4px">
+              <p style="margin:0;font-weight:700;color:#1A2535">📘 ¡Regalo incluido!</p>
+              <p style="margin:6px 0 0;font-size:14px;color:#46476A">
+                El libro <em>«Prompts que funcionan»</em> — 31 capítulos de ingeniería de prompts
+                para docentes de ELE — ya está disponible en tu área privada.
+              </p>
+            </div>
+
+            <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
+            <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
+              <li><strong>Completa tu perfil</strong> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.
+                  Lo usaré también en tu certificado.</li>
+              <li><strong>Echa un vistazo al libro</strong> y al <strong>Módulo 1</strong> para ir preparando tu cabeza.</li>
+              <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>
+                  (te enviaré el enlace unos días antes).</li>
+              <li><strong>Hazme caso si te pido que entregues tareas</strong>: el feedback personalizado
+                  es el corazón del curso.</li>
+            </ol>
+
+            <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
+              <p style="margin:0;font-size:14px;color:#46476A"><strong>Pago confirmado:</strong> {price_line}</p>
+              <p style="margin:6px 0 0;font-size:13px;color:#6B82A0">
+                Guarda este correo como justificante de inscripción.
+              </p>
+            </div>
+
+            <p style="text-align:center;margin:32px 0 16px">
+              <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
+                 text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
+                 display:inline-block;font-size:15px">
+                Acceder a mi área privada →
               </a>
+            </p>
+            <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
+              Entras con tu email ({user['email']}) — te enviaremos un enlace mágico cada vez.
+            </p>
+
+            <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
+            <p style="font-size:14px;color:#46476A;margin:0">
+              Si tienes cualquier duda, responde directamente a este correo y te leo sin falta.<br>
+              Un abrazo,<br>
+              <strong style="color:#1A2535">Javier</strong><br>
+              <span style="color:#6B82A0;font-size:13px">laclasedigital.com</span>
             </p>
             """
         )
-        await send_email(user["email"], "Inscripción confirmada · La Clase Digital", html)
+        await send_email(user["email"], f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
 
         # Notify admin of new enrollment
         admin_html = wrap_email(
@@ -1503,19 +1557,54 @@ async def get_ebook_chapter(slug: str, user: dict = Depends(current_user)):
     }
 
 
+@api.get("/ebook-full")
+async def get_ebook_full(user: dict = Depends(current_user)):
+    """Return all chapters with content_md for client-side PDF generation."""
+    await _ensure_any_enrollment(user)
+    parts_map: dict[int, dict] = {}
+    async for c in db.ebook_chapters.find({}).sort([("part_order", 1), ("order_in_part", 1)]):
+        p = parts_map.setdefault(c["part_order"], {
+            "part_order": c["part_order"],
+            "part_key": c.get("part_key"),
+            "part_label": c.get("part_label"),
+            "chapters": [],
+        })
+        p["chapters"].append({
+            "slug": c["slug"],
+            "title": c["title"],
+            "content_md": c["content_md"],
+            "order_in_part": c.get("order_in_part", 0),
+        })
+    return {
+        "title": "Prompts que funcionan",
+        "subtitle": "Guía de ingeniería de prompts para docentes de ELE",
+        "author": "Javier Benítez Láinez",
+        "parts": [parts_map[k] for k in sorted(parts_map.keys())],
+    }
+
+
 @api.get("/ebook.pdf")
 async def download_ebook_pdf(user: dict = Depends(current_user)):
-    """Generate the full book as a single styled PDF."""
+    """Generate the full book as a single PDF using ReportLab (pure Python,
+    no system dependencies). Styled with La Clase Digital brand palette."""
     await _ensure_any_enrollment(user)
     from fastapi.responses import Response
-    import markdown as md_lib
-    import weasyprint
+    from io import BytesIO
+
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import cm, mm
+    from reportlab.platypus import (
+        BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate,
+        Paragraph, Preformatted, Spacer, Table, TableStyle,
+    )
+    from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER
 
     chapters = []
     async for c in db.ebook_chapters.find({}).sort([("part_order", 1), ("order_in_part", 1)]):
         chapters.append(c)
 
-    # Group into parts
     parts: dict[int, dict] = {}
     for c in chapters:
         p = parts.setdefault(c["part_order"], {
@@ -1524,148 +1613,243 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
         p["chapters"].append(c)
     part_list = [parts[k] for k in sorted(parts.keys())]
 
-    md = md_lib.Markdown(
-        extensions=["extra", "tables", "fenced_code", "toc", "sane_lists"],
+    # ── Palette ──
+    NAVY = colors.HexColor("#0A1628")
+    BLUE = colors.HexColor("#0F4C81")
+    AMBER = colors.HexColor("#F5A623")
+    INK = colors.HexColor("#1A2535")
+    INK_SOFT = colors.HexColor("#46476A")
+    LIGHT_BG = colors.HexColor("#F4F7FA")
+    CODE_BG = colors.HexColor("#0F2744")
+    CODE_FG = colors.HexColor("#E8EEF5")
+    QUOTE_BG = colors.HexColor("#FEF6DC")
+    LINE = colors.HexColor("#E0E2EA")
+
+    # ── Styles ──
+    def st(**k):
+        base = {"fontName": "Helvetica", "fontSize": 10.5, "leading": 15, "textColor": INK, "spaceAfter": 5, "alignment": TA_JUSTIFY}
+        base.update(k)
+        return ParagraphStyle(k.pop("name", "s") if "name" in k else "s", **{kk: vv for kk, vv in base.items() if kk != "name"})
+
+    p_body = ParagraphStyle("body", fontName="Helvetica", fontSize=10.5, leading=15, textColor=INK, spaceAfter=5, alignment=TA_JUSTIFY)
+    p_h1 = ParagraphStyle("h1", fontName="Helvetica-Bold", fontSize=14, leading=18, textColor=BLUE, spaceBefore=12, spaceAfter=6)
+    p_h2 = ParagraphStyle("h2", fontName="Helvetica-Bold", fontSize=12, leading=16, textColor=BLUE, spaceBefore=10, spaceAfter=5)
+    p_h3 = ParagraphStyle("h3", fontName="Helvetica-Bold", fontSize=10.5, leading=14, textColor=INK, spaceBefore=8, spaceAfter=4)
+    p_chapter = ParagraphStyle("chapter", fontName="Helvetica-Bold", fontSize=18, leading=22, textColor=BLUE, spaceAfter=14, borderPadding=(0, 0, 0, 10), leftIndent=10)
+    p_part_kicker = ParagraphStyle("pk", fontName="Helvetica-Bold", fontSize=11, leading=14, textColor=AMBER)
+    p_part_title = ParagraphStyle("pt", fontName="Helvetica-Bold", fontSize=28, leading=32, textColor=BLUE, spaceBefore=8)
+    p_toc_title = ParagraphStyle("toct", fontName="Helvetica-Bold", fontSize=18, leading=22, textColor=BLUE, spaceAfter=14)
+    p_toc_part = ParagraphStyle("tocp", fontName="Helvetica-Bold", fontSize=9, leading=12, textColor=AMBER, spaceBefore=10, spaceAfter=4)
+    p_toc_item = ParagraphStyle("toci", fontName="Helvetica", fontSize=10, leading=14, textColor=INK, leftIndent=10, spaceAfter=2)
+    p_cover_kicker = ParagraphStyle("ck", fontName="Helvetica-Bold", fontSize=10, leading=14, textColor=AMBER)
+    p_cover_title = ParagraphStyle("ct", fontName="Helvetica-Bold", fontSize=38, leading=42, textColor=colors.white, spaceBefore=16)
+    p_cover_sub = ParagraphStyle("cs", fontName="Helvetica", fontSize=14, leading=19, textColor=colors.HexColor("#E8EEF5"), spaceBefore=16)
+    p_cover_author = ParagraphStyle("ca", fontName="Helvetica", fontSize=11, leading=14, textColor=colors.HexColor("#E8EEF5"))
+    p_cover_domain = ParagraphStyle("cd", fontName="Helvetica-Bold", fontSize=9, leading=12, textColor=AMBER)
+    p_quote = ParagraphStyle("q", fontName="Helvetica-Oblique", fontSize=10, leading=14, textColor=INK_SOFT, leftIndent=12, rightIndent=12, spaceBefore=6, spaceAfter=8, backColor=QUOTE_BG, borderPadding=(8, 10, 8, 10))
+    p_list = ParagraphStyle("li", fontName="Helvetica", fontSize=10.5, leading=14, textColor=INK, leftIndent=18, bulletIndent=6, spaceAfter=2)
+
+    # ── Markdown → flowables (simple parser) ──
+    import re as _re
+
+    def render_inline(text: str) -> str:
+        """Convert simple markdown inline (**bold**, *italic*, `code`) to ReportLab RML."""
+        # Escape HTML-sensitive chars first
+        text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        text = _re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", text)
+        text = _re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<i>\1</i>", text)
+        text = _re.sub(r"_([^_]+)_", r"<i>\1</i>", text)
+        text = _re.sub(r"`([^`]+)`", r'<font face="Courier" color="#0F4C81" backColor="#F4F7FA"> \1 </font>', text)
+        return text
+
+    def md_to_flowables(md: str) -> list:
+        flows = []
+        lines = md.split("\n")
+        code_buf: list[str] = []
+        in_code = False
+        list_buf: list[str] = []
+        tbl_buf: list[str] = []
+        in_tbl = False
+
+        def flush_list() -> None:
+            nonlocal list_buf
+            if list_buf:
+                for item in list_buf:
+                    flows.append(Paragraph("• " + render_inline(item), p_list))
+                flows.append(Spacer(1, 3))
+                list_buf = []
+
+        def flush_code() -> None:
+            nonlocal code_buf
+            if code_buf:
+                code_style = ParagraphStyle(
+                    "code", fontName="Courier", fontSize=8.5, leading=11,
+                    textColor=CODE_FG, backColor=CODE_BG, leftIndent=10, rightIndent=10,
+                    spaceBefore=6, spaceAfter=8, borderPadding=(8, 10, 8, 10),
+                )
+                txt = "\n".join(code_buf).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                flows.append(Preformatted(txt, code_style))
+                code_buf = []
+
+        def flush_table() -> None:
+            nonlocal tbl_buf, in_tbl
+            if len(tbl_buf) >= 2:
+                rows_raw = [r for r in tbl_buf if not _re.match(r"^\s*\|?\s*[-:| ]+\|?\s*$", r)]
+                rows = []
+                for row in rows_raw:
+                    cells = [c.strip() for c in row.split("|")]
+                    cells = [c for i, c in enumerate(cells) if not (i == 0 and c == "") and not (i == len(cells) - 1 and c == "")]
+                    rows.append([Paragraph(render_inline(c), p_body) for c in cells])
+                if rows:
+                    max_cols = max(len(r) for r in rows)
+                    rows = [r + [Paragraph("", p_body)] * (max_cols - len(r)) for r in rows]
+                    col_w = (18 * cm) / max_cols
+                    t = Table(rows, colWidths=[col_w] * max_cols, hAlign="LEFT")
+                    t.setStyle(TableStyle([
+                        ("BACKGROUND", (0, 0), (-1, 0), LIGHT_BG),
+                        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                        ("TEXTCOLOR", (0, 0), (-1, 0), BLUE),
+                        ("GRID", (0, 0), (-1, -1), 0.25, LINE),
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                        ("TOPPADDING", (0, 0), (-1, -1), 4),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                    ]))
+                    flows.append(t)
+                    flows.append(Spacer(1, 6))
+            tbl_buf = []
+            in_tbl = False
+
+        for raw in lines:
+            ln = raw.rstrip()
+            if ln.startswith("```"):
+                if in_code:
+                    flush_code(); in_code = False
+                else:
+                    flush_list(); flush_table(); in_code = True
+                continue
+            if in_code:
+                code_buf.append(ln); continue
+            if ln.strip().startswith("|") and "|" in ln.strip()[1:]:
+                if not in_tbl:
+                    flush_list(); in_tbl = True
+                tbl_buf.append(ln); continue
+            if in_tbl:
+                flush_table()
+            if not ln.strip():
+                flush_list(); continue
+            if ln.startswith("# "):
+                flush_list(); flows.append(Paragraph(render_inline(ln[2:]), p_h1)); continue
+            if ln.startswith("## "):
+                flush_list(); flows.append(Paragraph(render_inline(ln[3:]), p_h2)); continue
+            if ln.startswith("### "):
+                flush_list(); flows.append(Paragraph(render_inline(ln[4:]), p_h3)); continue
+            if ln.startswith("> "):
+                flush_list(); flows.append(Paragraph(render_inline(ln[2:]), p_quote)); continue
+            if ln.strip() in ("---", "***"):
+                flush_list()
+                hr_style = ParagraphStyle("hr", fontSize=1, leading=1, backColor=LINE, spaceBefore=6, spaceAfter=6)
+                flows.append(Paragraph(" ", hr_style)); continue
+            bm = _re.match(r"^[-*]\s+(.*)", ln)
+            nm = _re.match(r"^\d+\.\s+(.*)", ln)
+            if bm:
+                list_buf.append(bm.group(1)); continue
+            if nm:
+                list_buf.append(nm.group(1)); continue
+            flush_list()
+            flows.append(Paragraph(render_inline(ln), p_body))
+        flush_list(); flush_code(); flush_table()
+        return flows
+
+    # ── Page templates ──
+    buf = BytesIO()
+    doc = BaseDocTemplate(
+        buf, pagesize=A4,
+        leftMargin=2.2 * cm, rightMargin=2.2 * cm,
+        topMargin=2.6 * cm, bottomMargin=2.4 * cm,
+        title="Prompts que funcionan", author="Javier Benítez Láinez",
     )
+    content_frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="content")
+    cover_frame = Frame(0, 0, A4[0], A4[1], id="cover", leftPadding=2.8 * cm, bottomPadding=3 * cm, topPadding=3.5 * cm, rightPadding=2.8 * cm)
+    part_frame = Frame(0, 0, A4[0], A4[1], id="part", leftPadding=3 * cm, bottomPadding=A4[1] / 3, topPadding=A4[1] / 3, rightPadding=3 * cm)
 
-    def render_md(text: str) -> str:
-        md.reset()
-        return md.convert(text)
+    def draw_header_footer(canvas, doc_):  # noqa: ARG001
+        canvas.saveState()
+        canvas.setFont("Helvetica-Bold", 8.5)
+        canvas.setFillColor(INK_SOFT)
+        canvas.drawString(doc_.leftMargin, A4[1] - 1.2 * cm, "[ | ]  La Clase Digital")
+        canvas.setFont("Helvetica", 8.5)
+        canvas.drawRightString(A4[0] - doc_.rightMargin, A4[1] - 1.2 * cm, "Prompts que funcionan")
+        canvas.setStrokeColor(LINE); canvas.setLineWidth(0.3)
+        canvas.line(doc_.leftMargin, A4[1] - 1.5 * cm, A4[0] - doc_.rightMargin, A4[1] - 1.5 * cm)
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(colors.HexColor("#6B82A0"))
+        canvas.drawCentredString(A4[0] / 2, 1.1 * cm, str(canvas.getPageNumber()))
+        canvas.restoreState()
 
-    # Build HTML body
-    cover_html = """
-<section class="cover">
-  <div class="cover__mark">[ | ]</div>
-  <div class="cover__kicker">La Clase Digital</div>
-  <h1 class="cover__title">Prompts que funcionan</h1>
-  <p class="cover__subtitle">Guía de ingeniería de prompts<br/>para docentes de ELE</p>
-  <div class="cover__meta">
-    <p>Por <strong>Javier Benítez Láinez</strong></p>
-    <p class="cover__domain">laclasedigital.com</p>
-  </div>
-</section>
-"""
+    def draw_cover_bg(canvas, doc_):  # noqa: ARG001
+        canvas.saveState()
+        canvas.setFillColor(NAVY)
+        canvas.rect(0, 0, A4[0], A4[1], fill=1, stroke=0)
+        canvas.restoreState()
 
-    # TOC (auto using CSS target-counter)
-    toc_items = []
+    def draw_part_bg(canvas, doc_):  # noqa: ARG001
+        canvas.saveState()
+        canvas.setStrokeColor(AMBER); canvas.setLineWidth(3)
+        canvas.line(0, A4[1] - 1, A4[0], A4[1] - 1)
+        canvas.restoreState()
+
+    doc.addPageTemplates([
+        PageTemplate(id="Cover", frames=[cover_frame], onPage=draw_cover_bg),
+        PageTemplate(id="Content", frames=[content_frame], onPage=draw_header_footer),
+        PageTemplate(id="Part", frames=[part_frame], onPage=draw_part_bg),
+    ])
+
+    story = []
+    # Cover
+    story.append(NextPageTemplate("Cover"))
+    story.append(Paragraph('<font color="#F5A623" size="48"><b>[ | ]</b></font>', ParagraphStyle("cm", fontName="Helvetica-Bold", fontSize=48, leading=52)))
+    story.append(Spacer(1, 12))
+    story.append(Paragraph("LA CLASE DIGITAL", p_cover_kicker))
+    story.append(Paragraph("Prompts que funcionan", p_cover_title))
+    story.append(Paragraph("Guía de ingeniería de prompts para docentes de ELE", p_cover_sub))
+    story.append(Spacer(1, 220))
+    story.append(Paragraph('Por <font color="#F5A623"><b>Javier Benítez Láinez</b></font>', p_cover_author))
+    story.append(Spacer(1, 6))
+    story.append(Paragraph("LACLASEDIGITAL.COM", p_cover_domain))
+    story.append(NextPageTemplate("Content")); story.append(PageBreak())
+
+    # TOC
+    story.append(Paragraph("Índice", p_toc_title))
     for part in part_list:
-        toc_items.append(
-            f'<li class="toc-part"><span>{part["label"]}</span></li>'
-        )
+        story.append(Paragraph(part["label"].upper(), p_toc_part))
         for ch in part["chapters"]:
-            anchor = f"ch-{ch['slug']}"
-            toc_items.append(
-                f'<li class="toc-chapter">'
-                f'<a href="#{anchor}">{ch["title"]}</a>'
-                f'<span class="toc-leader"></span>'
-                f'<a class="toc-page" href="#{anchor}"></a>'
-                f"</li>"
-            )
-    toc_html = (
-        '<section class="toc"><h1>Índice</h1><ul class="toc-list">'
-        + "".join(toc_items)
-        + "</ul></section>"
-    )
+            story.append(Paragraph("• " + ch["title"], p_toc_item))
+    story.append(PageBreak())
 
-    # Chapters
-    body_parts = []
+    # Parts and chapters
     for part in part_list:
-        body_parts.append(
-            f'<section class="part-sep"><div class="part-sep__kicker">Parte {part["order"]}</div>'
-            f'<h1 class="part-sep__title">{part["label"].split(" · ", 1)[-1]}</h1></section>'
-        )
+        # Part separator
+        story.append(NextPageTemplate("Part"))
+        story.append(PageBreak())
+        kicker = "PRÓLOGO" if part["order"] == 0 else f"PARTE {part['order']}"
+        story.append(Paragraph(kicker, p_part_kicker))
+        label = part["label"].split(" · ", 1)[-1]
+        story.append(Paragraph(label, p_part_title))
+        story.append(NextPageTemplate("Content"))
+
         for ch in part["chapters"]:
-            anchor = f"ch-{ch['slug']}"
-            html_body = render_md(ch["content_md"])
-            body_parts.append(
-                f'<section class="chapter" id="{anchor}">'
-                f'<h1 class="chapter__title">{ch["title"]}</h1>'
-                f'<div class="chapter__body">{html_body}</div>'
-                f"</section>"
-            )
+            story.append(PageBreak())
+            story.append(Paragraph(ch["title"], p_chapter))
+            story.extend(md_to_flowables(ch["content_md"]))
 
-    css = """
-    @page {
-      size: A4;
-      margin: 26mm 22mm 24mm 22mm;
-      @top-left { content: "[ | ]  La Clase Digital"; font-family: 'Helvetica', sans-serif; font-size: 8.5pt; color: #46476A; }
-      @top-right { content: "Prompts que funcionan"; font-family: 'Helvetica', sans-serif; font-size: 8.5pt; color: #46476A; }
-      @bottom-center { content: counter(page); font-family: 'Helvetica', sans-serif; font-size: 9pt; color: #6B82A0; }
-    }
-    @page cover {
-      margin: 0;
-      @top-left { content: none; } @top-right { content: none; } @bottom-center { content: none; }
-    }
-    @page part-sep { @top-left { content: none; } @top-right { content: none; } }
-    html { font-family: 'Helvetica', sans-serif; font-size: 10.5pt; color: #1A2535; line-height: 1.55; }
-    body { margin: 0; }
-    .cover { page: cover; page-break-after: always;
-      background: linear-gradient(160deg, #0A1628 0%, #0F4C81 100%);
-      color: #fff; height: 297mm; width: 210mm; padding: 45mm 28mm 38mm; box-sizing: border-box;
-      display: block; position: relative;
-    }
-    .cover__mark { font-family: Georgia, serif; font-size: 40pt; letter-spacing: -2px; color: #F5A623; opacity: .95; }
-    .cover__kicker { margin-top: 6mm; font-size: 10pt; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: #F5A623; }
-    .cover__title { font-size: 44pt; line-height: 1.05; margin: 14mm 0 8mm; font-weight: 800; }
-    .cover__subtitle { font-size: 16pt; line-height: 1.35; font-weight: 300; color: #E8EEF5; max-width: 120mm; }
-    .cover__meta { position: absolute; bottom: 38mm; left: 28mm; right: 28mm; color: #E8EEF5; font-size: 11pt; }
-    .cover__meta strong { color: #F5A623; }
-    .cover__domain { margin-top: 3mm; font-size: 9.5pt; letter-spacing: 2px; color: #F5A623; text-transform: uppercase; }
-
-    .toc { page-break-after: always; }
-    .toc h1 { font-size: 22pt; color: #0F4C81; margin: 0 0 8mm; border-left: 4pt solid #F5A623; padding-left: 4mm; }
-    .toc-list { list-style: none; padding: 0; margin: 0; }
-    .toc-part { font-weight: 700; color: #F5A623; text-transform: uppercase; letter-spacing: 1.5px; font-size: 9pt; margin: 5mm 0 2mm; }
-    .toc-chapter { display: flex; align-items: baseline; margin: 1.5mm 0; font-size: 10.5pt; color: #1A2535; page-break-inside: avoid; }
-    .toc-chapter a { text-decoration: none; color: inherit; }
-    .toc-chapter .toc-leader { flex: 1; border-bottom: 0.3pt dotted #A7B3C4; margin: 0 2mm; transform: translateY(-2px); }
-    .toc-chapter .toc-page::before { content: target-counter(attr(href), page); font-variant-numeric: tabular-nums; color: #0F4C81; font-weight: 600; }
-
-    .part-sep { page: part-sep; page-break-before: always; page-break-after: always;
-      height: 240mm; display: flex; flex-direction: column; justify-content: center;
-      border-top: 4pt solid #F5A623; padding-top: 60mm;
-    }
-    .part-sep__kicker { color: #F5A623; font-size: 11pt; font-weight: 700; letter-spacing: 6px; text-transform: uppercase; }
-    .part-sep__title { font-size: 36pt; color: #0F4C81; margin-top: 8mm; line-height: 1.1; font-weight: 800; }
-
-    .chapter { page-break-before: always; }
-    .chapter__title { font-size: 20pt; color: #0F4C81; margin: 0 0 6mm; line-height: 1.2; border-left: 4pt solid #F5A623; padding-left: 4mm; }
-    .chapter__body h1, .chapter__body h2, .chapter__body h3 { color: #0F4C81; line-height: 1.25; margin-top: 7mm; page-break-after: avoid; }
-    .chapter__body h1 { font-size: 15pt; }
-    .chapter__body h2 { font-size: 12.5pt; }
-    .chapter__body h3 { font-size: 11pt; color: #1A2535; }
-    .chapter__body p { margin: 0 0 3.2mm; text-align: justify; hyphens: auto; orphans: 3; widows: 3; }
-    .chapter__body ul, .chapter__body ol { margin: 2mm 0 4mm 5mm; padding: 0; }
-    .chapter__body li { margin: 0.6mm 0; }
-    .chapter__body strong { color: #1A2535; }
-    .chapter__body em { color: #46476A; }
-    .chapter__body blockquote { margin: 4mm 0; padding: 3mm 5mm; background: #FEF6DC; border-left: 3pt solid #F5A623; font-style: italic; color: #46476A; page-break-inside: avoid; }
-    .chapter__body code { font-family: 'Courier', monospace; background: #F4F7FA; color: #0F4C81; padding: 0.3mm 1mm; border-radius: 1mm; font-size: 9.5pt; }
-    .chapter__body pre { background: #0F2744; color: #E8EEF5; padding: 4mm 5mm; border-left: 3pt solid #F5A623; border-radius: 1mm; margin: 4mm 0; font-family: 'Courier', monospace; font-size: 8.8pt; line-height: 1.45; white-space: pre-wrap; word-wrap: break-word; page-break-inside: avoid; }
-    .chapter__body pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
-    .chapter__body table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9.5pt; page-break-inside: avoid; }
-    .chapter__body th { background: #F4F7FA; padding: 1.8mm 2.5mm; border: 0.25pt solid #C8D1DD; text-align: left; font-weight: 700; color: #0F4C81; }
-    .chapter__body td { padding: 1.8mm 2.5mm; border: 0.25pt solid #E0E2EA; color: #1A2535; vertical-align: top; }
-    .chapter__body hr { border: none; border-top: 0.3pt solid #E0E2EA; margin: 5mm 0; }
-    .chapter__body a { color: #0F4C81; text-decoration: none; border-bottom: 0.3pt dotted #0F4C81; }
-    """
-
-    html = f"""<!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><title>Prompts que funcionan</title>
-<style>{css}</style></head>
-<body>
-{cover_html}
-{toc_html}
-{''.join(body_parts)}
-</body></html>"""
-
-    pdf_bytes = weasyprint.HTML(string=html).write_pdf()
+    doc.build(story)
+    pdf_bytes = buf.getvalue()
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={
-            "Content-Disposition": 'attachment; filename="prompts-que-funcionan.pdf"'
-        },
+        headers={"Content-Disposition": 'attachment; filename="prompts-que-funcionan.pdf"'},
     )
 
 

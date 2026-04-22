@@ -21,7 +21,10 @@ export default function Ebook() {
       const resp = await fetch(`${API_BASE}/ebook.pdf`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!resp.ok) throw new Error('Error al generar PDF');
+      if (!resp.ok) {
+        const txt = await resp.text();
+        throw new Error(`HTTP ${resp.status}: ${txt.slice(0, 120)}`);
+      }
       const blob = await resp.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -73,9 +76,7 @@ export default function Ebook() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '.75rem' }}>
                 {p.chapters.map((ch, idx) => (
                   <Link key={ch.slug} to={`/libro/${ch.slug}`} className="res-card" data-testid={`ebook-chapter-${ch.slug}`}>
-                    <span className="res-card__type">
-                      Cap. {idx + 1}
-                    </span>
+                    <span className="res-card__type">Cap. {idx + 1}</span>
                     <span className="res-card__title">{ch.title}</span>
                   </Link>
                 ))}
