@@ -6,7 +6,7 @@ import PageHero from '../../components/PageHero';
 
 const CREDS = [
   { icon: '🎓', title: 'Licenciado en Filología Hispánica · Universidad de Granada', desc: 'Formación académica en lingüística, literatura y lengua española.' },
-  { icon: '🖥️', title: 'PhD in Computer Science · New York University, 2002', desc: 'Formación doctoral en ciencias de la computación que fundamenta mi comprensión técnica de los sistemas de inteligencia artificial desde sus bases.' },
+  { icon: '🖥️', title: 'Estudios de posgrado en Computer Science por la New York University, 2002', desc: 'Formación en ciencias de la computación que fundamenta mi comprensión técnica de los sistemas de inteligencia artificial desde sus bases.' },
   { icon: '🌐', title: 'Formador de Formadores · Instituto Cervantes', desc: 'Titulación del Instituto Cervantes en formación de profesores de ELE.' },
   { icon: '📱', title: 'Experto en e-Learning · Cámara de Comercio de Granada, 2006', desc: 'Más de veinte años trabajando con entornos virtuales de aprendizaje.' },
   { icon: '💻', title: 'Digitalización Aplicada al Sector Productivo · Ministerio de Educación y FP', desc: 'Titulación oficial que conecta transformación digital con contextos productivos reales.' },

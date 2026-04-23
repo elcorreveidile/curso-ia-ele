@@ -866,6 +866,7 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             "amount_paid_eur": tx["amount_cents"],
             "was_founder": tx.get("was_founder", False),
             "status": "active",
+            "payment_status": "paid",
             "created_at": now_utc(),
         })
         # Update founder seats
@@ -1356,8 +1357,12 @@ async def admin_update_module(
         vid = payload.video_youtube_id.strip()
         if vid:
             import re as _re
+            # Accept both raw IDs and full YouTube URLs (youtu.be, youtube.com/watch, embed, shorts)
+            m = _re.search(r"(?:v=|youtu\.be/|/embed/|/shorts/)([A-Za-z0-9_-]{11})", vid)
+            if m:
+                vid = m.group(1)
             if not _re.match(r"^[A-Za-z0-9_-]{11}$", vid):
-                raise HTTPException(400, "ID de vídeo YouTube no válido (esperado 11 caracteres alfanuméricos)")
+                raise HTTPException(400, "ID o URL de YouTube no válido")
         update["video_youtube_id"] = vid or None
     if not update:
         raise HTTPException(400, "Nada que actualizar")

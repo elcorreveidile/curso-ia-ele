@@ -264,6 +264,7 @@ function ModulesControl() {
   const [modules, setModules] = useState([]);
   const [editingVideo, setEditingVideo] = useState(null); // module.id
   const [videoDraft, setVideoDraft] = useState('');
+  const [videoErr, setVideoErr] = useState('');
   const load = useCallback(() => {
     api.get('/course/ia-ele/content').then((r) => setModules(r.data.modules || []));
   }, []);
@@ -282,13 +283,19 @@ function ModulesControl() {
   const startEditVideo = (m) => {
     setEditingVideo(m.module.id);
     setVideoDraft(m.module.video_youtube_id || '');
+    setVideoErr('');
   };
 
   const saveVideo = async (id) => {
-    await api.patch(`/admin/module/${id}`, { video_youtube_id: videoDraft.trim() });
-    setEditingVideo(null);
-    setVideoDraft('');
-    load();
+    setVideoErr('');
+    try {
+      await api.patch(`/admin/module/${id}`, { video_youtube_id: videoDraft.trim() });
+      setEditingVideo(null);
+      setVideoDraft('');
+      load();
+    } catch (e) {
+      setVideoErr(e.response?.data?.detail || 'Error al guardar el vídeo');
+    }
   };
 
   return (
@@ -306,18 +313,19 @@ function ModulesControl() {
               <span>{m.module.unlocked_at ? 'Desbloqueado' : 'Bloqueado'}</span>
               <span>·</span>
               {editingVideo === m.module.id ? (
-                <span style={{ display: 'flex', gap: '.4rem', alignItems: 'center' }}>
+                <span style={{ display: 'flex', gap: '.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input
                     type="text"
                     className="form-input"
-                    style={{ padding: '.3rem .5rem', fontSize: '.82rem', maxWidth: 200 }}
-                    placeholder="Video ID (ej: dQw4w9WgXcQ)"
+                    style={{ padding: '.3rem .5rem', fontSize: '.82rem', minWidth: 240 }}
+                    placeholder="ID o URL de YouTube"
                     value={videoDraft}
                     onChange={(e) => setVideoDraft(e.target.value)}
                     data-testid={`admin-module-video-input-${m.module.order}`}
                   />
                   <button className="btn btn--primary" style={{ padding: '.3rem .7rem', fontSize: '.78rem' }} onClick={() => saveVideo(m.module.id)} data-testid={`admin-module-video-save-${m.module.order}`}>Guardar</button>
-                  <button className="btn btn--ghost" style={{ padding: '.3rem .6rem', fontSize: '.78rem' }} onClick={() => { setEditingVideo(null); setVideoDraft(''); }}>Cancelar</button>
+                  <button className="btn btn--ghost" style={{ padding: '.3rem .6rem', fontSize: '.78rem' }} onClick={() => { setEditingVideo(null); setVideoDraft(''); setVideoErr(''); }}>Cancelar</button>
+                  {videoErr && <span style={{ color: 'var(--clm-red)', fontSize: '.78rem' }} data-testid={`admin-module-video-err-${m.module.order}`}>{videoErr}</span>}
                 </span>
               ) : (
                 <button className="linkish" style={{ color: 'var(--blue)', fontSize: '.82rem' }} onClick={() => startEditVideo(m)} data-testid={`admin-module-video-edit-${m.module.order}`}>
