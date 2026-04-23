@@ -29,7 +29,7 @@ export default function SobreMi() {
         <PageHero
           tag="El formador"
           title="Javier Benítez Láinez"
-          desc="Docente de ELE · Computer Science por NYU · Formador de Formadores Instituto Cervantes · Granada"
+          desc="Docente de ELE · Formador de Formadores Instituto Cervantes · Granada"
         />
         <div className="inner-content">
           <div className="bio-grid">
