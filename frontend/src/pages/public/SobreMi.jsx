@@ -46,7 +46,7 @@ export default function SobreMi() {
               </div>
               <div>
                 <div className="bio-stat"><span className="bio-stat__num">30+</span><span>años de experiencia docente en ELE</span></div>
-                <div className="bio-stat"><span className="bio-stat__num">NYU</span><span>Computer Science · Posgrado 2002</span></div>
+                <div className="bio-stat"><span className="bio-stat__num">NYU</span><span>Computer Science · Estudios de posgrado 2002</span></div>
                 <div className="bio-stat"><span className="bio-stat__num">4</span><span>poemarios publicados</span></div>
                 <div className="bio-stat"><span className="bio-stat__num">20+</span><span>años con e-learning</span></div>
               </div>
