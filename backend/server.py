@@ -2570,9 +2570,11 @@ async def run_module_auto_unlock() -> dict[str, Any]:
     cursor = db.modules.find({"unlock_at": {"$lte": now}, "unlocked_at": None})
     unlocked = 0
     async for m in cursor:
+        # Clear unlock_at on success so a later manual re-lock doesn't silently
+        # re-trigger the scheduler on its next hourly run.
         await db.modules.update_one(
             {"id": m["id"]},
-            {"$set": {"unlocked_at": now}},
+            {"$set": {"unlocked_at": now, "unlock_at": None}},
         )
         log.info("Auto-unlocked module %s (order %s)", m.get("title"), m.get("order"))
         unlocked += 1

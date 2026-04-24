@@ -261,6 +261,19 @@ al usuario.
 - ✅ Testing backend: 22/23 pytest passed; bug HIGH de `/checkout/status`
   corregido y verificado manualmente.
 
+## Implementado en iteración 9 (2026-02 fork, sprint 5 · scheduled unlocks verified)
+- ✅ **Desbloqueo automático programado de módulos (verificado)**: admin
+  configura una fecha `unlock_at` desde el panel (date picker); APScheduler
+  corre cada hora (`CronTrigger(minute=5)`) y ejecuta `run_module_auto_unlock`
+  que desbloquea los módulos cuya fecha ya pasó.
+- ✅ **UX hardening**: al auto-desbloquearse un módulo, el scheduler también
+  limpia `unlock_at` (evita re-desbloqueo silencioso si el admin re-bloquea
+  manualmente después).
+- ✅ **Testing**: 12/12 backend pytest + 4/4 flujos frontend Playwright
+  (iter 9). Tests cubren PATCH (date / ISO / empty / invalid), trigger
+  manual `/admin/modules/auto-unlock/run`, pasado-desbloquea / futuro-no,
+  403 para no-admin, regresión de `unlocked` toggle y `video_youtube_id`.
+
 ## Backlog priorizado
 **P0 — Integraciones reales**
 - Reemplazar `sk_test_emergent` por las Stripe test/live keys del
