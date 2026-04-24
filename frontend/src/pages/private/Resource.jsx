@@ -230,7 +230,7 @@ export default function Resource() {
       .then((r) => setData(r.data))
       .catch((e) => setErr(e.response?.data?.detail || 'Error'));
     // Scroll to top when switching resource
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [slug]);
 
   // Once we know the course_slug, load the course-wide resource index.
