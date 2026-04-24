@@ -3,13 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1628" />
+
   <link rel="icon" type="image/x-icon" href="%PUBLIC_URL%/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32.png" />
-  <title>La Clase Digital · IA para la enseñanza de ELE</title>
-  <meta name="description" content="Formación docente en Inteligencia Artificial para la enseñanza de Español como Lengua Extranjera. Curso de mayo 2026." />
+
+  <title>La Clase Digital · Formación práctica en IA</title>
+  <meta name="description" content="Dos cursos prácticos de Inteligencia Artificial: IA para la enseñanza de ELE y IA Práctica para profesionales y pequeñas empresas. Sin conocimientos previos. laclasedigital.com" />
+  <meta name="keywords" content="ELE, español lengua extranjera, IA ELE, inteligencia artificial, formación IA, automatización, pequeña empresa, Javier Benítez Láinez" />
+  <meta name="author" content="Javier Benítez Láinez" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="La Clase Digital" />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:url" content="https://laclasedigital.com/" />
+  <meta property="og:title" content="La Clase Digital · Formación práctica en IA" />
+  <meta property="og:description" content="Dos cursos prácticos de IA: para docentes de ELE y para cualquier perfil profesional. Sin conocimientos previos. laclasedigital.com" />
+  <meta property="og:image" content="https://laclasedigital.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="La Clase Digital · Formación práctica en IA" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="La Clase Digital · Formación práctica en IA" />
+  <meta name="twitter:description" content="Dos cursos prácticos de IA para docentes de ELE y profesionales. Sin conocimientos previos." />
+  <meta name="twitter:image" content="https://laclasedigital.com/og-image.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- Prevent theme FOUC: apply data-theme before React hydrates -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('lcd_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = (saved === 'light' || saved === 'dark') ? saved : (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) { /* noop */ }
+    })();
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://laclasedigital.com/#org",
+        "name": "La Clase Digital",
+        "url": "https://laclasedigital.com/",
+        "logo": "https://laclasedigital.com/og-image.png",
+        "sameAs": ["https://laclasedigital.com/"]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://laclasedigital.com/#javier",
+        "name": "Javier Benítez Láinez",
+        "jobTitle": "Docente de ELE · Formador en IA aplicada a ELE",
+        "url": "https://laclasedigital.com/curso-ele/sobre-mi",
+        "image": "https://laclasedigital.com/javier-benitez.jpg",
+        "worksFor": { "@id": "https://laclasedigital.com/#org" }
+      },
+      {
+        "@type": "Course",
+        "@id": "https://laclasedigital.com/#course-ia-ele",
+        "name": "IA para la enseñanza de ELE",
+        "description": "Formación práctica para integrar IA en tu práctica docente de ELE con criterio ético y pedagógico. 4 módulos, 3 videotutorías en directo y feedback personalizado del formador. Incluye el libro 'Prompts que funcionan'.",
+        "provider": { "@id": "https://laclasedigital.com/#org" },
+        "instructor": { "@id": "https://laclasedigital.com/#javier" },
+        "inLanguage": "es",
+        "courseMode": "Online",
+        "educationalLevel": "Professional",
+        "teaches": "Ingeniería de prompts aplicada a ELE, ética de la IA en educación, planificación con MCER, generación de recursos multimodales",
+        "timeRequired": "PT20H",
+        "hasCourseInstance": {
+          "@type": "CourseInstance",
+          "courseMode": "Online",
+          "startDate": "2026-05-01",
+          "courseWorkload": "PT20H",
+          "instructor": { "@id": "https://laclasedigital.com/#javier" }
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "149",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/LimitedAvailability",
+          "url": "https://laclasedigital.com/curso-ele/precios",
+          "category": "Precio fundador (primeras 20 plazas)"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <noscript>Necesitas activar JavaScript para usar esta aplicación.</noscript>

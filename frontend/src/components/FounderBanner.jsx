@@ -11,7 +11,7 @@ export default function FounderBanner() {
     try { setClosed(sessionStorage.getItem('lcd_banner_closed') === '1'); } catch {}
   }, []);
 
-  const hidePaths = ['/inscripcion/', '/dashboard', '/curso/', '/admin', '/certificado/', '/auth/verify', '/login'];
+  const hidePaths = ['/inscripcion/', '/dashboard', '/curso/', '/admin', '/certificado/', '/auth/verify', '/login', '/curso-ia'];
   const hidden = hidePaths.some((p) => location.pathname.startsWith(p));
 
   const left = course ? Math.max(0, course.founder_seats - course.founder_seats_taken) : 0;
@@ -46,7 +46,7 @@ export default function FounderBanner() {
           className="founder-strip__cta"
           data-testid="founder-strip-cta"
         >
-          Reservar plaza →
+          Reservar plaza ELE →
         </Link>
         <button
           type="button"

@@ -4,8 +4,10 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
 import { api } from '../../lib/api';
+import { useScrollReveal } from '../../lib/useScrollReveal';
 
 export default function Precios() {
+  useScrollReveal();
   const [course, setCourse] = useState(null);
   useEffect(() => {
     api.get('/courses/ia-ele').then((r) => setCourse(r.data)).catch(() => {});
@@ -53,7 +55,7 @@ export default function Precios() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '4rem' }} className="price-grid">
-            <div className="price-card" data-testid="price-card-individual">
+            <div className="price-card reveal" data-testid="price-card-individual">
               <p className="price-card__label">⭐ Precio fundador · Primera edición</p>
               <p className="price-card__original">Precio a partir de la 2ª edición: {standardPrice} €</p>
               <div className="price-card__amount">
@@ -74,6 +76,7 @@ export default function Precios() {
                 <li>Feedback personalizado en cada tarea</li>
                 <li>Acceso a las grabaciones de las sesiones</li>
                 <li>Certificado de aprovechamiento</li>
+                <li><strong>📘 De regalo:</strong> libro <em>«Prompts que funcionan»</em> (31 capítulos · PDF)</li>
               </ul>
               <Link
                 to="/inscripcion/ia-ele"
@@ -89,7 +92,7 @@ export default function Precios() {
               </p>
             </div>
 
-            <div className="price-card price-card--featured">
+            <div className="price-card price-card--featured reveal reveal--delay-2">
               <span className="price-card__badge">Instituciones</span>
               <p className="price-card__label">Para centros y organizaciones</p>
               <p className="price-card__original">Precio público: {standardPrice} € / participante</p>
@@ -132,7 +135,7 @@ export default function Precios() {
                   y qué módulos te aportarán más valor.
                 </p>
               </div>
-              <Link to="/cuestionario" className="btn btn--primary" data-testid="precios-quiz-cta">
+              <Link to="/cuestionario" className="btn btn--primary" data-testid="precios-quiz-cta" data-context="ele">
                 Hacer el cuestionario →
               </Link>
             </div>

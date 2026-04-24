@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
@@ -56,49 +57,73 @@ export default function Cuestionario() {
   };
 
   if (result) {
+    const dims = [
+      { label: 'Práctica docente', v: Math.round(result.dimensions.practice), icon: '🎓', color: '#0F4C81' },
+      { label: 'Actitud ante IA', v: Math.round(result.dimensions.attitude), icon: '🧭', color: '#F5A623' },
+      { label: 'Uso real de IA', v: Math.round(result.dimensions.usage), icon: '🤖', color: '#16A34A' },
+    ];
     return (
       <>
         <Navbar />
         <div className="inner-page">
           <div className="page-hero" style={{ background: `linear-gradient(160deg, ${result.profile.color} 0%, #0A1628 100%)` }}>
             <div className="page-hero__inner">
-              <p className="page-hero__tag">Tu perfil</p>
+              <p className="page-hero__tag">Tu perfil docente</p>
               <h1 className="page-hero__title">
                 <span style={{ fontSize: '1.2em', marginRight: '.5rem' }}>{result.profile.emoji}</span>
                 {result.profile.name}
               </h1>
-              <p className="page-hero__desc">Puntuación global: {result.total}/100</p>
+              <p className="page-hero__desc">
+                Puntuación global <strong style={{ color: '#F5A623' }}>{result.total}/100</strong> · Gracias por tu tiempo
+              </p>
             </div>
           </div>
-          <div className="inner-content" style={{ maxWidth: 780 }}>
-            <div className="price-card" data-testid="quiz-result">
-              <p className="section__tag">Diagnóstico personalizado</p>
-              <p style={{ fontSize: '1rem', color: 'var(--ink-soft)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-                {result.profile.desc}
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
-                {[
-                  { label: 'Práctica docente', v: Math.round(result.dimensions.practice) },
-                  { label: 'Actitud ante IA', v: Math.round(result.dimensions.attitude) },
-                  { label: 'Uso real de IA', v: Math.round(result.dimensions.usage) },
-                ].map((d, i) => (
-                  <div key={i} style={{ background: 'var(--canvas)', borderRadius: 'var(--r-md)', padding: '1rem', textAlign: 'center' }}>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 800, color: 'var(--blue)' }}>{d.v}</div>
-                    <div style={{ fontSize: '.78rem', color: 'var(--ink-muted)', textTransform: 'uppercase', letterSpacing: '.05em' }}>{d.label}</div>
+          <div className="inner-content" style={{ maxWidth: 820 }}>
+            <div className="quiz-result-card" data-testid="quiz-result">
+              <div className="quiz-result-card__header">
+                <span className="quiz-result-card__emoji">{result.profile.emoji}</span>
+                <div>
+                  <p className="section__tag" style={{ margin: 0 }}>Diagnóstico personalizado</p>
+                  <h2 className="quiz-result-card__title">{result.profile.name}</h2>
+                </div>
+              </div>
+              <p className="quiz-result-card__desc">{result.profile.desc}</p>
+
+              <h3 className="quiz-result-card__section-title">Tu puntuación por dimensión</h3>
+              <div className="quiz-dims">
+                {dims.map((d, i) => (
+                  <div key={i} className="quiz-dim" data-testid={`quiz-dim-${i}`}>
+                    <div className="quiz-dim__label">
+                      <span className="quiz-dim__icon">{d.icon}</span>
+                      <span>{d.label}</span>
+                      <span className="quiz-dim__val" style={{ color: d.color }}>{d.v}<small>/100</small></span>
+                    </div>
+                    <div className="quiz-dim__track">
+                      <div className="quiz-dim__fill" style={{ width: `${d.v}%`, background: d.color }} />
+                    </div>
                   </div>
                 ))}
               </div>
-              <p className="section__tag">Módulos clave para ti</p>
-              <ul className="price-includes">
-                {result.profile.modules.map((m, i) => <li key={i}>{m}</li>)}
+
+              <h3 className="quiz-result-card__section-title">📚 Módulos clave para ti</h3>
+              <ul className="quiz-modules">
+                {result.profile.modules.map((m, i) => (
+                  <li key={i} className="quiz-modules__item"><span className="quiz-modules__bullet">✓</span>{m}</li>
+                ))}
               </ul>
-              <p className="price-note" style={{ marginTop: '1.5rem' }}>
-                He recibido tus respuestas y las tendré en cuenta para adaptar los contenidos del curso.
-                Gracias por el tiempo dedicado.
-              </p>
+
+              <div className="quiz-next-steps" data-testid="quiz-next-steps">
+                <p className="section__tag" style={{ marginBottom: '.5rem' }}>Próximos pasos</p>
+                <p style={{ margin: 0, fontSize: '.92rem', color: 'var(--ink-soft)', lineHeight: 1.6 }}>
+                  He recibido tus respuestas y las tendré en cuenta para adaptar los contenidos.
+                  Si te interesa, reserva plaza con el <strong>precio fundador</strong> antes de que se agoten.
+                  Incluye el libro <em>«Prompts que funcionan»</em> de regalo.
+                </p>
+              </div>
+
               <div style={{ marginTop: '1.5rem', display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
-                <a href="/precios" className="btn btn--primary" data-testid="quiz-go-precios">Ver precios e inscripción</a>
-                <a href="/programa" className="btn btn--ghost">Ver programa completo</a>
+                <Link to="/curso-ele/precios" className="btn btn--primary" data-testid="quiz-go-precios">Reservar plaza →</Link>
+                <Link to="/curso-ele/programa" className="btn btn--ghost">Ver programa completo</Link>
               </div>
             </div>
           </div>

@@ -1,18 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import PageHero from '../../components/PageHero';
+import Navbar from '../../../components/Navbar';
+import Footer from '../../../components/Footer';
+import PageHero from '../../../components/PageHero';
 
-export default function Descripcion() {
+export default function IaDescripcion() {
   return (
     <>
       <Navbar />
       <div className="inner-page">
         <PageHero
           tag="Sobre el curso"
-          title="IA para la enseñanza de ELE"
-          desc="Planificación de clases y creación de materiales didácticos con Inteligencia Artificial · Mayo 2026"
+          title="IA Práctica: de los fundamentos a la automatización"
+          desc="Para profesionales y pequeñas empresas · Sin conocimientos previos · 20 horas"
         />
         <div className="inner-content">
           <div className="desc-grid">
@@ -22,22 +22,22 @@ export default function Descripcion() {
                 ¿De qué trata este curso?
               </h2>
               <p className="desc__text">
-                Este curso está diseñado para capacitar a docentes de ELE en el uso ético y eficaz de
-                herramientas de Inteligencia Artificial, con el objetivo de optimizar la planificación de
-                clases y la creación de materiales didácticos.
+                Un curso diseñado para que cualquier persona —sin conocimientos técnicos previos—
+                pueda entender qué es la inteligencia artificial, construir sus primeras aplicaciones
+                prácticas y automatizar tareas repetitivas en su trabajo o negocio.
               </p>
               <p className="desc__text">
-                A través de un enfoque práctico, aprenderás a integrar la IA para ahorrar tiempo, mejorar
-                la calidad de los recursos y alinear tu práctica con los estándares del MCER. El curso
-                combina sesiones de videoconferencia en directo con trabajo autónomo en plataforma.
+                El enfoque es 100% práctico: cada módulo termina con una actividad real que puedes
+                aplicar inmediatamente. No hay teoría por la teoría. Todo lo que se enseña tiene un
+                uso concreto.
               </p>
               <div style={{ marginTop: '2.5rem' }}>
                 <p className="section__tag">Finalidad</p>
                 <div className="info-box" style={{ marginTop: '.75rem', borderLeft: '4px solid var(--orange)' }}>
                   <p style={{ fontSize: '.95rem', color: 'var(--ink-soft)', lineHeight: 1.7 }}>
-                    Ampliar las competencias docentes y especializarse en aprendizaje digital,
-                    integrando la Inteligencia Artificial como herramienta al servicio de una
-                    enseñanza de ELE más eficaz, creativa y crítica.
+                    Que al terminar el curso seas capaz de identificar oportunidades de uso de IA
+                    en tu trabajo, construir tus propias herramientas y automatizar procesos que
+                    hoy te roban tiempo, sin necesidad de saber programar.
                   </p>
                 </div>
               </div>
@@ -45,8 +45,9 @@ export default function Descripcion() {
                 <p className="section__tag">Destinatarios</p>
                 <div className="info-box" style={{ marginTop: '.75rem' }}>
                   <p style={{ fontSize: '.95rem', color: 'var(--ink-soft)', lineHeight: 1.7 }}>
-                    Docentes de ELE, coordinadores y responsables académicos de centros de lenguas que
-                    deseen integrar herramientas de IA en su práctica de manera ética y eficaz.
+                    Profesionales de cualquier sector, autónomos y propietarios de pequeñas
+                    empresas que quieren sacar partido a la IA sin necesidad de formación técnica
+                    previa.
                   </p>
                 </div>
               </div>
@@ -54,14 +55,18 @@ export default function Descripcion() {
 
             <div>
               <div className="competencias">
-                <p className="competencias__title">Competencias docentes que desarrolla</p>
+                <p className="competencias__title">Lo que desarrollarás</p>
                 <div className="competencia-item">
-                  <span className="competencia-item__icon">🎯</span>
-                  <span>Organizar situaciones de aprendizaje</span>
+                  <span className="competencia-item__icon">🧠</span>
+                  <span>Comprender qué es la IA y cómo funciona en la práctica</span>
                 </div>
                 <div className="competencia-item">
-                  <span className="competencia-item__icon">💻</span>
-                  <span>Servirse de las TIC para el desempeño del trabajo docente</span>
+                  <span className="competencia-item__icon">🛠️</span>
+                  <span>Construir aplicaciones y asistentes de IA sin programar</span>
+                </div>
+                <div className="competencia-item">
+                  <span className="competencia-item__icon">⚙️</span>
+                  <span>Automatizar tareas repetitivas con herramientas accesibles</span>
                 </div>
               </div>
 
@@ -69,10 +74,10 @@ export default function Descripcion() {
                 <p className="section__tag">Objetivos del curso</p>
                 <div className="objetivos-list" style={{ marginTop: '.75rem' }}>
                   {[
-                    'Reflexionar críticamente sobre el uso ético de la IA en la educación, identificando sesgos y promoviendo la equidad.',
-                    'Identificar y aplicar los principios de la ingeniería de prompts para generar contenido relevante para el aula de ELE.',
-                    'Crear planes de clase estructurados y coherentes con los objetivos del MCER usando herramientas de IA.',
-                    'Generar recursos didácticos variados —textos, imágenes, audios y mapas mentales— con IA generativa.',
+                    'Entender los fundamentos de la IA y el ecosistema de herramientas disponibles hoy.',
+                    'Diseñar prompts efectivos y construir asistentes de IA adaptados a tu trabajo.',
+                    'Crear flujos de automatización que reduzcan el trabajo manual en tu negocio.',
+                    'Evaluar críticamente qué tareas merece la pena automatizar y cuáles no.',
                   ].map((t, i) => (
                     <div key={i} className="objetivo-item">
                       <span className="objetivo-item__num">{String(i + 1).padStart(2, '0')}</span>
@@ -95,11 +100,11 @@ export default function Descripcion() {
                   ✓ Es para ti si…
                 </p>
                 {[
-                  'Tienes experiencia docente en ELE y conoces los fundamentos del MCER.',
-                  'Usas herramientas digitales básicas (correo, Moodle, videoconferencias) con soltura.',
-                  'Nunca has usado herramientas de IA o las has probado puntualmente sin método.',
-                  'Quieres ahorrar tiempo en la preparación de clases sin sacrificar calidad didáctica.',
-                  'Estás dispuesto/a a experimentar y a evaluar críticamente lo que genera la IA.',
+                  'Trabajas en cualquier sector y quieres entender cómo la IA puede ayudarte.',
+                  'No tienes experiencia técnica y buscas una formación práctica, sin código.',
+                  'Tienes un pequeño negocio y quieres automatizar tareas que te roban tiempo.',
+                  'Has oído hablar de ChatGPT pero no sabes cómo integrarlo en tu trabajo real.',
+                  'Quieres resultados aplicables desde el primer módulo.',
                 ].map((t, i) => (
                   <div key={i} style={{ display: 'flex', gap: '.75rem', alignItems: 'flex-start', fontSize: '.9rem', color: 'var(--ink-soft)', lineHeight: 1.5, padding: '.4rem 0' }}>
                     <span style={{ color: 'var(--green)', fontWeight: 700 }}>›</span>{t}
@@ -111,9 +116,9 @@ export default function Descripcion() {
                   ✕ No es para ti si…
                 </p>
                 {[
-                  'Buscas formación técnica avanzada en IA: programación, APIs o machine learning.',
-                  'No tienes experiencia docente en ELE: el curso asume conocimiento pedagógico previo.',
-                  'Esperas soluciones automáticas sin revisión docente: la IA es una herramienta, no un sustituto.',
+                  'Buscas formación técnica avanzada: programación, machine learning o APIs.',
+                  'Ya tienes experiencia sólida con herramientas de IA y buscas nivel avanzado.',
+                  'Esperas resultados automáticos sin dedicar tiempo a aprender y experimentar.',
                 ].map((t, i) => (
                   <div key={i} style={{ display: 'flex', gap: '.75rem', alignItems: 'flex-start', fontSize: '.9rem', color: 'var(--ink-soft)', lineHeight: 1.5, padding: '.4rem 0' }}>
                     <span style={{ color: 'var(--clm-red)', fontWeight: 700 }}>›</span>{t}
@@ -123,7 +128,7 @@ export default function Descripcion() {
             </div>
 
             <div style={{ marginTop: '2.5rem', textAlign: 'center' }}>
-              <Link to="/precios" className="btn btn--primary" data-testid="desc-cta-precios">
+              <Link to="/curso-ia/precios" className="btn btn--primary" data-testid="ia-desc-cta-precios">
                 Ver precios e inscripción →
               </Link>
             </div>

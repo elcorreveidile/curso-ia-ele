@@ -5,6 +5,7 @@ import asyncio
 import hashlib
 import logging
 import os
+import re
 import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -154,8 +155,14 @@ class UserOut(BaseModel):
     id: str
     email: str
     name: Optional[str] = None
+    surname: Optional[str] = None
     role: Literal["student", "admin"] = "student"
     created_at: str
+
+
+class ProfileUpdate(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
+    surname: str = Field(min_length=1, max_length=120)
 
 
 class CourseOut(BaseModel):
@@ -171,11 +178,14 @@ class CourseOut(BaseModel):
     active: bool
     hours: int = 20
     start_date: Optional[str] = None
+    has_alumni_pricing: bool = False
+    price_alumni_eur: int = 0
 
 
 class CheckoutRequest(BaseModel):
     course_slug: str
     origin_url: str
+    coupon_code: Optional[str] = None
 
 
 class SubmissionIn(BaseModel):
@@ -217,11 +227,22 @@ class AdminCourseUpdate(BaseModel):
     founder_seats: Optional[int] = None
     founder_seats_taken: Optional[int] = None
     active: Optional[bool] = None
+    intro_video_youtube_id: Optional[str] = None
 
 
 class AdminModuleUpdate(BaseModel):
     order: Optional[int] = None
     unlocked: Optional[bool] = None  # sets/clears unlocked_at
+    video_youtube_id: Optional[str] = None
+
+
+class AdminManualEnrollment(BaseModel):
+    email: EmailStr
+    course_slug: str = "ia-ele"
+    as_founder: bool = False
+    amount_eur: float = 0.0  # 0 = free/sponsored; otherwise arbitrary amount paid outside Stripe
+    note: str = ""
+    send_welcome_email: bool = True
 
 
 # ─────────────────────────── Auth ──────────────────────────────
@@ -392,6 +413,159 @@ MODULES_SEED = [
 ]
 
 
+COURSE_IA_PRACTICA = {
+    "id": "course-ia-practica",
+    "slug": "ia-practica",
+    "title": "IA Práctica: de los fundamentos a la automatización",
+    "description": (
+        "Curso práctico de inteligencia artificial para cualquier perfil profesional. "
+        "Sin conocimientos previos. 3 módulos: fundamentos de IA, diseño de aplicaciones "
+        "y automatización de tareas para la pequeña empresa."
+    ),
+    "price_eur": 25000,         # 250 €
+    "price_founder_eur": 25000, # sin precio fundador propio
+    "price_alumni_eur": 14900,  # 149 € para alumnos del curso ELE
+    "is_founder_edition": False,
+    "has_alumni_pricing": True,
+    "founder_seats": 0,
+    "founder_seats_taken": 0,
+    "active": True,
+    "hours": 20,
+    "start_date": None,
+    "created_at": now_utc(),
+}
+
+MODULES_IA_PRACTICA_SEED = [
+    {
+        "order": 1,
+        "title": "Introducción general a la inteligencia artificial",
+        "description": (
+            "Qué es la IA, cómo funciona y qué puede (y no puede) hacer por ti. "
+            "Principales modelos y herramientas disponibles hoy."
+        ),
+        "lessons": [
+            {
+                "title": "Qué es la IA y cómo funciona",
+                "content_md": (
+                    "# Qué es la inteligencia artificial\n\n"
+                    "Una introducción honesta: qué hay detrás de los modelos de lenguaje, "
+                    "cómo aprenden y qué limitaciones tienen.\n\n"
+                    "- Modelos de lenguaje (LLMs): GPT, Claude, Gemini\n"
+                    "- IA generativa vs IA predictiva\n"
+                    "- Lo que la IA puede y no puede hacer"
+                ),
+            },
+            {
+                "title": "El ecosistema de herramientas de IA",
+                "content_md": (
+                    "# Herramientas de IA disponibles hoy\n\n"
+                    "Un mapa práctico del ecosistema: cuándo usar cada herramienta "
+                    "y cuáles son gratuitas.\n\n"
+                    "- ChatGPT, Claude, Gemini, Copilot: diferencias clave\n"
+                    "- Herramientas especializadas (imagen, audio, vídeo)\n"
+                    "- Criterios para elegir la herramienta adecuada"
+                ),
+            },
+        ],
+        "task": {
+            "title": "Mi mapa personal de herramientas de IA",
+            "instructions_md": (
+                "Elabora un mapa de al menos 5 herramientas de IA relevantes para tu trabajo o negocio. "
+                "Para cada una indica: nombre, caso de uso principal, coste y valoración personal (1-5). "
+                "Extensión: 300-500 palabras o una tabla comentada."
+            ),
+            "due_days": 7,
+        },
+    },
+    {
+        "order": 2,
+        "title": "Diseño de aplicaciones con IA",
+        "description": (
+            "Cómo construir tu primera aplicación práctica con IA sin programar. "
+            "Asistentes personalizados, flujos de trabajo y casos reales."
+        ),
+        "lessons": [
+            {
+                "title": "Prompting avanzado y diseño de asistentes",
+                "content_md": (
+                    "# Diseña tu primer asistente con IA\n\n"
+                    "Del prompt básico al system prompt completo. "
+                    "Cómo definir rol, tono, límites y ejemplos.\n\n"
+                    "- Anatomía de un system prompt efectivo\n"
+                    "- Casos de uso: atención al cliente, redacción, análisis\n"
+                    "- Prueba y refinamiento iterativo"
+                ),
+            },
+            {
+                "title": "Herramientas no-code para construir con IA",
+                "content_md": (
+                    "# Aplicaciones con IA sin código\n\n"
+                    "Plataformas que permiten construir aplicaciones útiles "
+                    "sin escribir una línea de código.\n\n"
+                    "- GPTs personalizados (OpenAI)\n"
+                    "- Claude Projects\n"
+                    "- Notion AI, Gamma y otras herramientas integradas\n"
+                    "- Cuándo tiene sentido construir vs usar"
+                ),
+            },
+        ],
+        "task": {
+            "title": "Diseña y prueba tu primer asistente de IA",
+            "instructions_md": (
+                "Diseña un asistente de IA para una tarea concreta de tu trabajo o negocio. "
+                "Escribe el system prompt completo, pruébalo con al menos 5 interacciones reales "
+                "y documenta los resultados. Incluye una valoración crítica de sus puntos fuertes y limitaciones."
+            ),
+            "due_days": 7,
+        },
+    },
+    {
+        "order": 3,
+        "title": "Automatización de tareas aplicada a la pequeña empresa",
+        "description": (
+            "Identifica tareas repetitivas y automatízalas con IA. "
+            "Herramientas como Zapier y Make aplicadas a casos reales de negocio."
+        ),
+        "lessons": [
+            {
+                "title": "Qué tareas merece la pena automatizar",
+                "content_md": (
+                    "# Automatización para la pequeña empresa\n\n"
+                    "No todo debe automatizarse. Aprende a identificar "
+                    "qué tareas generan más valor al delegarlas a la IA.\n\n"
+                    "- Matriz de automatización: impacto vs esfuerzo\n"
+                    "- Casos típicos: emails, informes, redes sociales, atención al cliente\n"
+                    "- Riesgos y errores comunes"
+                ),
+            },
+            {
+                "title": "Automatización con Zapier y Make",
+                "content_md": (
+                    "# Tus primeros flujos automatizados\n\n"
+                    "Conecta herramientas y crea flujos de trabajo que trabajen solos.\n\n"
+                    "- Introducción a Zapier y Make (n8n como alternativa open source)\n"
+                    "- Flujo práctico: formulario → IA → email automático\n"
+                    "- Integración con Google Workspace, Notion y CRMs básicos"
+                ),
+            },
+        ],
+        "task": {
+            "title": "Automatiza un proceso real de tu negocio",
+            "instructions_md": (
+                "Identifica un proceso repetitivo en tu trabajo o negocio y diseña su automatización. "
+                "Puede ser con Zapier, Make, n8n o cualquier herramienta similar. "
+                "Documenta: el proceso antes de automatizar, el flujo diseñado (con capturas), "
+                "el tiempo estimado ahorrado por semana y las dificultades encontradas."
+            ),
+            "due_days": 7,
+        },
+    },
+]
+
+# Coupon code that grants alumni pricing on the IA course (share with ELE graduates)
+ALUMNI_COUPON_CODE = "ALUMNIELE"
+
+
 async def seed_database() -> None:
     # Admin user
     if not await db.users.find_one({"email": ADMIN_EMAIL.lower()}):
@@ -446,10 +620,249 @@ async def seed_database() -> None:
             })
         log.info("Seeded modules/lessons/tasks for ia-ele")
 
+    # Second course: IA Práctica
+    if not await db.courses.find_one({"slug": "ia-practica"}):
+        await db.courses.insert_one(dict(COURSE_IA_PRACTICA))
+        log.info("Seeded course ia-practica")
+
+    existing_ia = await db.modules.count_documents({"course_id": "course-ia-practica"})
+    if existing_ia == 0:
+        for mdata in MODULES_IA_PRACTICA_SEED:
+            mid = f"mod-iap-{mdata['order']:02d}"
+            await db.modules.insert_one({
+                "id": mid,
+                "course_id": "course-ia-practica",
+                "order": mdata["order"],
+                "title": mdata["title"],
+                "description": mdata["description"],
+                "unlocked_at": now_utc() if mdata["order"] == 1 else None,
+                "created_at": now_utc(),
+            })
+            for lidx, lesson in enumerate(mdata["lessons"], start=1):
+                await db.lessons.insert_one({
+                    "id": f"{mid}-l{lidx}",
+                    "module_id": mid,
+                    "order": lidx,
+                    "title": lesson["title"],
+                    "content_md": lesson["content_md"],
+                    "video_url": None,
+                    "visible": True,
+                    "created_at": now_utc(),
+                })
+            await db.tasks.insert_one({
+                "id": f"{mid}-task",
+                "module_id": mid,
+                "order": 1,
+                "title": mdata["task"]["title"],
+                "instructions_md": mdata["task"]["instructions_md"],
+                "due_days": mdata["task"]["due_days"],
+                "created_at": now_utc(),
+            })
+        log.info("Seeded modules/lessons/tasks for ia-practica")
+
 
 @app.on_event("startup")
 async def on_startup() -> None:
     await seed_database()
+    await seed_resources()
+    await seed_ebook()
+    start_inactivity_scheduler()
+
+
+# ─────────────────────────── Resources (course materials) ─────
+RESOURCE_TYPES = {  # folder hints → type label
+    "lecturas": "lectura",
+    "casos-reales": "lectura",
+    "guias-comparativas": "lectura",
+    "guias-herramientas": "lectura",
+    "criterios-calidad": "lectura",
+    "banco-mcer": "lectura",
+    "tutoriales": "lectura",
+    "plantillas": "plantilla",
+    "rubricas": "rubrica",
+    "glosarios": "glosario",
+    "evaluacion": "encuesta",
+}
+
+RESOURCE_LABELS = {
+    "lectura": "Lectura",
+    "plantilla": "Plantilla",
+    "rubrica": "Rúbrica",
+    "glosario": "Glosario",
+    "encuesta": "Encuesta",
+}
+
+MODULE_BY_FOLDER = {
+    "modulo-01-etica": "mod-ia-01",
+    "modulo-02-asistentes": "mod-ia-02",
+    "modulo-03-planificacion": "mod-ia-03",
+    "modulo-04-recursos": "mod-ia-04",
+    "transversales": None,
+}
+
+SKIP_FOLDERS = {"videos", "propuesta"}
+SKIP_FILES = {"GUIA_IMPLEMENTACION_MOODLE_COMPLETA.md", "GUIA_INICIO_MOODLE.md"}
+
+
+def _slugify(name: str) -> str:
+    s = name.lower()
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s[:80] or "recurso"
+
+
+async def seed_resources() -> None:
+    base = Path("/app/legacy/materiales")
+    if not base.exists():
+        log.warning("No materials folder at %s, skipping resources seed", base)
+        return
+    count_new = 0
+    count_updated = 0
+    for md_file in base.rglob("*.md"):
+        rel = md_file.relative_to(base)
+        parts = rel.parts
+        if any(p in SKIP_FOLDERS for p in parts):
+            continue
+        if md_file.name in SKIP_FILES:
+            continue
+
+        top_folder = parts[0]
+        if top_folder not in MODULE_BY_FOLDER:
+            continue
+        module_id = MODULE_BY_FOLDER[top_folder]
+
+        # Detect type from the parent folder (second segment)
+        kind_folder = parts[1] if len(parts) > 2 else ""
+        rtype = RESOURCE_TYPES.get(kind_folder, "lectura")
+
+        content = md_file.read_text(encoding="utf-8", errors="ignore")
+        # Try several heading candidates; skip generic ones like "ÍNDICE", "TABLA", "TOC"
+        title = None
+        for m in re.finditer(r"^#\s+(.+)$", content, re.MULTILINE):
+            candidate = m.group(1).strip()
+            upper = candidate.upper().strip("·: .")
+            if upper in {"ÍNDICE", "INDICE", "TABLA DE CONTENIDOS", "CONTENIDO", "TOC", "TABLE OF CONTENTS"}:
+                continue
+            title = candidate
+            break
+        if not title:
+            title = md_file.stem.replace("_", " ").replace("-", " ").title()
+        # Normalize: if the title is all uppercase (shouty), apply smart title case
+        def _smart_case(s: str) -> str:
+            letters = [c for c in s if c.isalpha()]
+            if not letters:
+                return s
+            if all(c.isupper() for c in letters):
+                # Convert to Title Case but keep small connectors lowercase
+                small = {"de", "del", "la", "el", "los", "las", "y", "o", "u", "con",
+                         "para", "por", "en", "a", "al", "ele", "ia", "mcer"}
+                words = s.lower().split()
+                out = []
+                for i, w in enumerate(words):
+                    core = w.strip(":·.,;!?")
+                    if i > 0 and core in small:
+                        out.append(w)
+                    else:
+                        out.append(w[:1].upper() + w[1:])
+                res = " ".join(out)
+                # Re-uppercase acronyms
+                for ac in ("ELE", "IA", "MCER", "ChatGPT", "PDF", "A1", "A2", "B1", "B2", "C1", "C2"):
+                    res = re.sub(rf"\b{ac}\b", ac, res, flags=re.IGNORECASE)
+                return res
+            return s
+        title = _smart_case(title)
+
+        slug = _slugify(md_file.stem)
+        existing = await db.resources.find_one({"slug": slug})
+        doc = {
+            "slug": slug,
+            "title": title,
+            "type": rtype,
+            "module_id": module_id,  # None → transversal
+            "course_id": "course-ia-ele",
+            "content_md": content,
+            "source_path": str(rel),
+            "updated_at": now_utc(),
+        }
+        if existing:
+            await db.resources.update_one({"slug": slug}, {"$set": doc})
+            count_updated += 1
+        else:
+            doc.update({"id": new_id(), "created_at": now_utc()})
+            await db.resources.insert_one(doc)
+            count_new += 1
+    log.info("Resources seeded: %d new, %d updated", count_new, count_updated)
+
+
+# ─────────────────────────── Ebook seeding ─────────────────────
+# Book: "Prompts que funcionan" — legacy/ebook/ has 31 MD chapters.
+EBOOK_PART_META = {
+    "00": {"order": 0, "label": "Introducción"},
+    "parte1": {"order": 1, "label": "Parte 1 · Fundamentos"},
+    "parte2": {"order": 2, "label": "Parte 2 · Por niveles"},
+    "parte3": {"order": 3, "label": "Parte 3 · Por destrezas"},
+    "parte4": {"order": 4, "label": "Parte 4 · Por géneros textuales"},
+    "parte5": {"order": 5, "label": "Parte 5 · Aplicaciones docentes"},
+    "apendices": {"order": 6, "label": "Apéndices"},
+}
+
+
+def _ebook_title_from_md(md: str, fallback: str) -> str:
+    for ln in md.splitlines():
+        ln = ln.strip()
+        if ln.startswith("# "):
+            return ln[2:].strip()
+        if ln.startswith("## "):
+            return ln[3:].strip()
+    return fallback
+
+
+async def seed_ebook() -> None:
+    base = Path("/app/legacy/ebook")
+    if not base.exists():
+        log.warning("No ebook folder at %s, skipping ebook seed", base)
+        return
+    new_count = 0
+    upd_count = 0
+    for md_path in sorted(base.rglob("*.md")):
+        rel = md_path.relative_to(base)
+        parts = rel.parts
+        if parts[0] in ("00_INTRODUCCION.md",):
+            part_key = "00"
+            order_in_part = 0
+        elif len(parts) == 2:
+            part_key = parts[0]
+            # order: first numeric chars of filename
+            name = parts[1]
+            order_in_part = int(name.split("_")[0]) if name[0].isdigit() else 0
+        else:
+            continue
+        meta = EBOOK_PART_META.get(part_key)
+        if not meta:
+            continue
+        content = md_path.read_text(encoding="utf-8")
+        default_title = md_path.stem.replace("_", " ").title()
+        title = _ebook_title_from_md(content, default_title)
+        slug = _slugify(f"{part_key}-{md_path.stem}")
+        doc = {
+            "slug": slug,
+            "part_key": part_key,
+            "part_order": meta["order"],
+            "part_label": meta["label"],
+            "order_in_part": order_in_part,
+            "title": title,
+            "content_md": content,
+            "source_path": str(rel),
+            "updated_at": now_utc(),
+        }
+        existing = await db.ebook_chapters.find_one({"slug": slug})
+        if existing:
+            await db.ebook_chapters.update_one({"slug": slug}, {"$set": doc})
+            upd_count += 1
+        else:
+            doc.update({"id": new_id(), "created_at": now_utc()})
+            await db.ebook_chapters.insert_one(doc)
+            new_count += 1
+    log.info("Ebook seeded: %d new, %d updated", new_count, upd_count)
 
 
 # ─────────────────────────── Public routes ─────────────────────
@@ -523,6 +936,20 @@ async def me(user: dict = Depends(current_user)):
     return UserOut(**user)
 
 
+@api.put("/auth/profile", response_model=UserOut)
+async def update_profile(payload: ProfileUpdate, user: dict = Depends(current_user)):
+    name = payload.name.strip()
+    surname = payload.surname.strip()
+    if not name or not surname:
+        raise HTTPException(400, "Nombre y apellido son obligatorios")
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"name": name, "surname": surname, "updated_at": now_utc()}},
+    )
+    updated = await db.users.find_one({"id": user["id"]})
+    return UserOut(**clean_doc(updated))
+
+
 # ─────────────────────────── Enrollment / Stripe ───────────────
 def _stripe_for(request: Request) -> StripeCheckout:
     # Host URL for the webhook
@@ -545,7 +972,26 @@ async def create_checkout_session(
     is_founder = bool(course.get("is_founder_edition")) and (
         course.get("founder_seats_taken", 0) < course.get("founder_seats", 0)
     )
-    amount_cents = course["price_founder_eur"] if is_founder else course["price_eur"]
+    is_alumni = False
+    if course.get("has_alumni_pricing"):
+        # Auto-detect: authenticated user enrolled in ELE course
+        if user:
+            ele_enrollment = await db.enrollments.find_one({
+                "user_id": user["id"],
+                "course_id": "course-ia-ele",
+                "status": "active",
+            })
+            is_alumni = ele_enrollment is not None
+        # Coupon fallback: non-authenticated users can supply the alumni coupon
+        if not is_alumni and payload.coupon_code:
+            is_alumni = payload.coupon_code.strip().upper() == ALUMNI_COUPON_CODE
+
+    if is_founder:
+        amount_cents = course["price_founder_eur"]
+    elif is_alumni:
+        amount_cents = course["price_alumni_eur"]
+    else:
+        amount_cents = course["price_eur"]
     amount_float = round(amount_cents / 100, 2)
 
     origin = payload.origin_url.rstrip("/")
@@ -556,6 +1002,7 @@ async def create_checkout_session(
         "course_id": course["id"],
         "course_slug": course["slug"],
         "was_founder": "true" if is_founder else "false",
+        "was_alumni": "true" if is_alumni else "false",
         "user_email": (user or {}).get("email", ""),
         "user_id": (user or {}).get("id", ""),
     }
@@ -582,6 +1029,7 @@ async def create_checkout_session(
         "user_email": metadata["user_email"],
         "user_id": metadata["user_id"],
         "was_founder": is_founder,
+        "was_alumni": is_alumni,
         "enrollment_id": None,
         "created_at": now_utc(),
     })
@@ -635,6 +1083,7 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             "amount_paid_eur": tx["amount_cents"],
             "was_founder": tx.get("was_founder", False),
             "status": "active",
+            "payment_status": "paid",
             "created_at": now_utc(),
         })
         # Update founder seats
@@ -649,24 +1098,88 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
         amount_eur = tx["amount_cents"] / 100
         price_line = (
             f"<strong>{amount_eur:.2f} €</strong>"
-            + (" (precio fundador)" if tx.get("was_founder") else "")
+            + (" · precio fundador 🎉" if tx.get("was_founder") else "")
+        )
+        # Prefer the stored user.name; fall back to a clean local-part if
+        # it looks like a real name (letters only), else a generic greeting.
+        raw_name = (user.get("name") or "").strip()
+        if raw_name:
+            first_name = raw_name.split()[0].capitalize()
+        else:
+            local = user["email"].split("@")[0]
+            if local.replace("-", "").replace(".", "").isalpha():
+                first_name = local.split(".")[0].split("-")[0].capitalize()
+            else:
+                first_name = "docente"
+        founder_badge = (
+            '<div style="display:inline-block;background:#F5A623;color:#0A1628;padding:6px 14px;'
+            'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
+            'text-transform:uppercase;margin-top:6px">⭐ Fundador/a · plaza única</div>'
+            if tx.get("was_founder") else ""
         )
         html = wrap_email(
             f"""
-            <h2 style="font-family:Georgia,serif;color:#0F4C81">¡Bienvenido/a, {user['email']}!</h2>
-            <p>Te has inscrito correctamente en <strong>{course['title']}</strong>.</p>
-            <p>Importe pagado: {price_line}</p>
-            <p>Ya puedes acceder a tu área privada con tu email. Te esperamos el
-               <strong>4 de mayo de 2026</strong> en la primera videotutoría.</p>
-            <p style="text-align:center;margin:28px 0">
-              <a href="{FRONTEND_ORIGIN}/login" style="background:#0F4C81;color:#fff;
-                 text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">
-                Acceder a mi área privada
+            <div style="text-align:center;margin-bottom:24px">
+              <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
+              <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
+            </div>
+
+            <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:26px;line-height:1.2;margin:0 0 8px">
+              ¡Bienvenido/a, {first_name}! 👋
+            </h2>
+            <p style="color:#46476A;font-size:16px;margin:0 0 4px">
+              Gracias por confiar en mí para esta primera edición de
+              <strong style="color:#1A2535">{course['title']}</strong>.
+            </p>
+            {founder_badge}
+
+            <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:16px 20px;margin:28px 0;border-radius:4px">
+              <p style="margin:0;font-weight:700;color:#1A2535">📘 ¡Regalo incluido!</p>
+              <p style="margin:6px 0 0;font-size:14px;color:#46476A">
+                El libro <em>«Prompts que funcionan»</em> — 31 capítulos de ingeniería de prompts
+                para docentes de ELE — ya está disponible en tu área privada.
+              </p>
+            </div>
+
+            <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
+            <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
+              <li><strong>Completa tu perfil</strong> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.
+                  Lo usaré también en tu certificado.</li>
+              <li><strong>Echa un vistazo al libro</strong> y al <strong>Módulo 1</strong> para ir preparando tu cabeza.</li>
+              <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>
+                  (te enviaré el enlace unos días antes).</li>
+              <li><strong>Hazme caso si te pido que entregues tareas</strong>: el feedback personalizado
+                  es el corazón del curso.</li>
+            </ol>
+
+            <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
+              <p style="margin:0;font-size:14px;color:#46476A"><strong>Pago confirmado:</strong> {price_line}</p>
+              <p style="margin:6px 0 0;font-size:13px;color:#6B82A0">
+                Guarda este correo como justificante de inscripción.
+              </p>
+            </div>
+
+            <p style="text-align:center;margin:32px 0 16px">
+              <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
+                 text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
+                 display:inline-block;font-size:15px">
+                Acceder a mi área privada →
               </a>
+            </p>
+            <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
+              Entras con tu email ({user['email']}) — te enviaremos un enlace mágico cada vez.
+            </p>
+
+            <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
+            <p style="font-size:14px;color:#46476A;margin:0">
+              Si tienes cualquier duda, responde directamente a este correo y te leo sin falta.<br>
+              Un abrazo,<br>
+              <strong style="color:#1A2535">Javier</strong><br>
+              <span style="color:#6B82A0;font-size:13px">laclasedigital.com</span>
             </p>
             """
         )
-        await send_email(user["email"], "Inscripción confirmada · La Clase Digital", html)
+        await send_email(user["email"], f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
 
         # Notify admin of new enrollment
         admin_html = wrap_email(
@@ -826,6 +1339,13 @@ async def _ensure_enrollment_for(user: dict, slug: str) -> dict:
     return {"course": course, "enrollment": enrollment}
 
 
+async def _verify_task_in_course(task: dict, course: dict) -> None:
+    """Guard: ensure task belongs to the course resolved from the URL slug."""
+    mod = await db.modules.find_one({"id": task.get("module_id", "")})
+    if not mod or mod.get("course_id") != course["id"]:
+        raise HTTPException(404, "Tarea no encontrada")
+
+
 @api.get("/course/{slug}/content")
 async def course_content(slug: str, user: dict = Depends(current_user)):
     ctx = await _ensure_enrollment_for(user, slug)
@@ -836,8 +1356,11 @@ async def course_content(slug: str, user: dict = Depends(current_user)):
         async for le in db.lessons.find({"module_id": m["id"], "visible": True}).sort("order", 1):
             lessons.append(clean_doc(le))
         task = await db.tasks.find_one({"module_id": m["id"]})
+        m_clean = clean_doc(m)
+        # Normalize video_youtube_id so the key always exists on every module
+        m_clean.setdefault("video_youtube_id", None)
         modules.append({
-            "module": clean_doc(m),
+            "module": m_clean,
             "unlocked": bool(m.get("unlocked_at")) or user.get("role") == "admin",
             "lessons": lessons,
             "task": clean_doc(task),
@@ -851,18 +1374,49 @@ async def course_content(slug: str, user: dict = Depends(current_user)):
 
 @api.get("/course/{slug}/task/{task_id}")
 async def task_detail(slug: str, task_id: str, user: dict = Depends(current_user)):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
     task = await db.tasks.find_one({"id": task_id})
     if not task:
         raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
     mod = await db.modules.find_one({"id": task["module_id"]})
     submissions = []
     async for s in db.submissions.find({"task_id": task_id, "user_id": user["id"]}).sort("submitted_at", -1):
         submissions.append(clean_doc(s))
+
+    # Module resources gate: list unread resources from this module so the
+    # student must read the materials before submitting the task.
+    module_resources = []
+    pending_resources = []
+    if mod:
+        viewed_slugs = set()
+        async for row in db.user_progress.find(
+            {"user_id": user["id"], "resource_slug": {"$exists": True}},
+            {"resource_slug": 1},
+        ):
+            if row.get("resource_slug"):
+                viewed_slugs.add(row["resource_slug"])
+        async for r in db.resources.find(
+            {"module_id": mod["id"]}
+        ).sort([("type", 1), ("title", 1)]):
+            item = {
+                "slug": r["slug"], "title": r["title"],
+                "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+                "viewed": r["slug"] in viewed_slugs,
+            }
+            module_resources.append(item)
+            if not item["viewed"]:
+                pending_resources.append(item)
+    # Admins are never gated
+    can_submit = (user.get("role") == "admin") or (len(pending_resources) == 0)
+
     return {
         "task": clean_doc(task),
         "module": clean_doc(mod),
         "submissions": submissions,
+        "module_resources": module_resources,
+        "pending_resources": pending_resources,
+        "can_submit": can_submit,
     }
 
 
@@ -870,10 +1424,30 @@ async def task_detail(slug: str, task_id: str, user: dict = Depends(current_user
 async def submit_task(
     slug: str, task_id: str, payload: SubmissionIn, user: dict = Depends(current_user),
 ):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
     task = await db.tasks.find_one({"id": task_id})
     if not task:
         raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
+    # Gate: require all module resources to be viewed (admins bypass)
+    if user.get("role") != "admin" and task.get("module_id"):
+        viewed_slugs = set()
+        async for row in db.user_progress.find(
+            {"user_id": user["id"], "resource_slug": {"$exists": True}},
+            {"resource_slug": 1},
+        ):
+            if row.get("resource_slug"):
+                viewed_slugs.add(row["resource_slug"])
+        pending = []
+        async for r in db.resources.find({"module_id": task["module_id"]}, {"slug": 1, "title": 1}):
+            if r["slug"] not in viewed_slugs:
+                pending.append(r["title"])
+        if pending:
+            raise HTTPException(
+                400,
+                f"Antes de entregar debes leer los materiales del módulo: {', '.join(pending[:5])}"
+                + (" …" if len(pending) > 5 else ""),
+            )
     sid = new_id()
     doc = {
         "id": sid,
@@ -908,7 +1482,11 @@ async def submit_task(
 # ─────────────────────────── Forum threads ────────────────────
 @api.get("/course/{slug}/task/{task_id}/threads")
 async def list_threads(slug: str, task_id: str, user: dict = Depends(current_user)):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
+    task = await db.tasks.find_one({"id": task_id})
+    if not task:
+        raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
     posts = []
     async for t in db.threads.find({"task_id": task_id}).sort("created_at", 1):
         posts.append(clean_doc(t))
@@ -919,7 +1497,11 @@ async def list_threads(slug: str, task_id: str, user: dict = Depends(current_use
 async def create_thread(
     slug: str, task_id: str, payload: ThreadPostIn, user: dict = Depends(current_user),
 ):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
+    task = await db.tasks.find_one({"id": task_id})
+    if not task:
+        raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
     tid = new_id()
     await db.threads.insert_one({
         "id": tid,
@@ -982,7 +1564,14 @@ async def admin_overview(user: dict = Depends(current_admin)):
 async def admin_update_course(
     course_id: str, payload: AdminCourseUpdate, user: dict = Depends(current_admin),
 ):
-    update = {k: v for k, v in payload.dict().items() if v is not None}
+    update: dict[str, Any] = {}
+    for k, v in payload.dict().items():
+        if v is None:
+            continue
+        if k == "intro_video_youtube_id":
+            update[k] = v.strip() or None
+        else:
+            update[k] = v
     if not update:
         raise HTTPException(400, "Nada que actualizar")
     await db.courses.update_one({"id": course_id}, {"$set": update})
@@ -998,6 +1587,17 @@ async def admin_update_module(
         update["order"] = payload.order
     if payload.unlocked is not None:
         update["unlocked_at"] = now_utc() if payload.unlocked else None
+    if payload.video_youtube_id is not None:
+        vid = payload.video_youtube_id.strip()
+        if vid:
+            import re as _re
+            # Accept both raw IDs and full YouTube URLs (youtu.be, youtube.com/watch, embed, shorts)
+            m = _re.search(r"(?:v=|youtu\.be/|/embed/|/shorts/)([A-Za-z0-9_-]{11})", vid)
+            if m:
+                vid = m.group(1)
+            if not _re.match(r"^[A-Za-z0-9_-]{11}$", vid):
+                raise HTTPException(400, "ID o URL de YouTube no válido")
+        update["video_youtube_id"] = vid or None
     if not update:
         raise HTTPException(400, "Nada que actualizar")
     await db.modules.update_one({"id": module_id}, {"$set": update})
@@ -1053,6 +1653,714 @@ async def admin_feedback(
         )
         await send_email(student["email"], "Feedback disponible · La Clase Digital", html)
     return clean_doc(await db.submissions.find_one({"id": submission_id}))
+
+
+# ─────────────────────────── Resources endpoints ──────────────
+@api.get("/course/{slug}/resources")
+async def list_course_resources(slug: str, user: dict = Depends(current_user)):
+    await _ensure_enrollment_for(user, slug)
+    course = await db.courses.find_one({"slug": slug})
+    if not course:
+        raise HTTPException(404, "Curso no encontrado")
+
+    # Which resources has this user already viewed?
+    viewed_slugs = set()
+    async for row in db.user_progress.find(
+        {"user_id": user["id"], "course_id": course["id"], "resource_slug": {"$exists": True}},
+        {"resource_slug": 1},
+    ):
+        if row.get("resource_slug"):
+            viewed_slugs.add(row["resource_slug"])
+
+    # Group by module
+    modules = []
+    async for m in db.modules.find({"course_id": course["id"]}).sort("order", 1):
+        items = []
+        async for r in db.resources.find({"course_id": course["id"], "module_id": m["id"]}).sort([("type", 1), ("title", 1)]):
+            items.append({
+                "slug": r["slug"], "title": r["title"],
+                "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+                "module_id": m["id"],
+                "viewed": r["slug"] in viewed_slugs,
+            })
+        modules.append({
+            "module_id": m["id"], "order": m["order"], "title": m["title"],
+            "unlocked": bool(m.get("unlocked_at")) or user.get("role") == "admin",
+            "resources": items,
+        })
+
+    # Transversal resources (module_id null)
+    transversal = []
+    async for r in db.resources.find({"course_id": course["id"], "module_id": None}).sort("title", 1):
+        transversal.append({
+            "slug": r["slug"], "title": r["title"],
+            "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+            "module_id": None,
+            "viewed": r["slug"] in viewed_slugs,
+        })
+
+    total_res = sum(len(m["resources"]) for m in modules) + len(transversal)
+    return {
+        "modules": modules,
+        "transversal": transversal,
+        "viewed_count": len(viewed_slugs & {r["slug"] for m in modules for r in m["resources"]} | viewed_slugs & {r["slug"] for r in transversal}),
+        "total_count": total_res,
+    }
+
+
+@api.get("/resource/{slug}")
+async def get_resource(slug: str, user: dict = Depends(current_user)):
+    r = await db.resources.find_one({"slug": slug})
+    if not r:
+        raise HTTPException(404, "Recurso no encontrado")
+    # Validate enrollment (transversal resources still require enrollment)
+    course = await db.courses.find_one({"id": r["course_id"]})
+    if course:
+        await _ensure_enrollment_for(user, course["slug"])
+    module = await db.modules.find_one({"id": r["module_id"]}) if r.get("module_id") else None
+    # Mark as viewed (idempotent) — only for real students, not admins
+    if course and user.get("role") != "admin":
+        await db.user_progress.update_one(
+            {"user_id": user["id"], "resource_slug": r["slug"]},
+            {"$set": {
+                "user_id": user["id"],
+                "resource_slug": r["slug"],
+                "course_id": course["id"],
+                "viewed_at": now_utc(),
+            }},
+            upsert=True,
+        )
+    return {
+        "slug": r["slug"],
+        "title": r["title"],
+        "type": r["type"],
+        "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+        "content_md": r["content_md"],
+        "module_id": r.get("module_id"),
+        "module_order": module.get("order") if module else None,
+        "module_title": module.get("title") if module else None,
+        "course_slug": course.get("slug") if course else None,
+        "course_title": course.get("title") if course else None,
+        "updated_at": iso(r.get("updated_at")),
+    }
+
+
+@api.post("/admin/resources/reseed")
+async def admin_reseed_resources(user: dict = Depends(current_admin)):
+    await seed_resources()
+    total = await db.resources.count_documents({})
+    return {"ok": True, "total": total}
+
+
+@api.post("/admin/ebook/reseed")
+async def admin_reseed_ebook(user: dict = Depends(current_admin)):
+    await seed_ebook()
+    total = await db.ebook_chapters.count_documents({})
+    return {"ok": True, "total": total}
+
+
+# ─────────────────────────── Ebook (students) ──────────────────
+async def _ensure_any_enrollment(user: dict) -> None:
+    """Ebook is a student perk — require at least one active enrollment.
+    Admins bypass."""
+    if user.get("role") == "admin":
+        return
+    exists = await db.enrollments.find_one({
+        "user_id": user["id"],
+        "status": "active",
+        "$or": [
+            {"payment_status": "paid"},
+            {"payment_status": {"$exists": False}},
+        ],
+    })
+    if not exists:
+        raise HTTPException(403, "El libro está disponible solo para estudiantes inscritos")
+
+
+@api.get("/ebook")
+async def get_ebook_toc(user: dict = Depends(current_user)):
+    await _ensure_any_enrollment(user)
+    parts_map: dict[int, dict] = {}
+    total = 0
+    async for c in db.ebook_chapters.find({}, {
+        "slug": 1, "title": 1, "part_key": 1, "part_order": 1, "part_label": 1, "order_in_part": 1,
+    }).sort([("part_order", 1), ("order_in_part", 1)]):
+        p = parts_map.setdefault(c["part_order"], {
+            "part_order": c["part_order"],
+            "part_key": c["part_key"],
+            "part_label": c["part_label"],
+            "chapters": [],
+        })
+        p["chapters"].append({
+            "slug": c["slug"], "title": c["title"],
+            "order_in_part": c.get("order_in_part", 0),
+        })
+        total += 1
+    return {
+        "title": "Prompts que funcionan",
+        "subtitle": "Guía de ingeniería de prompts para docentes de ELE",
+        "author": "Javier Benítez Láinez",
+        "parts": [parts_map[k] for k in sorted(parts_map.keys())],
+        "total_chapters": total,
+    }
+
+
+@api.get("/ebook/{slug}")
+async def get_ebook_chapter(slug: str, user: dict = Depends(current_user)):
+    await _ensure_any_enrollment(user)
+    c = await db.ebook_chapters.find_one({"slug": slug})
+    if not c:
+        raise HTTPException(404, "Capítulo no encontrado")
+    return {
+        "slug": c["slug"],
+        "title": c["title"],
+        "content_md": c["content_md"],
+        "part_key": c.get("part_key"),
+        "part_label": c.get("part_label"),
+        "part_order": c.get("part_order"),
+        "order_in_part": c.get("order_in_part"),
+        "updated_at": iso(c.get("updated_at")),
+    }
+
+
+@api.get("/ebook-full")
+async def get_ebook_full(user: dict = Depends(current_user)):
+    """Return all chapters with content_md for client-side PDF generation."""
+    await _ensure_any_enrollment(user)
+    parts_map: dict[int, dict] = {}
+    async for c in db.ebook_chapters.find({}).sort([("part_order", 1), ("order_in_part", 1)]):
+        p = parts_map.setdefault(c["part_order"], {
+            "part_order": c["part_order"],
+            "part_key": c.get("part_key"),
+            "part_label": c.get("part_label"),
+            "chapters": [],
+        })
+        p["chapters"].append({
+            "slug": c["slug"],
+            "title": c["title"],
+            "content_md": c["content_md"],
+            "order_in_part": c.get("order_in_part", 0),
+        })
+    return {
+        "title": "Prompts que funcionan",
+        "subtitle": "Guía de ingeniería de prompts para docentes de ELE",
+        "author": "Javier Benítez Láinez",
+        "parts": [parts_map[k] for k in sorted(parts_map.keys())],
+    }
+
+
+@api.get("/ebook.pdf")
+async def download_ebook_pdf(user: dict = Depends(current_user)):
+    """Generate the full book as a single PDF using ReportLab (pure Python,
+    no system dependencies). Styled with La Clase Digital brand palette."""
+    await _ensure_any_enrollment(user)
+    from fastapi.responses import Response
+    from io import BytesIO
+
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import cm, mm
+    from reportlab.platypus import (
+        BaseDocTemplate, Frame, NextPageTemplate, PageBreak, PageTemplate,
+        Paragraph, Preformatted, Spacer, Table, TableStyle,
+    )
+    from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER
+
+    chapters = []
+    async for c in db.ebook_chapters.find({}).sort([("part_order", 1), ("order_in_part", 1)]):
+        chapters.append(c)
+
+    parts: dict[int, dict] = {}
+    for c in chapters:
+        p = parts.setdefault(c["part_order"], {
+            "order": c["part_order"], "label": c["part_label"], "chapters": [],
+        })
+        p["chapters"].append(c)
+    part_list = [parts[k] for k in sorted(parts.keys())]
+
+    # ── Palette ──
+    NAVY = colors.HexColor("#0A1628")
+    BLUE = colors.HexColor("#0F4C81")
+    AMBER = colors.HexColor("#F5A623")
+    INK = colors.HexColor("#1A2535")
+    INK_SOFT = colors.HexColor("#46476A")
+    LIGHT_BG = colors.HexColor("#F4F7FA")
+    CODE_BG = colors.HexColor("#0F2744")
+    CODE_FG = colors.HexColor("#E8EEF5")
+    QUOTE_BG = colors.HexColor("#FEF6DC")
+    LINE = colors.HexColor("#E0E2EA")
+
+    # ── Styles ──
+    def st(**k):
+        base = {"fontName": "Helvetica", "fontSize": 10.5, "leading": 15, "textColor": INK, "spaceAfter": 5, "alignment": TA_JUSTIFY}
+        base.update(k)
+        return ParagraphStyle(k.pop("name", "s") if "name" in k else "s", **{kk: vv for kk, vv in base.items() if kk != "name"})
+
+    p_body = ParagraphStyle("body", fontName="Helvetica", fontSize=10.5, leading=15, textColor=INK, spaceAfter=5, alignment=TA_JUSTIFY)
+    p_h1 = ParagraphStyle("h1", fontName="Helvetica-Bold", fontSize=14, leading=18, textColor=BLUE, spaceBefore=12, spaceAfter=6)
+    p_h2 = ParagraphStyle("h2", fontName="Helvetica-Bold", fontSize=12, leading=16, textColor=BLUE, spaceBefore=10, spaceAfter=5)
+    p_h3 = ParagraphStyle("h3", fontName="Helvetica-Bold", fontSize=10.5, leading=14, textColor=INK, spaceBefore=8, spaceAfter=4)
+    p_chapter = ParagraphStyle("chapter", fontName="Helvetica-Bold", fontSize=18, leading=22, textColor=BLUE, spaceAfter=14, borderPadding=(0, 0, 0, 10), leftIndent=10)
+    p_part_kicker = ParagraphStyle("pk", fontName="Helvetica-Bold", fontSize=11, leading=14, textColor=AMBER)
+    p_part_title = ParagraphStyle("pt", fontName="Helvetica-Bold", fontSize=28, leading=32, textColor=BLUE, spaceBefore=8)
+    p_toc_title = ParagraphStyle("toct", fontName="Helvetica-Bold", fontSize=18, leading=22, textColor=BLUE, spaceAfter=14)
+    p_toc_part = ParagraphStyle("tocp", fontName="Helvetica-Bold", fontSize=9, leading=12, textColor=AMBER, spaceBefore=10, spaceAfter=4)
+    p_toc_item = ParagraphStyle("toci", fontName="Helvetica", fontSize=10, leading=14, textColor=INK, leftIndent=10, spaceAfter=2)
+    p_cover_kicker = ParagraphStyle("ck", fontName="Helvetica-Bold", fontSize=10, leading=14, textColor=AMBER)
+    p_cover_title = ParagraphStyle("ct", fontName="Helvetica-Bold", fontSize=38, leading=42, textColor=colors.white, spaceBefore=16)
+    p_cover_sub = ParagraphStyle("cs", fontName="Helvetica", fontSize=14, leading=19, textColor=colors.HexColor("#E8EEF5"), spaceBefore=16)
+    p_cover_author = ParagraphStyle("ca", fontName="Helvetica", fontSize=11, leading=14, textColor=colors.HexColor("#E8EEF5"))
+    p_cover_domain = ParagraphStyle("cd", fontName="Helvetica-Bold", fontSize=9, leading=12, textColor=AMBER)
+    p_quote_text = ParagraphStyle("qt", fontName="Helvetica-Oblique", fontSize=10, leading=14, textColor=INK_SOFT)
+    p_list = ParagraphStyle("li", fontName="Helvetica", fontSize=10.5, leading=14, textColor=INK, leftIndent=18, bulletIndent=6, spaceAfter=2)
+
+    # ── Markdown → flowables (simple parser) ──
+    import re as _re
+
+    def render_inline(text: str) -> str:
+        """Convert simple markdown inline (**bold**, *italic*, `code`) to ReportLab RML."""
+        # Escape HTML-sensitive chars first
+        text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        text = _re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", text)
+        text = _re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<i>\1</i>", text)
+        text = _re.sub(r"_([^_]+)_", r"<i>\1</i>", text)
+        text = _re.sub(r"`([^`]+)`", r'<font face="Courier" color="#0F4C81"> \1 </font>', text)
+        return text
+
+    def md_to_flowables(md: str) -> list:
+        flows = []
+        lines = md.split("\n")
+        code_buf: list[str] = []
+        in_code = False
+        list_buf: list[str] = []
+        tbl_buf: list[str] = []
+        in_tbl = False
+
+        def flush_list() -> None:
+            nonlocal list_buf
+            if list_buf:
+                for item in list_buf:
+                    flows.append(Paragraph("• " + render_inline(item), p_list))
+                flows.append(Spacer(1, 3))
+                list_buf = []
+
+        def flush_code() -> None:
+            nonlocal code_buf
+            if code_buf:
+                # Dark text on light background — always readable regardless
+                # of how reportlab renders the Table BACKGROUND.
+                code_style = ParagraphStyle(
+                    "code", fontName="Courier", fontSize=8.8, leading=12,
+                    textColor=INK, leftIndent=0, rightIndent=0,
+                )
+                txt = "\n".join(code_buf).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                inner = Preformatted(txt, code_style)
+                tbl = Table(
+                    [[inner]],
+                    colWidths=[18 * cm],
+                    hAlign="LEFT",
+                )
+                tbl.setStyle(TableStyle([
+                    ("BACKGROUND", (0, 0), (-1, -1), LIGHT_BG),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 10),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+                    ("TOPPADDING", (0, 0), (-1, -1), 8),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+                    ("LINEBEFORE", (0, 0), (0, -1), 3, AMBER),
+                    ("BOX", (0, 0), (-1, -1), 0.3, LINE),
+                ]))
+                flows.append(Spacer(1, 4))
+                flows.append(tbl)
+                flows.append(Spacer(1, 6))
+                code_buf = []
+
+        def flush_table() -> None:
+            nonlocal tbl_buf, in_tbl
+            if len(tbl_buf) >= 2:
+                rows_raw = [r for r in tbl_buf if not _re.match(r"^\s*\|?\s*[-:| ]+\|?\s*$", r)]
+                rows = []
+                for row in rows_raw:
+                    cells = [c.strip() for c in row.split("|")]
+                    cells = [c for i, c in enumerate(cells) if not (i == 0 and c == "") and not (i == len(cells) - 1 and c == "")]
+                    rows.append([Paragraph(render_inline(c), p_body) for c in cells])
+                if rows:
+                    max_cols = max(len(r) for r in rows)
+                    rows = [r + [Paragraph("", p_body)] * (max_cols - len(r)) for r in rows]
+                    col_w = (18 * cm) / max_cols
+                    t = Table(rows, colWidths=[col_w] * max_cols, hAlign="LEFT")
+                    t.setStyle(TableStyle([
+                        ("BACKGROUND", (0, 0), (-1, 0), LIGHT_BG),
+                        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                        ("TEXTCOLOR", (0, 0), (-1, 0), BLUE),
+                        ("GRID", (0, 0), (-1, -1), 0.25, LINE),
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                        ("TOPPADDING", (0, 0), (-1, -1), 4),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                    ]))
+                    flows.append(t)
+                    flows.append(Spacer(1, 6))
+            tbl_buf = []
+            in_tbl = False
+
+        for raw in lines:
+            ln = raw.rstrip()
+            if ln.startswith("```"):
+                if in_code:
+                    flush_code(); in_code = False
+                else:
+                    flush_list(); flush_table(); in_code = True
+                continue
+            if in_code:
+                code_buf.append(ln); continue
+            if ln.strip().startswith("|") and "|" in ln.strip()[1:]:
+                if not in_tbl:
+                    flush_list(); in_tbl = True
+                tbl_buf.append(ln); continue
+            if in_tbl:
+                flush_table()
+            if not ln.strip():
+                flush_list(); continue
+            if ln.startswith("# "):
+                flush_list(); flows.append(Paragraph(render_inline(ln[2:]), p_h1)); continue
+            if ln.startswith("## "):
+                flush_list(); flows.append(Paragraph(render_inline(ln[3:]), p_h2)); continue
+            if ln.startswith("### "):
+                flush_list(); flows.append(Paragraph(render_inline(ln[4:]), p_h3)); continue
+            if ln.startswith("> "):
+                flush_list()
+                quote_inner = Paragraph(render_inline(ln[2:]), p_quote_text)
+                qtbl = Table([[quote_inner]], colWidths=[18 * cm], hAlign="LEFT")
+                qtbl.setStyle(TableStyle([
+                    ("BACKGROUND", (0, 0), (-1, -1), QUOTE_BG),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 10),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                    ("LINEBEFORE", (0, 0), (0, -1), 3, AMBER),
+                ]))
+                flows.append(Spacer(1, 3))
+                flows.append(qtbl)
+                flows.append(Spacer(1, 6))
+                continue
+            if ln.strip() in ("---", "***"):
+                flush_list()
+                hr_style = ParagraphStyle("hr", fontSize=1, leading=1, backColor=LINE, spaceBefore=6, spaceAfter=6)
+                flows.append(Paragraph(" ", hr_style)); continue
+            bm = _re.match(r"^[-*]\s+(.*)", ln)
+            nm = _re.match(r"^\d+\.\s+(.*)", ln)
+            if bm:
+                list_buf.append(bm.group(1)); continue
+            if nm:
+                list_buf.append(nm.group(1)); continue
+            flush_list()
+            flows.append(Paragraph(render_inline(ln), p_body))
+        flush_list(); flush_code(); flush_table()
+        return flows
+
+    # ── Page templates ──
+    buf = BytesIO()
+    doc = BaseDocTemplate(
+        buf, pagesize=A4,
+        leftMargin=2.2 * cm, rightMargin=2.2 * cm,
+        topMargin=2.6 * cm, bottomMargin=2.4 * cm,
+        title="Prompts que funcionan", author="Javier Benítez Láinez",
+    )
+    content_frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="content")
+    cover_frame = Frame(0, 0, A4[0], A4[1], id="cover", leftPadding=2.8 * cm, bottomPadding=3 * cm, topPadding=3.5 * cm, rightPadding=2.8 * cm)
+    part_frame = Frame(0, 0, A4[0], A4[1], id="part", leftPadding=3 * cm, bottomPadding=A4[1] / 3, topPadding=A4[1] / 3, rightPadding=3 * cm)
+
+    def draw_header_footer(canvas, doc_):  # noqa: ARG001
+        canvas.saveState()
+        canvas.setFont("Helvetica-Bold", 8.5)
+        canvas.setFillColor(INK_SOFT)
+        canvas.drawString(doc_.leftMargin, A4[1] - 1.2 * cm, "[ | ]  La Clase Digital")
+        canvas.setFont("Helvetica", 8.5)
+        canvas.drawRightString(A4[0] - doc_.rightMargin, A4[1] - 1.2 * cm, "Prompts que funcionan")
+        canvas.setStrokeColor(LINE); canvas.setLineWidth(0.3)
+        canvas.line(doc_.leftMargin, A4[1] - 1.5 * cm, A4[0] - doc_.rightMargin, A4[1] - 1.5 * cm)
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(colors.HexColor("#6B82A0"))
+        canvas.drawCentredString(A4[0] / 2, 1.1 * cm, str(canvas.getPageNumber()))
+        canvas.restoreState()
+
+    def draw_cover_bg(canvas, doc_):  # noqa: ARG001
+        canvas.saveState()
+        canvas.setFillColor(NAVY)
+        canvas.rect(0, 0, A4[0], A4[1], fill=1, stroke=0)
+        canvas.restoreState()
+
+    def draw_part_bg(canvas, doc_):  # noqa: ARG001
+        canvas.saveState()
+        canvas.setStrokeColor(AMBER); canvas.setLineWidth(3)
+        canvas.line(0, A4[1] - 1, A4[0], A4[1] - 1)
+        canvas.restoreState()
+
+    doc.addPageTemplates([
+        PageTemplate(id="Cover", frames=[cover_frame], onPage=draw_cover_bg),
+        PageTemplate(id="Content", frames=[content_frame], onPage=draw_header_footer),
+        PageTemplate(id="Part", frames=[part_frame], onPage=draw_part_bg),
+    ])
+
+    story = []
+    # Cover
+    story.append(NextPageTemplate("Cover"))
+    story.append(Paragraph('<font color="#F5A623" size="48"><b>[ | ]</b></font>', ParagraphStyle("cm", fontName="Helvetica-Bold", fontSize=48, leading=52)))
+    story.append(Spacer(1, 12))
+    story.append(Paragraph("LA CLASE DIGITAL", p_cover_kicker))
+    story.append(Paragraph("Prompts que funcionan", p_cover_title))
+    story.append(Paragraph("Guía de ingeniería de prompts para docentes de ELE", p_cover_sub))
+    story.append(Spacer(1, 220))
+    story.append(Paragraph('Por <font color="#F5A623"><b>Javier Benítez Láinez</b></font>', p_cover_author))
+    story.append(Spacer(1, 6))
+    story.append(Paragraph("LACLASEDIGITAL.COM", p_cover_domain))
+    story.append(NextPageTemplate("Content")); story.append(PageBreak())
+
+    # TOC
+    story.append(Paragraph("Índice", p_toc_title))
+    for part in part_list:
+        story.append(Paragraph(part["label"].upper(), p_toc_part))
+        for ch in part["chapters"]:
+            story.append(Paragraph("• " + ch["title"], p_toc_item))
+    story.append(PageBreak())
+
+    # Parts and chapters
+    for part in part_list:
+        # Part separator
+        story.append(NextPageTemplate("Part"))
+        story.append(PageBreak())
+        kicker = "PRÓLOGO" if part["order"] == 0 else f"PARTE {part['order']}"
+        story.append(Paragraph(kicker, p_part_kicker))
+        label = part["label"].split(" · ", 1)[-1]
+        story.append(Paragraph(label, p_part_title))
+        story.append(NextPageTemplate("Content"))
+
+        for ch in part["chapters"]:
+            story.append(PageBreak())
+            story.append(Paragraph(ch["title"], p_chapter))
+            story.extend(md_to_flowables(ch["content_md"]))
+
+    doc.build(story)
+    pdf_bytes = buf.getvalue()
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="prompts-que-funcionan.pdf"'},
+    )
+
+
+@api.post("/admin/enrollment/manual")
+async def admin_create_manual_enrollment(
+    payload: AdminManualEnrollment, user: dict = Depends(current_admin),
+):
+    """Manually enroll a student without going through Stripe.
+
+    Use cases:
+    - Payment received outside Stripe (bank transfer, cash, voucher).
+    - Comped / free seat (amount_eur=0).
+    - Friends & family or press review copies.
+
+    Idempotent: if an active enrollment already exists for (user, course),
+    returns it without duplicating.
+    """
+    email = payload.email.lower().strip()
+    course = await db.courses.find_one({"slug": payload.course_slug})
+    if not course:
+        raise HTTPException(404, "Curso no encontrado")
+
+    # Resolve or create the user
+    u = await db.users.find_one({"email": email})
+    if not u:
+        uid = new_id()
+        await db.users.insert_one({
+            "id": uid, "email": email, "role": "student",
+            "created_at": now_utc(),
+        })
+        u = await db.users.find_one({"id": uid})
+
+    # Reuse existing active enrollment if present
+    existing = await db.enrollments.find_one(
+        {"user_id": u["id"], "course_id": course["id"], "status": "active"}
+    )
+    if existing and existing.get("payment_status") == "paid":
+        return {
+            "enrollment": clean_doc(existing),
+            "created": False,
+            "user_id": u["id"],
+        }
+
+    # Honor founder seat if requested and still available
+    was_founder = bool(payload.as_founder) and (
+        course.get("founder_seats_taken", 0) < course.get("founder_seats", 0)
+    )
+    amount_cents = int(round(payload.amount_eur * 100))
+    payment_ref = f"MANUAL-{new_id()[:8].upper()}"
+
+    enrollment_doc = existing or {
+        "id": new_id(),
+        "user_id": u["id"],
+        "course_id": course["id"],
+        "created_at": now_utc(),
+    }
+    enrollment_doc.update({
+        "status": "active",
+        "payment_status": "paid",
+        "paid_at": now_utc(),
+        "stripe_payment_id": payment_ref,
+        "amount_paid_eur": amount_cents,
+        "was_founder": was_founder,
+        "manual": True,
+        "manual_note": payload.note or None,
+        "manual_by": user["email"],
+    })
+    if existing:
+        await db.enrollments.update_one({"id": existing["id"]}, {"$set": enrollment_doc})
+    else:
+        await db.enrollments.insert_one(enrollment_doc)
+    if was_founder:
+        await db.courses.update_one(
+            {"id": course["id"]}, {"$inc": {"founder_seats_taken": 1}}
+        )
+
+    # Send welcome email (reuse the same template as paid enrollments)
+    if payload.send_welcome_email:
+        try:
+            amount_eur = amount_cents / 100
+            price_line = (
+                "<strong>Gratis</strong>" if amount_cents == 0
+                else f"<strong>{amount_eur:.2f} €</strong>"
+                + (" · precio fundador 🎉" if was_founder else "")
+            )
+            raw_name = (u.get("name") or "").strip()
+            if raw_name:
+                first_name = raw_name.split()[0].capitalize()
+            else:
+                local = email.split("@")[0]
+                first_name = local.split(".")[0].split("-")[0].capitalize() if local.replace("-", "").replace(".", "").isalpha() else "docente"
+            founder_badge = (
+                '<div style="display:inline-block;background:#F5A623;color:#0A1628;padding:6px 14px;'
+                'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
+                'text-transform:uppercase;margin-top:6px">⭐ Fundador/a · plaza única</div>'
+                if was_founder else ""
+            )
+            html = wrap_email(
+                f"""
+                <div style="text-align:center;margin-bottom:24px">
+                  <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
+                  <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
+                </div>
+
+                <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:26px;line-height:1.2;margin:0 0 8px">
+                  ¡Bienvenido/a, {first_name}! 👋
+                </h2>
+                <p style="color:#46476A;font-size:16px;margin:0 0 4px">
+                  Te he inscrito manualmente en
+                  <strong style="color:#1A2535">{course['title']}</strong>.
+                </p>
+                {founder_badge}
+
+                <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:16px 20px;margin:28px 0;border-radius:4px">
+                  <p style="margin:0;font-weight:700;color:#1A2535">📘 ¡Regalo incluido!</p>
+                  <p style="margin:6px 0 0;font-size:14px;color:#46476A">
+                    El libro <em>«Prompts que funcionan»</em> — 31 capítulos de ingeniería de prompts
+                    para docentes de ELE — ya está disponible en tu área privada.
+                  </p>
+                </div>
+
+                <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
+                <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
+                  <li><strong>Completa tu perfil</strong> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
+                  <li><strong>Echa un vistazo al libro</strong> y al <strong>Módulo 1</strong>.</li>
+                  <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>.</li>
+                </ol>
+
+                <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
+                  <p style="margin:0;font-size:14px;color:#46476A"><strong>Inscripción:</strong> {price_line}</p>
+                  <p style="margin:6px 0 0;font-size:13px;color:#6B82A0">Referencia: {payment_ref}</p>
+                </div>
+
+                <p style="text-align:center;margin:32px 0 16px">
+                  <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
+                     text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
+                     display:inline-block;font-size:15px">
+                    Acceder a mi área privada →
+                  </a>
+                </p>
+                <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
+                  Entras con tu email ({email}) — te enviaremos un enlace mágico cada vez.
+                </p>
+
+                <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
+                <p style="font-size:14px;color:#46476A;margin:0">
+                  Si tienes cualquier duda, responde directamente a este correo y te leo sin falta.<br>
+                  Un abrazo,<br>
+                  <strong style="color:#1A2535">Javier</strong>
+                </p>
+                """
+            )
+            await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+        except Exception as e:
+            log.error("Welcome email failed for manual enrollment of %s: %s", email, e)
+
+    return {
+        "enrollment": clean_doc(enrollment_doc),
+        "created": existing is None,
+        "user_id": u["id"],
+        "payment_reference": payment_ref,
+    }
+
+
+@api.delete("/admin/enrollment/{enrollment_id}")
+async def admin_delete_enrollment(enrollment_id: str, user: dict = Depends(current_admin)):
+    """Delete an enrollment and its related data (submissions, threads, progress, certificates).
+
+    If the enrollment used a founder seat, decrement founder_seats_taken and
+    re-activate is_founder_edition if it was flipped off because of this one.
+    The user document itself is preserved (they may re-enroll or be admin).
+    """
+    enrollment = await db.enrollments.find_one({"id": enrollment_id})
+    if not enrollment:
+        raise HTTPException(404, "Inscripción no encontrada")
+
+    user_id = enrollment["user_id"]
+    course_id = enrollment["course_id"]
+
+    # Clean related artefacts scoped to this user+course
+    module_ids = [m["id"] async for m in db.modules.find({"course_id": course_id}, {"id": 1})]
+    task_ids = [t["id"] async for t in db.tasks.find({"module_id": {"$in": module_ids}}, {"id": 1})]
+    lesson_ids = [le["id"] async for le in db.lessons.find({"module_id": {"$in": module_ids}}, {"id": 1})]
+
+    deleted = {
+        "submissions": (await db.submissions.delete_many({"user_id": user_id, "task_id": {"$in": task_ids}})).deleted_count if task_ids else 0,
+        "threads": (await db.threads.delete_many({"user_id": user_id, "task_id": {"$in": task_ids}})).deleted_count if task_ids else 0,
+        "user_progress": (await db.user_progress.delete_many({
+            "user_id": user_id,
+            "$or": [
+                {"lesson_id": {"$in": lesson_ids}} if lesson_ids else {"lesson_id": "__none__"},
+                {"course_id": course_id, "resource_slug": {"$exists": True}},
+            ],
+        })).deleted_count,
+        "certificates": (await db.certificates.delete_many({"enrollment_id": enrollment_id})).deleted_count,
+        "payment_transactions": (await db.payment_transactions.delete_many({"enrollment_id": enrollment_id})).deleted_count,
+    }
+
+    # Restore founder seat if applicable
+    if enrollment.get("was_founder"):
+        course = await db.courses.find_one({"id": course_id})
+        if course:
+            new_taken = max(0, (course.get("founder_seats_taken") or 0) - 1)
+            update: dict[str, Any] = {"founder_seats_taken": new_taken}
+            # Re-open founder edition if we freed a seat and we were sold out
+            if new_taken < (course.get("founder_seats") or 0) and not course.get("is_founder_edition"):
+                update["is_founder_edition"] = True
+            await db.courses.update_one({"id": course_id}, {"$set": update})
+
+    # Finally delete the enrollment
+    await db.enrollments.delete_one({"id": enrollment_id})
+
+    return {"ok": True, "deleted": deleted}
 
 
 # ─────────────────────────── Upload (Cloudinary) ───────────────
@@ -1355,6 +2663,122 @@ async def admin_export_enrollments(user: dict = Depends(current_admin)):
             "Content-Disposition": f'attachment; filename="inscripciones-{now_utc().strftime("%Y%m%d")}.csv"'
         },
     )
+
+
+# ─────────────────────── Inactivity nudge scheduler ────────────
+# Sends a friendly nudge email to enrolled students who haven't
+# opened any course material for >= 7 days. Runs daily and is
+# idempotent per-day via `last_nudge_at` on the user.
+_INACTIVITY_DAYS = int(os.environ.get("INACTIVITY_NUDGE_DAYS", "7"))
+_scheduler_started = False
+
+
+def _nudge_email_html(name: str | None, course_title: str, first_name: str | None) -> str:
+    greeting = first_name or (name or "docente")
+    inner_url = FRONTEND_ORIGIN or "https://laclasedigital.com"
+    return f"""
+<div style="max-width:560px;margin:0 auto;padding:24px;font-family:-apple-system,Segoe UI,Helvetica,sans-serif;color:#1A2535;background:#FFFCF4;">
+  <p style="font-size:20px;margin:0 0 12px;color:#F5A623;font-weight:800;">Hola, {greeting} 👋</p>
+  <p>He notado que llevas unos días sin entrar en <strong>{course_title}</strong>.
+  Sé que combinar la formación con tu día a día no es fácil, así que te dejo un empujón para retomar con energía.</p>
+  <p style="margin:18px 0;">👉 <a href="{inner_url}/dashboard" style="color:#0F4C81;text-decoration:underline;font-weight:600;">Entrar a mi área y continuar</a></p>
+  <p>Recuerda que tienes a tu disposición:</p>
+  <ul style="padding-left:20px;">
+    <li>📘 El libro <em>«Prompts que funcionan»</em> (31 capítulos)</li>
+    <li>📚 Todos los materiales del curso ordenados por módulo</li>
+    <li>🎥 Las videotutorías grabadas</li>
+  </ul>
+  <p style="margin-top:20px;font-size:13px;color:#6B82A0;">— Javier Benítez Láinez · <a href="{inner_url}" style="color:#0F4C81;">laclasedigital.com</a></p>
+</div>
+"""
+
+
+def _aware(dt: Optional[datetime]) -> Optional[datetime]:
+    """MongoDB motor returns naive datetimes — coerce to UTC-aware for safe compares."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+async def run_inactivity_nudge() -> dict[str, Any]:
+    """Find enrolled students with no resource/lesson activity in the last N days
+    and email them a gentle reminder. Returns a summary dict."""
+    now = now_utc()
+    cutoff = now - timedelta(days=_INACTIVITY_DAYS)
+    # Skip users already nudged in the last 7 days (idempotency)
+    recent_nudge_cutoff = now - timedelta(days=_INACTIVITY_DAYS)
+
+    sent = 0
+    skipped = 0
+    checked = 0
+
+    # Iterate active-paid enrollments only
+    async for en in db.enrollments.find({"status": "active", "payment_status": "paid"}):
+        checked += 1
+        user = await db.users.find_one({"id": en["user_id"]})
+        if not user or user.get("role") == "admin":
+            continue
+        # Respect idempotency: if already nudged recently, skip
+        last_nudge = _aware(user.get("last_nudge_at"))
+        if last_nudge and last_nudge > recent_nudge_cutoff:
+            skipped += 1
+            continue
+        # Any activity in the last N days?
+        recent = await db.user_progress.find_one(
+            {"user_id": user["id"], "viewed_at": {"$gte": cutoff}},
+            {"_id": 1},
+        )
+        if recent:
+            continue
+        # Enrollment too fresh? Give them a week of grace.
+        paid_at = _aware(en.get("paid_at"))
+        if paid_at and paid_at > cutoff:
+            continue
+
+        course = await db.courses.find_one({"id": en["course_id"]})
+        if not course:
+            continue
+        subject = f"¿Retomamos {course['title']}? Tu curso te espera"
+        html = _nudge_email_html(user.get("name"), course["title"], user.get("name"))
+        try:
+            await send_email(user["email"], subject, html)
+            await db.users.update_one(
+                {"id": user["id"]}, {"$set": {"last_nudge_at": now}}
+            )
+            sent += 1
+        except Exception as e:  # pragma: no cover
+            log.error("Failed to send nudge to %s: %s", user.get("email"), e)
+    log.info("Inactivity nudge run: checked=%d sent=%d skipped=%d", checked, sent, skipped)
+    return {"checked": checked, "sent": sent, "skipped": skipped}
+
+
+def start_inactivity_scheduler() -> None:
+    global _scheduler_started
+    if _scheduler_started:
+        return
+    if os.environ.get("INACTIVITY_NUDGE_ENABLED", "1") != "1":
+        log.info("Inactivity nudge scheduler disabled via env")
+        return
+    try:
+        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+        from apscheduler.triggers.cron import CronTrigger
+    except Exception as e:  # pragma: no cover
+        log.warning("APScheduler not available: %s", e)
+        return
+    sch = AsyncIOScheduler(timezone="Europe/Madrid")
+    # Daily at 09:00 Madrid time
+    sch.add_job(run_inactivity_nudge, CronTrigger(hour=9, minute=0))
+    sch.start()
+    _scheduler_started = True
+    log.info("Inactivity nudge scheduler started (every day 09:00 Europe/Madrid)")
+
+
+@api.post("/admin/inactivity/run")
+async def admin_run_inactivity_nudge(user: dict = Depends(current_admin)):
+    """Manual trigger for the nudge job (used in testing and admin-forced runs)."""
+    return await run_inactivity_nudge()
 
 
 # ─────────────────────────── Register router ───────────────────

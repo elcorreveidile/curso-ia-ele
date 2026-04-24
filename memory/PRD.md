@@ -34,6 +34,166 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 8 (2026-02 fork, sprint 4 · bugfix producción)
+- ✅ **PDF del libro en producción** (BUG FIX CRÍTICO): WeasyPrint no
+  funcionaba en el deploy nativo porque necesita libs del sistema
+  (cairo, pango, gdk-pixbuf). Reescrito `/api/ebook.pdf` con **ReportLab**
+  (pure Python, sin system deps). Incluye portada navy + marca ámbar,
+  TOC, separadores de parte, headers/footers con número de página.
+  Resultado: 557 KB · 246 páginas verificado.
+- ✅ **Email de bienvenida mejorado** (post inscripción Stripe):
+  saludo por primer nombre (con fallback sensato si el email no parece
+  nombre real), badge fundador si corresponde, caja del regalo del
+  libro, 4 pasos para empezar, importe + referencia Stripe, CTA a
+  login. Envío via send_email(Resend) desde webhook.
+- ✅ **Normalización API**: `video_youtube_id` siempre presente (None)
+  en todos los módulos del endpoint `/api/course/{slug}/content`.
+- ✅ **Testing iter8**: backend 12/12 pytest + frontend 5/5 Playwright.
+
+## Refactor pendiente (prioridad baja)
+Dividir `/app/backend/server.py` (~2300 líneas) en routers FastAPI
+modulares: auth, courses, dashboard, tasks, ebook, payments, admin,
+public. Mejora mantenibilidad y velocidad del IDE. Cero cambio visible
+al usuario.
+
+## Implementado en iteración 7 (2026-02 fork, sprint 3)
+- ✅ **Regalo del libro en landing**: banner "📘 Incluye de regalo el libro
+  *Prompts que funcionan*" en Home hero (contraste ámbar sobre oscuro)
+  y bullet en el precio fundador de Precios.
+- ✅ **SEO + Open Graph**:
+  - Meta tags OG (site_name, locale, image 1200x630, alt) + Twitter Card.
+  - JSON-LD con `@graph` Organization + Person (Javier) + Course +
+    CourseInstance + Offer (149 €, LimitedAvailability).
+  - Generada `public/og-image.png` (91 KB, azul degradado + branding).
+  - `public/sitemap.xml` con 9 rutas prioridad 0.6-1.0.
+  - `public/robots.txt` permitiendo rutas públicas y bloqueando /api,
+    /dashboard, /admin, /libro, /recurso.
+- ✅ **Animaciones scroll-reveal**: hook `useScrollReveal` con
+  IntersectionObserver, marca above-the-fold como visible inmediatamente
+  y aplica fade+slide a elementos below-fold. Aplicado en Home y Precios.
+- ✅ **Resultado del cuestionario visual**: tarjeta con emoji + título,
+  barras animadas por dimensión (Práctica / Actitud / Uso) con color
+  propio cada una, módulos clave con ✓ verde, bloque "Próximos pasos"
+  mencionando el libro, botón "Reservar plaza →".
+- ✅ **Contador de plazas live**: CourseProvider con polling 60 s +
+  refresh al volver de otra pestaña (`visibilitychange`).
+- ✅ **Email semanal automático** (APScheduler + Resend):
+  - Cron diario 09:00 Europe/Madrid, función `run_inactivity_nudge`.
+  - Detecta estudiantes inscritos sin `user_progress.viewed_at` en 7 días,
+    respeta grace week para recién inscritos y idempotencia por
+    `user.last_nudge_at`.
+  - Endpoint admin `POST /api/admin/inactivity/run` para disparo manual.
+  - Email HTML con saludo personalizado + CTA "Entrar a mi área".
+- ✅ **Modo oscuro** con toggle + `prefers-color-scheme`:
+  - Componente `ThemeToggle` en Navbar (☀️/🌙).
+  - Variable CSS `--surface` para fondos de tarjetas (evita romper los
+    títulos blancos que usaban `var(--white)`).
+  - Script inline en `index.html` previene FOUC aplicando `data-theme`
+    antes de React.
+  - Persistencia en `localStorage.lcd_theme`, respeta `prefers-color-scheme`.
+- ✅ **Bugfix contraste**: en iter7.1 arreglé dos reportes del usuario:
+  (1) el regalo del libro usaba `color: var(--ink)` que quedaba oscuro
+  sobre el hero → ahora texto `#F3F7FC`; (2) en modo oscuro los títulos
+  blancos desaparecían porque `--white` se sobrescribía → introducido
+  `--surface` para separar "fondo de card" de "color blanco puro".
+- ✅ **Testing iter7**: backend 19/19 pytest + frontend 6/6 Playwright
+  (nudge idempotency, SEO meta/JSON-LD, sitemap/robots/og-image,
+  theme toggle persistencia, cuestionario full flow, regalo landing).
+
+## Implementado en iteración 6 (2026-02 fork, sprint 2)
+- ✅ **Libro "Prompts que funcionan"** completo integrado:
+  - Seed automático de 31 capítulos desde `/app/legacy/ebook/**/*.md`
+    en 7 partes (Intro · P1 Fundamentos · P2 Niveles · P3 Destrezas
+    · P4 Géneros · P5 Aplicaciones · Apéndices).
+  - Nuevas páginas `/libro` (TOC con banner + descarga) y
+    `/libro/:slug` (lector con sidebar desktop + drawer móvil +
+    breadcrumb + Anterior/Siguiente).
+  - **PDF descargable generado con WeasyPrint**: portada azul
+    degradado con marca `[ | ]` y acento ámbar, índice paginado con
+    `target-counter`, separadores por parte, tipografía Helvetica,
+    ~150 páginas, 1.7 MB. Endpoint `GET /api/ebook.pdf`.
+  - Acceso solo a estudiantes con enrollment activo+paid
+    (admin bypass).
+  - Link destacado "📘 Mi libro" en Dashboard.
+- ✅ **Vídeos de YouTube por módulo**:
+  - Campo `video_youtube_id` en `modules` editable desde admin
+    (validación regex `^[A-Za-z0-9_-]{11}$` para evitar XSS).
+  - Embed iframe con `?rel=0&modestbranding=1` arriba de la página
+    del módulo cuando está definido.
+- ✅ **Fix botón "Acceder"**: visible sin hover (fondo ámbar con
+  `!important` para ganar especificidad).
+- ✅ **Perfil + nombre/apellidos**:
+  - Modelo `UserOut` extendido con `surname`.
+  - `PUT /api/auth/profile` con validación.
+  - Onboarding: tras magic-link, si falta nombre → redirección a
+    `/mi-area/perfil?onboarding=1` con form pre-focused.
+  - Dashboard saluda con `name` y muestra banner "Completa tu
+    perfil" si incompleto.
+  - Página `/mi-area/perfil` con datos personales editables + panel
+    "Mi inscripción" (curso, fecha, importe, badge fundador, ref pago).
+- ✅ **Bloqueo de tarea hasta leer materiales**:
+  - `/api/course/{slug}/task/{id}` devuelve `module_resources`,
+    `pending_resources`, `can_submit`.
+  - `POST /submit` devuelve 400 con lista de materiales pendientes
+    si quedan sin leer.
+  - UI: banner rojo con lista clicable + textarea y botón
+    deshabilitados ("Lee primero los materiales"); banner verde
+    "✓ Has leído todos los materiales" cuando está listo.
+  - Admin bypass.
+- ✅ **Testing iter6**: backend 19/19 pytest + frontend 7/7 Playwright.
+
+## Implementado en iteración 5 (2026-02 fork)
+- ✅ **Check "Leído" + progreso** en materiales:
+  - Auto-marcado idempotente al abrir cualquier recurso (estudiantes, no admins).
+  - Sidebar y drawer muestran ✓ verde en cada material leído y un dot
+    vacío en los no leídos; el contador "X / 17 leídos" con barra de
+    progreso ámbar→verde.
+  - Índice `/curso/:slug/recursos` muestra banner "Has leído X de Y
+    materiales" + badge ✓ en cada card leído.
+  - Backend: `user_progress` reutilizado con `resource_slug`; limpieza
+    al borrar inscripción incluye los rows de recursos.
+- ✅ **Navegación entre materiales** en `/recurso/:slug`:
+  - Sidebar sticky en desktop con los 17 materiales agrupados por módulo.
+  - Drawer deslizable en móvil con botón "📚 Índice de materiales".
+  - Breadcrumb clicable: `Mis cursos › Curso › Módulo N › Título`.
+  - Botones Anterior / Siguiente con título del recurso.
+  - `/api/resource/{slug}` devuelve `course_slug`, `course_title`,
+    `module_order`, `module_title`.
+- ✅ **Fix visor Markdown**: `remark-gfm` + CSS overflow. Validado 5/5.
+- ✅ **Fix generador PDF**: soporte fences + tablas GFM.
+
+## Implementado en iteración 4 (2026-04-20)
+- ✅ **Sistema de recursos del curso** importado automáticamente desde
+  `/app/legacy/materiales/**/*.md`. Colección `resources` en MongoDB.
+  17 materiales activos: 4 M1 · 3 M2 · 5 M3 · 3 M4 · 2 transversales.
+  Excluidos: vídeos (uso personal del formador) y guías Moodle.
+- ✅ **Visor de recurso** `/recurso/:slug` con ReactMarkdown + botón
+  "📄 Descargar PDF" en plantillas/rúbricas/glosario (generación
+  on-the-fly con `@react-pdf/renderer` replicando el estilo de la
+  plantilla original: franja ámbar, cabecera/pie con nombre del
+  formador, tipografía Helvetica y colores `#F5A623` / `#0F4C81` /
+  `#FEF6DC`).
+- ✅ **Índice de materiales** `/curso/:slug/recursos` con recursos
+  agrupados por módulo + sección transversal. Cards con emoji por
+  tipo y hover con transición a ámbar.
+- ✅ **Sección "📚 Materiales de este módulo"** en cada página de
+  módulo, listando solo los recursos de ese módulo.
+- ✅ **Botón "📚 Materiales"** en dashboard junto al CTA del curso.
+- ✅ **Normalización inteligente de títulos**: salta "ÍNDICE",
+  convierte shouty-caps a sentence case pero respeta acrónimos
+  (ELE, IA, MCER, A1-C2).
+- ✅ **Eliminar inscripciones desde admin** con botón 🗑 — borra
+  todo lo relacionado (entregas, foros, progreso, certificados) y
+  restaura la plaza fundador si aplica.
+- ✅ **Reescanear materiales** con botón 🔄 en admin
+  (`POST /api/admin/resources/reseed`) para importar nuevos `.md`
+  sin reiniciar el servidor.
+- ✅ **Stripe + webhook** ahora usa el SDK oficial directamente
+  (bypass del wrapper que daba bugs de Pydantic con `StripeObject`).
+- ✅ **Reply-To dinámico en contacto y cuestionario**: el correo
+  del visitante se pone como Reply-To para que el admin responda
+  con un clic.
+
 ## Implementado en iteración 3 (2026-04-20)
 - ✅ **Cuestionario de diagnóstico** `/cuestionario` portado del legacy:
   27 preguntas en 4 bloques (perfil · práctica · IA · expectativas),

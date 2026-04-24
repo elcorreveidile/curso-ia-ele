@@ -1,0 +1,39 @@
+{
+  "summary": "Iter 8 — BOTH backend + frontend tested. Backend: 12/12 pytest passing (test_iter8_pdf_and_welcome_email.py). Frontend: /libro page renders banner + 7 parts + 31 chapter cards, PDF download via data-testid=ebook-download-pdf returns 200 application/pdf 557191 bytes, downloads as 'prompts-que-funcionan.pdf', no error alert. Chapter detail /libro/parte1-01-frame renders correctly. Home page intact.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/course/ia-ele/content", "issue": "Field 'video_youtube_id' is only present on modules whose Mongo doc has it set (e.g. mod-ia-01); not normalized to None on others (mod-ia-02 lacks the key entirely). Iter6 schema contract is technically met (key exists somewhere) but the response shape is inconsistent across modules, which can break frontend code that assumes the key always exists."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter8_pdf_and_welcome_email.py",
+    "/app/test_reports/pytest/iter8_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Normalize /api/course/{slug}/content modules so video_youtube_id is always present (None when unset) for a stable schema across all modules."
+  ],
+  "critical_code_review_comments": [
+    "server.py /api/ebook.pdf (1586-1845 approx): imports reportlab inside the request handler — fine for cold-start friendliness on serverless deploys but adds ~100-200 ms per request on warm traffic. Consider lazy-importing once at module load behind try/except so subsequent requests skip the import overhead.",
+    "server.py _ensure_enrollment_from_session (~814-970): synchronously awaits send_email twice (student + admin) inside the webhook request path. If Resend is slow/unavailable the Stripe webhook can timeout (>5s) and Stripe will retry, potentially producing duplicate enrollments. Consider FastAPI BackgroundTasks for the email sends so the webhook returns 200 immediately after enrollment is committed.",
+    "server.py welcome email (870-944): uses user['email'].split('@')[0].split()[0].capitalize() as fallback first_name. For TEST_iter8_welcome_std_xxxxx@example.com this yields 'Test_iter8_welcome_std_xxxxx' as the greeting. Consider stripping known prefixes / using the explicit name field even when surname is missing, or fall back to a generic greeting when name is empty.",
+    "server.py /api/course/{slug}/content: module dicts are returned verbatim from Mongo. Add a Pydantic response model or .get('video_youtube_id') normalization so the frontend has a stable schema."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter8_pdf_and_welcome_email.py",
+    "/app/test_reports/iteration_8.json",
+    "/app/test_reports/pytest/iter8_results.xml"
+  ],
+  "success_rate": {"backend": "100% (12/12)", "frontend": "100% (5/5 scenarios)"},
+  "test_credentials": "Admin: benitezl@go.ugr.es via _magic + POST /api/auth/verify. Student fixtures: per-test unique TEST_iter8_*@example.com with active+paid enrollment in ia-ele. Frontend Playwright used a JWT generated for TEST_iter8_fe_7cdfb6@example.com (also enrolled).",
+  "seed_data_creation": "Created TEST_iter8_* users + enrollments (cleaned up in module-scoped autouse fixture). Created TEST_iter8_sess_* payment_transactions docs for welcome-email tests (cleaned up). The Frontend test user (TEST_iter8_fe_*) was created outside the fixture so a manual cleanup may leave one residual user — minor.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter 8 verified the production-deploy fix for /api/ebook.pdf (ReportLab, no system deps). Endpoint returns 557 KB / 246 pages on the seeded ia-ele data. Test asserts: status 200, content-type application/pdf, Content-Disposition attachment with .pdf, size > 200KB, pypdf parses >=100 pages, page 1 contains 'Prompts que funcionan' AND 'LA CLASE DIGITAL', page 2 contains 'Índice'. PDF text extraction strips spaces from kerned headings — assertions normalize via ''.join(text.split()).lower(). Welcome email test pattern: import server module, monkeypatch server.send_email, seed payment_transactions doc, await server._ensure_enrollment_from_session(session_id). IMPORTANT: motor's AsyncIOMotorClient (server.db) is bound to whichever event loop first awaits it, so all in-process async calls in this test file MUST use the same loop. The test file uses a module-level _LOOP = asyncio.new_event_loop() shared by all _run() calls. Don't switch to pytest-asyncio without ensuring loop reuse. Frontend pattern for authenticated pages: visit /, set localStorage.lcd_token, then navigate. Frontend Ebook.jsx triggers a real browser download with filename 'prompts-que-funcionan.pdf'. Use page.expect_download() to capture it.",
+  "rca of the issue": "No iter8 bugs. Original production bug ('No se pudo generar el PDF') was caused by WeasyPrint requiring system libs (cairo, pango) absent in Emergent's deploy image. Fix swapped WeasyPrint for ReportLab (pure Python). Verified end-to-end: /api/ebook.pdf in preview env returns 200 with valid PDF (557KB / 246 pages), frontend Ebook.jsx fetch-blob pattern works without alert error."
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A1628"/>
+      <stop offset="1" stop-color="#0F4C81"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <text x="80" y="140" font-family="Georgia,serif" font-size="90" fill="#F5A623" letter-spacing="-6">[ | ]</text>
+  <text x="80" y="200" font-family="Helvetica,Arial,sans-serif" font-size="20" fill="#F5A623" font-weight="700" letter-spacing="5">LA CLASE DIGITAL</text>
+  <text x="80" y="310" font-family="Helvetica,Arial,sans-serif" font-size="76" fill="#ffffff" font-weight="800"><tspan fill="#F5A623">IA</tspan> para la enseñanza</text>
+  <text x="80" y="395" font-family="Helvetica,Arial,sans-serif" font-size="76" fill="#ffffff" font-weight="800">de <tspan fill="#F5A623">ELE</tspan></text>
+  <text x="80" y="460" font-family="Helvetica,Arial,sans-serif" font-size="26" fill="#E8EEF5">Formación docente · Mayo 2026 · 20 horas</text>
+  <text x="80" y="495" font-family="Helvetica,Arial,sans-serif" font-size="26" fill="#E8EEF5">Precio fundador 149 €</text>
+  <text x="80" y="570" font-family="Helvetica,Arial,sans-serif" font-size="18" fill="#F5A623" letter-spacing="3">LACLASEDIGITAL.COM</text>
+  <rect x="820" y="540" rx="30" width="310" height="50" fill="#F5A623"/>
+  <text x="975" y="572" font-family="Helvetica,Arial,sans-serif" font-size="20" fill="#0A1628" font-weight="800" text-anchor="middle">⭐ SOLO 20 PLAZAS FUNDADOR</text>
+</svg>
