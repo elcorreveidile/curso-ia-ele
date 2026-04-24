@@ -84,8 +84,8 @@ export default function Admin() {
           <div className="dash-section">
             <h2 className="dash-title">Cursos</h2>
             {data.courses.map((c) => (
-              <div key={c.id} className="course-card" style={{ marginBottom: '1rem' }} data-testid={`admin-course-${c.slug}`}>
-                <div style={{ flex: 1 }}>
+              <div key={c.id} className="course-card" style={{ marginBottom: '1rem', flexWrap: 'wrap' }} data-testid={`admin-course-${c.slug}`}>
+                <div style={{ flex: '1 1 320px' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)' }}>{c.title}</h3>
                   <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)' }}>
                     {c.enrollments_count} inscritos · {c.founder_seats_taken}/{c.founder_seats} plazas fundador · Precio actual:{' '}
@@ -95,6 +95,7 @@ export default function Admin() {
                         : `${(c.price_eur / 100).toFixed(0)} €`}
                     </strong>
                   </p>
+                  <IntroVideoEditor course={c} onDone={load} />
                 </div>
                 <button className="btn btn--ghost" onClick={() => toggleFounder(c.id, c.is_founder_edition)} data-testid={`admin-toggle-founder-${c.slug}`}>
                   {c.is_founder_edition ? 'Desactivar fundador' : 'Activar fundador'}
@@ -433,6 +434,56 @@ function ManualEnrollForm({ onDone }) {
         {busy ? 'Matriculando…' : 'Matricular alumno'}
       </button>
     </form>
+  );
+}
+
+
+function IntroVideoEditor({ course, onDone }) {
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState(course.intro_video_youtube_id || '');
+  const [err, setErr] = useState('');
+
+  const save = async () => {
+    setErr('');
+    try {
+      await api.patch(`/admin/course/${course.id}`, { intro_video_youtube_id: val.trim() });
+      setEditing(false);
+      onDone && onDone();
+    } catch (e) {
+      setErr(e.response?.data?.detail || 'Error');
+    }
+  };
+
+  if (!editing) {
+    return (
+      <p style={{ fontSize: '.82rem', color: 'var(--ink-muted)', margin: '.25rem 0 0' }}>
+        🎬 Vídeo de presentación:{' '}
+        <button
+          type="button"
+          className="linkish"
+          style={{ color: 'var(--blue)', background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 'inherit' }}
+          onClick={() => setEditing(true)}
+          data-testid={`admin-course-intro-video-edit-${course.slug}`}
+        >
+          {course.intro_video_youtube_id ? `YT: ${course.intro_video_youtube_id}` : 'Añadir vídeo de introducción'}
+        </button>
+      </p>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', gap: '.4rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '.4rem' }}>
+      <input
+        type="text" className="form-input"
+        style={{ padding: '.3rem .5rem', fontSize: '.82rem', minWidth: 260 }}
+        placeholder="URL o ID de YouTube"
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        data-testid={`admin-course-intro-video-input-${course.slug}`}
+      />
+      <button className="btn btn--primary" style={{ padding: '.3rem .7rem', fontSize: '.78rem' }} onClick={save} data-testid={`admin-course-intro-video-save-${course.slug}`}>Guardar</button>
+      <button className="btn btn--ghost" style={{ padding: '.3rem .6rem', fontSize: '.78rem' }} onClick={() => { setEditing(false); setVal(course.intro_video_youtube_id || ''); setErr(''); }}>Cancelar</button>
+      {err && <span style={{ color: 'var(--clm-red)', fontSize: '.78rem' }}>{err}</span>}
+    </div>
   );
 }
 

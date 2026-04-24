@@ -35,6 +35,16 @@ export default function CursoDetail() {
           desc={data.course.description}
         />
         <div className="inner-content">
+          {data.course.intro_video_youtube_id && (
+            <div className="module-video" data-testid="course-intro-video" style={{ marginBottom: '1.5rem' }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${data.course.intro_video_youtube_id}?rel=0&modestbranding=1`}
+                title="Vídeo de presentación del curso"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          )}
           <div style={{ marginBottom: '1rem' }}>
             <Link
               to={`/curso/${slug}/recursos`}

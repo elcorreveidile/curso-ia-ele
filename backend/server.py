@@ -644,6 +644,12 @@ async def seed_ebook() -> None:
         if not meta:
             continue
         content = md_path.read_text(encoding="utf-8")
+        # Strip LaTeX-style `\newpage` markers (Pandoc artifacts in the
+        # legacy markdown). They are meaningless for the web viewer and
+        # our PDF generator uses page-break logic instead.
+        import re as _re
+        content = _re.sub(r"^\s*\\newpage\s*$", "", content, flags=_re.MULTILINE)
+        content = content.replace("\\newpage", "")
         default_title = md_path.stem.replace("_", " ").title()
         title = _ebook_title_from_md(content, default_title)
         slug = _slugify(f"{part_key}-{md_path.stem}")
@@ -924,16 +930,18 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
               </p>
             </div>
 
-            <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
-            <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
-              <li><strong>Completa tu perfil</strong> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.
-                  Lo usaré también en tu certificado.</li>
-              <li><strong>Echa un vistazo al libro</strong> y al <strong>Módulo 1</strong> para ir preparando tu cabeza.</li>
-              <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>
-                  (te enviaré el enlace unos días antes).</li>
-              <li><strong>Hazme caso si te pido que entregues tareas</strong>: el feedback personalizado
-                  es el corazón del curso.</li>
-            </ol>
+                <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
+                <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
+                  <li><a href="{FRONTEND_ORIGIN}/mi-area/perfil?onboarding=1" style="color:#0F4C81;font-weight:600">Completa tu perfil</a>
+                      (nombre y apellidos) en <em>Mi área → Mi perfil</em>. Lo usaré también en tu certificado.</li>
+                  <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro «Prompts que funcionan»</a>
+                      y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>
+                      para ir preparando tu cabeza.</li>
+                  <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>
+                      (te enviaré el enlace unos días antes).</li>
+                  <li><strong>Hazme caso si te pido que entregues tareas</strong>: el feedback personalizado
+                      es el corazón del curso.</li>
+                </ol>
 
             <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
               <p style="margin:0;font-size:14px;color:#46476A"><strong>Pago confirmado:</strong> {price_line}</p>
@@ -1331,11 +1339,20 @@ async def admin_update_course(
     course_id: str, payload: AdminCourseUpdate, user: dict = Depends(current_admin),
 ):
     update: dict[str, Any] = {}
+    import re as _re
+    url_re = _re.compile(r"(?:v=|youtu\.be/|/embed/|/shorts/)([A-Za-z0-9_-]{11})")
     for k, v in payload.dict().items():
         if v is None:
             continue
         if k == "intro_video_youtube_id":
-            update[k] = v.strip() or None
+            vid = v.strip()
+            if vid:
+                m = url_re.search(vid)
+                if m:
+                    vid = m.group(1)
+                if not _re.match(r"^[A-Za-z0-9_-]{11}$", vid):
+                    raise HTTPException(400, "ID o URL de YouTube no válido")
+            update[k] = vid or None
         else:
             update[k] = v
     if not update:
@@ -1438,20 +1455,23 @@ async def list_course_resources(slug: str, user: dict = Depends(current_user)):
         if row.get("resource_slug"):
             viewed_slugs.add(row["resource_slug"])
 
-    # Group by module
+    # Group by module (hide locked modules' resources from non-admin students)
+    is_admin = user.get("role") == "admin"
     modules = []
     async for m in db.modules.find({"course_id": course["id"]}).sort("order", 1):
+        unlocked = bool(m.get("unlocked_at")) or is_admin
         items = []
-        async for r in db.resources.find({"course_id": course["id"], "module_id": m["id"]}).sort([("type", 1), ("title", 1)]):
-            items.append({
-                "slug": r["slug"], "title": r["title"],
-                "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
-                "module_id": m["id"],
-                "viewed": r["slug"] in viewed_slugs,
-            })
+        if unlocked:
+            async for r in db.resources.find({"course_id": course["id"], "module_id": m["id"]}).sort([("type", 1), ("title", 1)]):
+                items.append({
+                    "slug": r["slug"], "title": r["title"],
+                    "type": r["type"], "type_label": RESOURCE_LABELS.get(r["type"], r["type"]),
+                    "module_id": m["id"],
+                    "viewed": r["slug"] in viewed_slugs,
+                })
         modules.append({
             "module_id": m["id"], "order": m["order"], "title": m["title"],
-            "unlocked": bool(m.get("unlocked_at")) or user.get("role") == "admin",
+            "unlocked": unlocked,
             "resources": items,
         })
 
@@ -1484,6 +1504,9 @@ async def get_resource(slug: str, user: dict = Depends(current_user)):
     if course:
         await _ensure_enrollment_for(user, course["slug"])
     module = await db.modules.find_one({"id": r["module_id"]}) if r.get("module_id") else None
+    # Gate: students can only access resources from unlocked modules
+    if module and user.get("role") != "admin" and not module.get("unlocked_at"):
+        raise HTTPException(403, "Este material pertenece a un módulo aún bloqueado")
     # Mark as viewed (idempotent) — only for real students, not admins
     if course and user.get("role") != "admin":
         await db.user_progress.update_one(
@@ -2032,8 +2055,8 @@ async def admin_create_manual_enrollment(
 
                 <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
                 <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
-                  <li><strong>Completa tu perfil</strong> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
-                  <li><strong>Echa un vistazo al libro</strong> y al <strong>Módulo 1</strong>.</li>
+                  <li><a href="{FRONTEND_ORIGIN}/mi-area/perfil?onboarding=1" style="color:#0F4C81;font-weight:600">Completa tu perfil</a> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
+                  <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro</a> y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>.</li>
                   <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>.</li>
                 </ol>
 

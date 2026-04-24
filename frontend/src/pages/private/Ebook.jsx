@@ -27,10 +27,18 @@ export default function Ebook() {
       }
       const blob = await resp.blob();
       const url = URL.createObjectURL(blob);
+      // Force download — create an off-screen link and click. The browser
+      // shows "Save as" / saves to Downloads and never replaces the current
+      // tab (the previous behaviour that opened the PDF in place).
       const a = document.createElement('a');
-      a.href = url; a.download = 'prompts-que-funcionan.pdf';
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
+      a.href = url;
+      a.download = 'prompts-que-funcionan.pdf';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Release the blob a bit later to guarantee the download started
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
     } catch (ex) {
       alert('No se pudo generar el PDF: ' + (ex.message || 'Error'));
     }
