@@ -10,6 +10,7 @@ export default function Inscripcion() {
   const { slug } = useParams();
   const [course, setCourse] = useState(null);
   const [email, setEmail] = useState('');
+  const [coupon, setCoupon] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { user } = useAuth();
@@ -27,23 +28,24 @@ export default function Inscripcion() {
   const seatsLeft = Math.max(0, course.founder_seats - course.founder_seats_taken);
   const founderActive = course.is_founder_edition && seatsLeft > 0;
   const amount = founderActive ? course.price_founder_eur / 100 : course.price_eur / 100;
+  const hasAlumniPricing = course.has_alumni_pricing;
 
   const checkout = async (e) => {
     e.preventDefault();
     if (!email) { setError('Introduce tu email'); return; }
     setLoading(true); setError('');
     try {
-      // Send email as Bearer-less metadata via header manipulation
       const token = localStorage.getItem('lcd_token');
-      const r = await api.post('/checkout/create', {
+      const body = {
         course_slug: slug,
         origin_url: window.location.origin,
-      }, {
+        ...(hasAlumniPricing && coupon ? { coupon_code: coupon } : {}),
+      };
+      const r = await api.post('/checkout/create', body, {
         headers: token ? { Authorization: `Bearer ${token}` } : {
           'X-Buyer-Email': email,
         },
       });
-      // If no auth, we still want the email in metadata — handle via temporary login creation on backend later
       window.location.href = r.data.url;
     } catch (err) {
       setError(err.response?.data?.detail || 'Error al iniciar el pago.');
@@ -51,9 +53,6 @@ export default function Inscripcion() {
     }
   };
 
-  // If not logged in, we need the email to appear in metadata.
-  // Simpler approach: ask user to log in first (magic link) then come back.
-  // Or: send email via a query param; backend already uses current_user_optional.
   const requestLinkAndRedirect = async () => {
     if (!email) { setError('Introduce tu email'); return; }
     setLoading(true); setError('');
@@ -83,9 +82,14 @@ export default function Inscripcion() {
             <p className="price-card__label">Resumen</p>
             <div className="price-card__amount">{amount.toFixed(0)}<span style={{ fontSize: '1.5rem', fontWeight: 400, color: 'var(--ink-muted)' }}> €</span></div>
             <p className="price-card__period">pago único · {course.hours || 20} horas</p>
+            {hasAlumniPricing && (
+              <p className="price-card__alumni-note" style={{ marginTop: '.75rem' }}>
+                🎓 ¿Alumno del curso ELE? El precio final será <strong>{(course.price_alumni_eur / 100).toFixed(0)} €</strong> con el código de descuento.
+              </p>
+            )}
             <ul className="price-includes">
-              <li>4 módulos con actividades prácticas</li>
-              <li>3 videotutorías en directo</li>
+              <li>{course.hours || 20} horas de formación práctica</li>
+              <li>Actividades prácticas por módulo</li>
               <li>Feedback personalizado en cada tarea</li>
               <li>Certificado de aprovechamiento</li>
               {founderActive && <li>Acceso directo al formador · Solo primera edición</li>}
@@ -108,6 +112,25 @@ export default function Inscripcion() {
                   data-testid="inscripcion-email"
                 />
               </div>
+
+              {hasAlumniPricing && (
+                <div className="form-group" data-testid="inscripcion-coupon-group">
+                  <label htmlFor="coupon">Código de descuento alumni (opcional)</label>
+                  <input
+                    id="coupon"
+                    type="text"
+                    className="form-input"
+                    placeholder="Ej: ALUMNIELE"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                    data-testid="inscripcion-coupon"
+                  />
+                  <p style={{ fontSize: '.78rem', color: 'var(--ink-muted)', marginTop: '.35rem' }}>
+                    Si eres alumno del curso de IA para ELE, introduce el código que recibiste al finalizar para obtener el precio de {(course.price_alumni_eur / 100).toFixed(0)} €.
+                  </p>
+                </div>
+              )}
+
               {error && <p style={{ color: 'var(--clm-red)', fontSize: '.85rem', marginBottom: '1rem' }}>{error}</p>}
 
               {user ? (
@@ -118,7 +141,7 @@ export default function Inscripcion() {
                   disabled={loading}
                   data-testid="inscripcion-pay"
                 >
-                  {loading ? 'Redirigiendo…' : `Pagar ${amount.toFixed(2)} € con Stripe →`}
+                  {loading ? 'Redirigiendo…' : `Pagar con Stripe →`}
                 </button>
               ) : (
                 <>

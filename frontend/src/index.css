@@ -1747,3 +1747,284 @@ footer {
   .price-card { padding: 1.75rem; }
   .auth-card { margin: 6rem 1rem 2rem; padding: 1.75rem; }
 }
+
+/* ── IA home variant (orange accent instead of blue) ── */
+.home-hero--ia { background: linear-gradient(160deg, #1A1000 0%, #2D1A00 50%, #1A1000 100%); }
+.home-hero--ia::before {
+  background:
+    radial-gradient(ellipse at 90% 10%, rgba(245,166,35,.25) 0%, transparent 45%),
+    radial-gradient(ellipse at 10% 80%, rgba(245,166,35,.12) 0%, transparent 45%);
+}
+
+/* ── Hub landing ── */
+.hub-hero {
+  min-height: 92vh;
+  background: linear-gradient(160deg, #0A1628 0%, #0F2744 55%, #0A1628 100%);
+  display: flex; align-items: center;
+  position: relative; overflow: hidden;
+  padding-top: 64px;
+}
+.hub-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(245,166,35,.18) 0%, transparent 45%),
+    radial-gradient(ellipse at 15% 75%, rgba(15,76,129,.3) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hub-hero__inner {
+  max-width: 900px; margin: 0 auto;
+  padding: 5rem 2.5rem 6rem;
+  position: relative; z-index: 1;
+  text-align: center;
+}
+.hub-hero__eyebrow {
+  font-size: .78rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .14em;
+  color: var(--clm-red); margin-bottom: 1.25rem;
+}
+.hub-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 800; color: var(--white);
+  line-height: 1.1; margin-bottom: 1.5rem;
+}
+.hub-hero__title em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--clm-red), #FFD060);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hub-hero__subtitle {
+  font-size: 1.15rem; color: rgba(255,255,255,.7);
+  max-width: 580px; margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+.hub-hero__cta {
+  display: inline-block;
+  padding: .85rem 2.25rem;
+  background: var(--clm-red); color: var(--ink);
+  font-family: var(--font-display); font-weight: 700; font-size: 1rem;
+  border-radius: var(--r-md);
+  transition: background .2s, transform .15s;
+  text-decoration: none;
+}
+.hub-hero__cta:hover { background: #FFBF47; transform: translateY(-2px); }
+
+/* Hub sections common */
+.hub-section-inner { max-width: 1200px; margin: 0 auto; padding: 5rem 2.5rem; }
+
+/* Hub course cards */
+.hub-courses { background: var(--canvas); }
+.hub-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.hub-card {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-md);
+  border-top: 4px solid var(--accent, var(--blue));
+  padding: 2.25rem;
+  display: flex; flex-direction: column; gap: 1.5rem;
+  transition: box-shadow .25s, transform .2s;
+}
+.hub-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.hub-card__top { display: flex; flex-direction: column; gap: .75rem; }
+.hub-card__badge {
+  display: inline-block;
+  background: var(--accent-light, var(--blue-light));
+  color: var(--accent, var(--blue));
+  font-size: .72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em;
+  padding: .3rem .85rem; border-radius: 100px;
+  align-self: flex-start;
+}
+.hub-card__title {
+  font-family: var(--font-display);
+  font-size: 1.3rem; font-weight: 800; color: var(--ink);
+  line-height: 1.25;
+}
+.hub-card__subtitle {
+  font-size: .8rem; color: var(--ink-muted); font-weight: 500;
+}
+.hub-card__desc {
+  font-size: .9rem; color: var(--ink-soft); line-height: 1.65;
+}
+.hub-card__modules {
+  display: flex; flex-direction: column; gap: .5rem;
+  background: var(--canvas);
+  border-radius: var(--r-md);
+  padding: 1rem 1.25rem;
+}
+.hub-card__module {
+  display: flex; align-items: flex-start; gap: .75rem;
+  font-size: .875rem; color: var(--ink-soft); line-height: 1.4;
+}
+.hub-card__module-num {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: .75rem;
+  color: var(--accent, var(--blue));
+  flex-shrink: 0; padding-top: 1px;
+}
+.hub-card__gift {
+  background: var(--accent-light, var(--blue-light));
+  border-radius: var(--r-sm);
+  padding: .75rem 1rem;
+  font-size: .85rem; color: var(--ink-soft);
+}
+.hub-card__pricing {
+  display: flex; align-items: baseline; gap: .75rem;
+  margin-top: auto;
+}
+.hub-card__price {
+  font-family: var(--font-display);
+  font-size: 1.9rem; font-weight: 800;
+  color: var(--accent, var(--blue));
+}
+.hub-card__price-note {
+  font-size: .78rem; color: var(--ink-muted); line-height: 1.4;
+}
+.hub-card__cta {
+  display: block; text-align: center;
+  padding: .85rem 1.5rem;
+  background: var(--accent, var(--blue));
+  color: var(--white);
+  font-family: var(--font-display); font-weight: 700; font-size: .9rem;
+  border-radius: var(--r-md);
+  transition: opacity .2s, transform .15s;
+  text-decoration: none;
+}
+.hub-card__cta:hover { opacity: .88; transform: translateX(3px); }
+
+/* Hub social proof */
+.hub-proof { background: var(--canvas-alt); }
+.hub-proof__stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2rem; margin-bottom: 3rem;
+}
+.hub-proof__stat {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+.hub-proof__num {
+  display: block;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 2.5rem; color: var(--blue);
+  margin-bottom: .4rem;
+}
+.hub-proof__label {
+  font-size: .85rem; color: var(--ink-muted); line-height: 1.4;
+}
+.hub-testimonials-placeholder {
+  text-align: center;
+  padding: 2rem;
+  border: 2px dashed var(--canvas-alt);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.hub-testimonials-placeholder__text {
+  font-size: .9rem; color: var(--ink-muted); font-style: italic;
+}
+
+/* Hub about */
+.hub-about { background: var(--canvas); }
+.hub-about__inner {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 4rem; align-items: center;
+}
+.hub-about__img-wrap { position: relative; }
+.hub-about__img {
+  width: 100%; border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  aspect-ratio: 4/5; object-fit: cover;
+}
+.hub-about__name {
+  font-family: var(--font-display);
+  font-size: 1.8rem; font-weight: 800; color: var(--ink);
+  margin-bottom: 1rem;
+}
+.hub-about__bio {
+  font-size: .95rem; color: var(--ink-soft); line-height: 1.75;
+  margin-bottom: 1rem;
+}
+.hub-about__link {
+  display: inline-block;
+  font-weight: 600; font-size: .9rem;
+  color: var(--blue);
+  border-bottom: 2px solid var(--blue-light);
+  padding-bottom: 2px;
+  transition: border-color .2s, color .2s;
+}
+.hub-about__link:hover { color: var(--clm-red); border-color: var(--clm-red); }
+
+/* Hub FAQ */
+.hub-faq { background: var(--canvas-alt); }
+.hub-faq-list { display: flex; flex-direction: column; gap: .5rem; }
+.hub-faq-item {
+  background: var(--surface);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.hub-faq-item__q {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.1rem 1.5rem;
+  background: none; border: none;
+  font-family: var(--font-body); font-size: .95rem; font-weight: 600;
+  color: var(--ink); cursor: pointer; text-align: left;
+  transition: background .15s;
+}
+.hub-faq-item__q:hover { background: var(--canvas); }
+.hub-faq-item__arrow {
+  flex-shrink: 0;
+  font-size: 1.25rem; color: var(--ink-muted); font-weight: 400;
+}
+.hub-faq-item__a {
+  padding: 0 1.5rem 1.1rem;
+  font-size: .9rem; color: var(--ink-soft); line-height: 1.7;
+}
+
+/* Navbar back link */
+.inner-nav__back {
+  font-size: .8rem !important; font-weight: 500 !important;
+  color: var(--ink-muted) !important;
+  padding-right: .75rem !important;
+  border-right: 1px solid var(--canvas-alt);
+  margin-right: .25rem;
+}
+.inner-nav__back::after { display: none !important; }
+.inner-nav__back:hover { color: var(--ink) !important; }
+
+/* Price card alumni note */
+.price-card__alumni-note {
+  background: var(--orange-light);
+  border-radius: var(--r-sm);
+  padding: .65rem 1rem;
+  font-size: .85rem; color: var(--ink-soft);
+  display: flex; flex-direction: column; gap: .2rem;
+  margin-bottom: 1rem;
+}
+.price-card__alumni-note strong { color: var(--ink); }
+
+/* Hub responsive */
+@media (max-width: 960px) {
+  .hub-cards { grid-template-columns: 1fr; }
+  .hub-proof__stats { grid-template-columns: 1fr; }
+  .hub-about__inner { grid-template-columns: 1fr; gap: 2rem; }
+  .hub-about__img { max-width: 260px; aspect-ratio: 1; }
+  .hub-hero__title { font-size: clamp(2.2rem, 8vw, 3.5rem); }
+  .hub-section-inner { padding: 3.5rem 1.5rem; }
+}
+@media (max-width: 600px) {
+  .hub-hero__inner { padding: 4rem 1.25rem 5rem; }
+  .hub-hero__title { font-size: 2.4rem; }
+  .hub-card { padding: 1.75rem; }
+  .hub-faq-item__q { padding: .9rem 1.1rem; font-size: .9rem; }
+  .hub-faq-item__a { padding: 0 1.1rem .9rem; }
+}

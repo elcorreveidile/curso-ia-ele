@@ -178,11 +178,14 @@ class CourseOut(BaseModel):
     active: bool
     hours: int = 20
     start_date: Optional[str] = None
+    has_alumni_pricing: bool = False
+    price_alumni_eur: int = 0
 
 
 class CheckoutRequest(BaseModel):
     course_slug: str
     origin_url: str
+    coupon_code: Optional[str] = None
 
 
 class SubmissionIn(BaseModel):
@@ -410,6 +413,159 @@ MODULES_SEED = [
 ]
 
 
+COURSE_IA_PRACTICA = {
+    "id": "course-ia-practica",
+    "slug": "ia-practica",
+    "title": "IA Práctica: de los fundamentos a la automatización",
+    "description": (
+        "Curso práctico de inteligencia artificial para cualquier perfil profesional. "
+        "Sin conocimientos previos. 3 módulos: fundamentos de IA, diseño de aplicaciones "
+        "y automatización de tareas para la pequeña empresa."
+    ),
+    "price_eur": 25000,         # 250 €
+    "price_founder_eur": 25000, # sin precio fundador propio
+    "price_alumni_eur": 14900,  # 149 € para alumnos del curso ELE
+    "is_founder_edition": False,
+    "has_alumni_pricing": True,
+    "founder_seats": 0,
+    "founder_seats_taken": 0,
+    "active": True,
+    "hours": 20,
+    "start_date": None,
+    "created_at": now_utc(),
+}
+
+MODULES_IA_PRACTICA_SEED = [
+    {
+        "order": 1,
+        "title": "Introducción general a la inteligencia artificial",
+        "description": (
+            "Qué es la IA, cómo funciona y qué puede (y no puede) hacer por ti. "
+            "Principales modelos y herramientas disponibles hoy."
+        ),
+        "lessons": [
+            {
+                "title": "Qué es la IA y cómo funciona",
+                "content_md": (
+                    "# Qué es la inteligencia artificial\n\n"
+                    "Una introducción honesta: qué hay detrás de los modelos de lenguaje, "
+                    "cómo aprenden y qué limitaciones tienen.\n\n"
+                    "- Modelos de lenguaje (LLMs): GPT, Claude, Gemini\n"
+                    "- IA generativa vs IA predictiva\n"
+                    "- Lo que la IA puede y no puede hacer"
+                ),
+            },
+            {
+                "title": "El ecosistema de herramientas de IA",
+                "content_md": (
+                    "# Herramientas de IA disponibles hoy\n\n"
+                    "Un mapa práctico del ecosistema: cuándo usar cada herramienta "
+                    "y cuáles son gratuitas.\n\n"
+                    "- ChatGPT, Claude, Gemini, Copilot: diferencias clave\n"
+                    "- Herramientas especializadas (imagen, audio, vídeo)\n"
+                    "- Criterios para elegir la herramienta adecuada"
+                ),
+            },
+        ],
+        "task": {
+            "title": "Mi mapa personal de herramientas de IA",
+            "instructions_md": (
+                "Elabora un mapa de al menos 5 herramientas de IA relevantes para tu trabajo o negocio. "
+                "Para cada una indica: nombre, caso de uso principal, coste y valoración personal (1-5). "
+                "Extensión: 300-500 palabras o una tabla comentada."
+            ),
+            "due_days": 7,
+        },
+    },
+    {
+        "order": 2,
+        "title": "Diseño de aplicaciones con IA",
+        "description": (
+            "Cómo construir tu primera aplicación práctica con IA sin programar. "
+            "Asistentes personalizados, flujos de trabajo y casos reales."
+        ),
+        "lessons": [
+            {
+                "title": "Prompting avanzado y diseño de asistentes",
+                "content_md": (
+                    "# Diseña tu primer asistente con IA\n\n"
+                    "Del prompt básico al system prompt completo. "
+                    "Cómo definir rol, tono, límites y ejemplos.\n\n"
+                    "- Anatomía de un system prompt efectivo\n"
+                    "- Casos de uso: atención al cliente, redacción, análisis\n"
+                    "- Prueba y refinamiento iterativo"
+                ),
+            },
+            {
+                "title": "Herramientas no-code para construir con IA",
+                "content_md": (
+                    "# Aplicaciones con IA sin código\n\n"
+                    "Plataformas que permiten construir aplicaciones útiles "
+                    "sin escribir una línea de código.\n\n"
+                    "- GPTs personalizados (OpenAI)\n"
+                    "- Claude Projects\n"
+                    "- Notion AI, Gamma y otras herramientas integradas\n"
+                    "- Cuándo tiene sentido construir vs usar"
+                ),
+            },
+        ],
+        "task": {
+            "title": "Diseña y prueba tu primer asistente de IA",
+            "instructions_md": (
+                "Diseña un asistente de IA para una tarea concreta de tu trabajo o negocio. "
+                "Escribe el system prompt completo, pruébalo con al menos 5 interacciones reales "
+                "y documenta los resultados. Incluye una valoración crítica de sus puntos fuertes y limitaciones."
+            ),
+            "due_days": 7,
+        },
+    },
+    {
+        "order": 3,
+        "title": "Automatización de tareas aplicada a la pequeña empresa",
+        "description": (
+            "Identifica tareas repetitivas y automatízalas con IA. "
+            "Herramientas como Zapier y Make aplicadas a casos reales de negocio."
+        ),
+        "lessons": [
+            {
+                "title": "Qué tareas merece la pena automatizar",
+                "content_md": (
+                    "# Automatización para la pequeña empresa\n\n"
+                    "No todo debe automatizarse. Aprende a identificar "
+                    "qué tareas generan más valor al delegarlas a la IA.\n\n"
+                    "- Matriz de automatización: impacto vs esfuerzo\n"
+                    "- Casos típicos: emails, informes, redes sociales, atención al cliente\n"
+                    "- Riesgos y errores comunes"
+                ),
+            },
+            {
+                "title": "Automatización con Zapier y Make",
+                "content_md": (
+                    "# Tus primeros flujos automatizados\n\n"
+                    "Conecta herramientas y crea flujos de trabajo que trabajen solos.\n\n"
+                    "- Introducción a Zapier y Make (n8n como alternativa open source)\n"
+                    "- Flujo práctico: formulario → IA → email automático\n"
+                    "- Integración con Google Workspace, Notion y CRMs básicos"
+                ),
+            },
+        ],
+        "task": {
+            "title": "Automatiza un proceso real de tu negocio",
+            "instructions_md": (
+                "Identifica un proceso repetitivo en tu trabajo o negocio y diseña su automatización. "
+                "Puede ser con Zapier, Make, n8n o cualquier herramienta similar. "
+                "Documenta: el proceso antes de automatizar, el flujo diseñado (con capturas), "
+                "el tiempo estimado ahorrado por semana y las dificultades encontradas."
+            ),
+            "due_days": 7,
+        },
+    },
+]
+
+# Coupon code that grants alumni pricing on the IA course (share with ELE graduates)
+ALUMNI_COUPON_CODE = "ALUMNIELE"
+
+
 async def seed_database() -> None:
     # Admin user
     if not await db.users.find_one({"email": ADMIN_EMAIL.lower()}):
@@ -463,6 +619,46 @@ async def seed_database() -> None:
                 "created_at": now_utc(),
             })
         log.info("Seeded modules/lessons/tasks for ia-ele")
+
+    # Second course: IA Práctica
+    if not await db.courses.find_one({"slug": "ia-practica"}):
+        await db.courses.insert_one(dict(COURSE_IA_PRACTICA))
+        log.info("Seeded course ia-practica")
+
+    existing_ia = await db.modules.count_documents({"course_id": "course-ia-practica"})
+    if existing_ia == 0:
+        for mdata in MODULES_IA_PRACTICA_SEED:
+            mid = f"mod-iap-{mdata['order']:02d}"
+            await db.modules.insert_one({
+                "id": mid,
+                "course_id": "course-ia-practica",
+                "order": mdata["order"],
+                "title": mdata["title"],
+                "description": mdata["description"],
+                "unlocked_at": now_utc() if mdata["order"] == 1 else None,
+                "created_at": now_utc(),
+            })
+            for lidx, lesson in enumerate(mdata["lessons"], start=1):
+                await db.lessons.insert_one({
+                    "id": f"{mid}-l{lidx}",
+                    "module_id": mid,
+                    "order": lidx,
+                    "title": lesson["title"],
+                    "content_md": lesson["content_md"],
+                    "video_url": None,
+                    "visible": True,
+                    "created_at": now_utc(),
+                })
+            await db.tasks.insert_one({
+                "id": f"{mid}-task",
+                "module_id": mid,
+                "order": 1,
+                "title": mdata["task"]["title"],
+                "instructions_md": mdata["task"]["instructions_md"],
+                "due_days": mdata["task"]["due_days"],
+                "created_at": now_utc(),
+            })
+        log.info("Seeded modules/lessons/tasks for ia-practica")
 
 
 @app.on_event("startup")
@@ -776,7 +972,26 @@ async def create_checkout_session(
     is_founder = bool(course.get("is_founder_edition")) and (
         course.get("founder_seats_taken", 0) < course.get("founder_seats", 0)
     )
-    amount_cents = course["price_founder_eur"] if is_founder else course["price_eur"]
+    is_alumni = False
+    if course.get("has_alumni_pricing"):
+        # Auto-detect: authenticated user enrolled in ELE course
+        if user:
+            ele_enrollment = await db.enrollments.find_one({
+                "user_id": user["id"],
+                "course_id": "course-ia-ele",
+                "status": "active",
+            })
+            is_alumni = ele_enrollment is not None
+        # Coupon fallback: non-authenticated users can supply the alumni coupon
+        if not is_alumni and payload.coupon_code:
+            is_alumni = payload.coupon_code.strip().upper() == ALUMNI_COUPON_CODE
+
+    if is_founder:
+        amount_cents = course["price_founder_eur"]
+    elif is_alumni:
+        amount_cents = course["price_alumni_eur"]
+    else:
+        amount_cents = course["price_eur"]
     amount_float = round(amount_cents / 100, 2)
 
     origin = payload.origin_url.rstrip("/")
@@ -787,6 +1002,7 @@ async def create_checkout_session(
         "course_id": course["id"],
         "course_slug": course["slug"],
         "was_founder": "true" if is_founder else "false",
+        "was_alumni": "true" if is_alumni else "false",
         "user_email": (user or {}).get("email", ""),
         "user_id": (user or {}).get("id", ""),
     }
@@ -813,6 +1029,7 @@ async def create_checkout_session(
         "user_email": metadata["user_email"],
         "user_id": metadata["user_id"],
         "was_founder": is_founder,
+        "was_alumni": is_alumni,
         "enrollment_id": None,
         "created_at": now_utc(),
     })

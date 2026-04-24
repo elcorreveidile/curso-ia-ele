@@ -135,7 +135,7 @@ export default function Precios() {
                   y qué módulos te aportarán más valor.
                 </p>
               </div>
-              <Link to="/cuestionario" className="btn btn--primary" data-testid="precios-quiz-cta">
+              <Link to="/cuestionario" className="btn btn--primary" data-testid="precios-quiz-cta" data-context="ele">
                 Hacer el cuestionario →
               </Link>
             </div>
