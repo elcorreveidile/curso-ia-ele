@@ -1339,6 +1339,13 @@ async def _ensure_enrollment_for(user: dict, slug: str) -> dict:
     return {"course": course, "enrollment": enrollment}
 
 
+async def _verify_task_in_course(task: dict, course: dict) -> None:
+    """Guard: ensure task belongs to the course resolved from the URL slug."""
+    mod = await db.modules.find_one({"id": task.get("module_id", "")})
+    if not mod or mod.get("course_id") != course["id"]:
+        raise HTTPException(404, "Tarea no encontrada")
+
+
 @api.get("/course/{slug}/content")
 async def course_content(slug: str, user: dict = Depends(current_user)):
     ctx = await _ensure_enrollment_for(user, slug)
@@ -1367,10 +1374,11 @@ async def course_content(slug: str, user: dict = Depends(current_user)):
 
 @api.get("/course/{slug}/task/{task_id}")
 async def task_detail(slug: str, task_id: str, user: dict = Depends(current_user)):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
     task = await db.tasks.find_one({"id": task_id})
     if not task:
         raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
     mod = await db.modules.find_one({"id": task["module_id"]})
     submissions = []
     async for s in db.submissions.find({"task_id": task_id, "user_id": user["id"]}).sort("submitted_at", -1):
@@ -1416,10 +1424,11 @@ async def task_detail(slug: str, task_id: str, user: dict = Depends(current_user
 async def submit_task(
     slug: str, task_id: str, payload: SubmissionIn, user: dict = Depends(current_user),
 ):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
     task = await db.tasks.find_one({"id": task_id})
     if not task:
         raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
     # Gate: require all module resources to be viewed (admins bypass)
     if user.get("role") != "admin" and task.get("module_id"):
         viewed_slugs = set()
@@ -1473,7 +1482,11 @@ async def submit_task(
 # ─────────────────────────── Forum threads ────────────────────
 @api.get("/course/{slug}/task/{task_id}/threads")
 async def list_threads(slug: str, task_id: str, user: dict = Depends(current_user)):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
+    task = await db.tasks.find_one({"id": task_id})
+    if not task:
+        raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
     posts = []
     async for t in db.threads.find({"task_id": task_id}).sort("created_at", 1):
         posts.append(clean_doc(t))
@@ -1484,7 +1497,11 @@ async def list_threads(slug: str, task_id: str, user: dict = Depends(current_use
 async def create_thread(
     slug: str, task_id: str, payload: ThreadPostIn, user: dict = Depends(current_user),
 ):
-    await _ensure_enrollment_for(user, slug)
+    ctx = await _ensure_enrollment_for(user, slug)
+    task = await db.tasks.find_one({"id": task_id})
+    if not task:
+        raise HTTPException(404, "Tarea no encontrada")
+    await _verify_task_in_course(task, ctx["course"])
     tid = new_id()
     await db.threads.insert_one({
         "id": tid,
@@ -1748,9 +1765,14 @@ async def _ensure_any_enrollment(user: dict) -> None:
     Admins bypass."""
     if user.get("role") == "admin":
         return
-    exists = await db.enrollments.find_one(
-        {"user_id": user["id"], "status": "active", "payment_status": "paid"}
-    )
+    exists = await db.enrollments.find_one({
+        "user_id": user["id"],
+        "status": "active",
+        "$or": [
+            {"payment_status": "paid"},
+            {"payment_status": {"$exists": False}},
+        ],
+    })
     if not exists:
         raise HTTPException(403, "El libro está disponible solo para estudiantes inscritos")
 
