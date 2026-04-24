@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
@@ -121,8 +122,8 @@ export default function Cuestionario() {
               </div>
 
               <div style={{ marginTop: '1.5rem', display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
-                <a href="/precios" className="btn btn--primary" data-testid="quiz-go-precios">Reservar plaza →</a>
-                <a href="/programa" className="btn btn--ghost">Ver programa completo</a>
+                <Link to="/curso-ele/precios" className="btn btn--primary" data-testid="quiz-go-precios">Reservar plaza →</Link>
+                <Link to="/curso-ele/programa" className="btn btn--ghost">Ver programa completo</Link>
               </div>
             </div>
           </div>
