@@ -287,8 +287,11 @@ al usuario.
 - Preview: `https://teach-preview.preview.emergentagent.com`
 - Producción objetivo: Vercel + dominio `laclasedigital.com`.
 - Variables a configurar en producción: `MONGO_URL`, `DB_NAME`,
-  `JWT_SECRET`, `MAGIC_LINK_SECRET`, `STRIPE_API_KEY`, `RESEND_API_KEY`,
-  `RESEND_FROM`, `ADMIN_EMAIL`, `FRONTEND_ORIGIN`.
+  `JWT_SECRET`, `MAGIC_LINK_SECRET`, `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`,
+  `RESEND_API_KEY`, `RESEND_FROM`, `ADMIN_EMAIL`, `FRONTEND_ORIGIN`.
+- Webhook de Stripe: configurar en el dashboard de Stripe apuntando a
+  `https://laclasedigital.com/api/webhook/stripe`, evento `checkout.session.completed`.
+  El secret generado (`whsec_...`) debe guardarse en `STRIPE_WEBHOOK_SECRET`.
 
 ## Credenciales de test
 Ver `/app/memory/test_credentials.md`.

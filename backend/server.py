@@ -20,11 +20,6 @@ from jose import JWTError, jwt
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr, Field
 
-from emergentintegrations.payments.stripe.checkout import (
-    CheckoutSessionRequest,
-    CheckoutSessionResponse,
-    StripeCheckout,
-)
 import stripe as stripe_sdk
 
 import cloudinary
@@ -755,13 +750,6 @@ async def update_profile(payload: ProfileUpdate, user: dict = Depends(current_us
 
 
 # ─────────────────────────── Enrollment / Stripe ───────────────
-def _stripe_for(request: Request) -> StripeCheckout:
-    # Host URL for the webhook
-    host_url = str(request.base_url).rstrip("/")
-    webhook_url = f"{host_url}/api/webhook/stripe"
-    return StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
-
-
 @api.post("/checkout/create")
 async def create_checkout_session(
     payload: CheckoutRequest,
@@ -777,7 +765,6 @@ async def create_checkout_session(
         course.get("founder_seats_taken", 0) < course.get("founder_seats", 0)
     )
     amount_cents = course["price_founder_eur"] if is_founder else course["price_eur"]
-    amount_float = round(amount_cents / 100, 2)
 
     origin = payload.origin_url.rstrip("/")
     success_url = f"{origin}/inscripcion/success?session_id={{CHECKOUT_SESSION_ID}}"
@@ -791,19 +778,27 @@ async def create_checkout_session(
         "user_id": (user or {}).get("id", ""),
     }
 
-    stripe = _stripe_for(request)
-    req = CheckoutSessionRequest(
-        amount=amount_float,
-        currency="eur",
+    session = await asyncio.to_thread(
+        stripe_sdk.checkout.Session.create,
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "eur",
+                "product_data": {"name": course["title"]},
+                "unit_amount": amount_cents,
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
         success_url=success_url,
         cancel_url=cancel_url,
         metadata=metadata,
+        allow_promotion_codes=True,
     )
-    session: CheckoutSessionResponse = await stripe.create_checkout_session(req)
 
     await db.payment_transactions.insert_one({
         "id": new_id(),
-        "session_id": session.session_id,
+        "session_id": session.id,
         "amount_cents": amount_cents,
         "currency": "eur",
         "metadata": metadata,
@@ -817,7 +812,7 @@ async def create_checkout_session(
         "created_at": now_utc(),
     })
 
-    return {"url": session.url, "session_id": session.session_id}
+    return {"url": session.url, "session_id": session.id}
 
 
 async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
@@ -827,6 +822,15 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
         return None
     if tx.get("payment_status") == "paid" and tx.get("enrollment_id"):
         return await db.enrollments.find_one({"id": tx["enrollment_id"]})
+
+    # Fetch actual amount charged from Stripe (may differ from list price after coupon)
+    try:
+        stripe_session = await asyncio.to_thread(
+            stripe_sdk.checkout.Session.retrieve, session_id
+        )
+        actual_amount_cents = getattr(stripe_session, "amount_total", None) or tx["amount_cents"]
+    except Exception:
+        actual_amount_cents = tx["amount_cents"]
 
     # Resolve / create user
     email = (tx.get("user_email") or "").lower()
@@ -863,7 +867,7 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             "course_id": course["id"],
             "paid_at": now_utc(),
             "stripe_payment_id": session_id,
-            "amount_paid_eur": tx["amount_cents"],
+            "amount_paid_eur": actual_amount_cents,
             "was_founder": tx.get("was_founder", False),
             "status": "active",
             "payment_status": "paid",
@@ -878,7 +882,7 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             await db.courses.update_one({"id": course["id"]}, {"$set": update})
 
         # Welcome email to student
-        amount_eur = tx["amount_cents"] / 100
+        amount_eur = actual_amount_cents / 100
         price_line = (
             f"<strong>{amount_eur:.2f} €</strong>"
             + (" · precio fundador 🎉" if tx.get("was_founder") else "")
