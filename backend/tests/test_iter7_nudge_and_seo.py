@@ -15,10 +15,15 @@ from pathlib import Path
 
 import pytest
 import requests
+from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
-API = os.environ["REACT_APP_BACKEND_URL"].rstrip("/") + "/api"
-BASE = os.environ["REACT_APP_BACKEND_URL"].rstrip("/")
+_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(_ROOT / ".env")
+load_dotenv(_ROOT.parent / "frontend" / ".env")
+
+API = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/") + "/api"
+BASE = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 MONGO_URL = os.environ["MONGO_URL"]
 DB_NAME = os.environ["DB_NAME"]
 FE_PUBLIC = Path("/app/frontend/public")
