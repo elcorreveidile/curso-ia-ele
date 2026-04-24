@@ -1581,10 +1581,6 @@ footer {
 .footer-bottom a { color: rgba(245,166,35,.75); }
 .footer-bottom a:hover { color: var(--clm-red); }
 
-/* Reveal animations */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
-.reveal.visible { opacity: 1; transform: none; }
-
 /* Utility */
 .mt-4 { margin-top: 4rem; }
 .mt-3 { margin-top: 3rem; }

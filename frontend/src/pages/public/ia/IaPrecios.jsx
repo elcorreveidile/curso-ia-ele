@@ -14,7 +14,7 @@ export default function IaPrecios() {
   }, []);
 
   const standardPrice = course ? (course.price_eur / 100).toFixed(0) : 250;
-  const alumniPrice = course ? (course.price_alumni_eur / 100).toFixed(0) : 149;
+  const alumniPrice = course?.price_alumni_eur ? (course.price_alumni_eur / 100).toFixed(0) : 149;
 
   return (
     <>
