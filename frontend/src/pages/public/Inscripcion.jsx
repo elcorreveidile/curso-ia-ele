@@ -84,7 +84,7 @@ export default function Inscripcion() {
             <p className="price-card__period">pago único · {course.hours || 20} horas</p>
             {hasAlumniPricing && (
               <p className="price-card__alumni-note" style={{ marginTop: '.75rem' }}>
-                🎓 ¿Alumno del curso ELE? El precio final será <strong>{(course.price_alumni_eur / 100).toFixed(0)} €</strong> con el código de descuento.
+                🎓 ¿Alumno del curso ELE? El precio final será <strong>{course.price_alumni_eur ? (course.price_alumni_eur / 100).toFixed(0) : '—'} €</strong> con el código de descuento.
               </p>
             )}
             <ul className="price-includes">
@@ -126,7 +126,7 @@ export default function Inscripcion() {
                     data-testid="inscripcion-coupon"
                   />
                   <p style={{ fontSize: '.78rem', color: 'var(--ink-muted)', marginTop: '.35rem' }}>
-                    Si eres alumno del curso de IA para ELE, introduce el código que recibiste al finalizar para obtener el precio de {(course.price_alumni_eur / 100).toFixed(0)} €.
+                    Si eres alumno del curso de IA para ELE, introduce el código que recibiste al finalizar para obtener el precio de {course.price_alumni_eur ? (course.price_alumni_eur / 100).toFixed(0) : '—'} €.
                   </p>
                 </div>
               )}
