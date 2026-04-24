@@ -36,5 +36,5 @@ export function useScrollReveal() {
     );
     belowFold.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  });
+  }, []);
 }

@@ -90,7 +90,7 @@ export default function Descripcion() {
               ¿Para quién es este curso?
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="desc-grid">
-              <div style={{ background: 'var(--white)', borderRadius: 'var(--r-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)', borderTop: '3px solid var(--green)' }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)', borderTop: '3px solid var(--green)' }}>
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--green)', marginBottom: '1rem' }}>
                   ✓ Es para ti si…
                 </p>
@@ -106,7 +106,7 @@ export default function Descripcion() {
                   </div>
                 ))}
               </div>
-              <div style={{ background: 'var(--white)', borderRadius: 'var(--r-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)', borderTop: '3px solid var(--clm-red)' }}>
+              <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-lg)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)', borderTop: '3px solid var(--clm-red)' }}>
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--clm-red)', marginBottom: '1rem' }}>
                   ✕ No es para ti si…
                 </p>
