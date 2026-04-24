@@ -231,6 +231,9 @@ class AdminModuleUpdate(BaseModel):
     order: Optional[int] = None
     unlocked: Optional[bool] = None  # sets/clears unlocked_at
     video_youtube_id: Optional[str] = None
+    # ISO-8601 date or datetime string (or empty string to clear). When set,
+    # the module will auto-unlock at that moment (scheduler runs hourly).
+    unlock_at: Optional[str] = None
 
 
 class AdminManualEnrollment(BaseModel):
@@ -471,6 +474,11 @@ async def on_startup() -> None:
     await seed_resources()
     await seed_ebook()
     start_inactivity_scheduler()
+    # Run once on boot so that any overdue unlock gets applied immediately
+    try:
+        await run_module_auto_unlock()
+    except Exception as e:  # pragma: no cover
+        log.warning("Boot-time module auto-unlock failed: %s", e)
 
 
 # ─────────────────────────── Resources (course materials) ─────
@@ -1374,13 +1382,30 @@ async def admin_update_module(
         vid = payload.video_youtube_id.strip()
         if vid:
             import re as _re
-            # Accept both raw IDs and full YouTube URLs (youtu.be, youtube.com/watch, embed, shorts)
             m = _re.search(r"(?:v=|youtu\.be/|/embed/|/shorts/)([A-Za-z0-9_-]{11})", vid)
             if m:
                 vid = m.group(1)
             if not _re.match(r"^[A-Za-z0-9_-]{11}$", vid):
                 raise HTTPException(400, "ID o URL de YouTube no válido")
         update["video_youtube_id"] = vid or None
+    if payload.unlock_at is not None:
+        raw = payload.unlock_at.strip()
+        if not raw:
+            update["unlock_at"] = None
+        else:
+            # Accept YYYY-MM-DD or ISO-8601. Store as aware UTC datetime.
+            try:
+                if len(raw) == 10:
+                    dt = datetime.strptime(raw, "%Y-%m-%d").replace(
+                        hour=9, minute=0, tzinfo=timezone.utc
+                    )
+                else:
+                    dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+                    if dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=timezone.utc)
+            except ValueError:
+                raise HTTPException(400, "Formato de fecha no válido (usa YYYY-MM-DD o ISO-8601)")
+            update["unlock_at"] = dt
     if not update:
         raise HTTPException(400, "Nada que actualizar")
     await db.modules.update_one({"id": module_id}, {"$set": update})
@@ -2538,6 +2563,22 @@ async def run_inactivity_nudge() -> dict[str, Any]:
     return {"checked": checked, "sent": sent, "skipped": skipped}
 
 
+async def run_module_auto_unlock() -> dict[str, Any]:
+    """Unlock modules whose scheduled `unlock_at` has already passed.
+    Runs hourly."""
+    now = now_utc()
+    cursor = db.modules.find({"unlock_at": {"$lte": now}, "unlocked_at": None})
+    unlocked = 0
+    async for m in cursor:
+        await db.modules.update_one(
+            {"id": m["id"]},
+            {"$set": {"unlocked_at": now}},
+        )
+        log.info("Auto-unlocked module %s (order %s)", m.get("title"), m.get("order"))
+        unlocked += 1
+    return {"unlocked": unlocked, "ran_at": iso(now)}
+
+
 def start_inactivity_scheduler() -> None:
     global _scheduler_started
     if _scheduler_started:
@@ -2552,17 +2593,25 @@ def start_inactivity_scheduler() -> None:
         log.warning("APScheduler not available: %s", e)
         return
     sch = AsyncIOScheduler(timezone="Europe/Madrid")
-    # Daily at 09:00 Madrid time
     sch.add_job(run_inactivity_nudge, CronTrigger(hour=9, minute=0))
+    # Module auto-unlock: check every hour (covers midnight rollovers,
+    # day-of scheduling without polling too aggressively).
+    sch.add_job(run_module_auto_unlock, CronTrigger(minute=5))
     sch.start()
     _scheduler_started = True
-    log.info("Inactivity nudge scheduler started (every day 09:00 Europe/Madrid)")
+    log.info("Scheduler started (nudge 09:00 Europe/Madrid + module auto-unlock hourly)")
 
 
 @api.post("/admin/inactivity/run")
 async def admin_run_inactivity_nudge(user: dict = Depends(current_admin)):
     """Manual trigger for the nudge job (used in testing and admin-forced runs)."""
     return await run_inactivity_nudge()
+
+
+@api.post("/admin/modules/auto-unlock/run")
+async def admin_run_module_auto_unlock(user: dict = Depends(current_admin)):
+    """Manual trigger for the scheduled module unlock job."""
+    return await run_module_auto_unlock()
 
 
 # ─────────────────────────── Register router ───────────────────

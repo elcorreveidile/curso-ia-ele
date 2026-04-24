@@ -281,6 +281,11 @@ function ModulesControl() {
     load();
   };
 
+  const saveUnlockAt = async (id, dateStr) => {
+    await api.patch(`/admin/module/${id}`, { unlock_at: dateStr || '' });
+    load();
+  };
+
   const startEditVideo = (m) => {
     setEditingVideo(m.module.id);
     setVideoDraft(m.module.video_youtube_id || '');
@@ -332,6 +337,27 @@ function ModulesControl() {
                 <button className="linkish" style={{ color: 'var(--blue)', fontSize: '.82rem' }} onClick={() => startEditVideo(m)} data-testid={`admin-module-video-edit-${m.module.order}`}>
                   🎥 {m.module.video_youtube_id ? `YT: ${m.module.video_youtube_id}` : 'Añadir vídeo YouTube'}
                 </button>
+              )}
+              {!m.module.unlocked_at && (
+                <>
+                  <span>·</span>
+                  <span style={{ display: 'flex', gap: '.4rem', alignItems: 'center', fontSize: '.82rem' }} title="Desbloqueo automático">
+                    📅
+                    <input
+                      type="date"
+                      className="form-input"
+                      style={{ padding: '.25rem .4rem', fontSize: '.78rem', width: 140 }}
+                      defaultValue={m.module.unlock_at ? m.module.unlock_at.slice(0, 10) : ''}
+                      onChange={(e) => saveUnlockAt(m.module.id, e.target.value)}
+                      data-testid={`admin-module-unlock-date-${m.module.order}`}
+                    />
+                    {m.module.unlock_at && (
+                      <span style={{ color: 'var(--ink-muted)', fontSize: '.72rem' }}>
+                        Se desbloquea {new Date(m.module.unlock_at).toLocaleDateString('es-ES')}
+                      </span>
+                    )}
+                  </span>
+                </>
               )}
             </div>
           </div>
