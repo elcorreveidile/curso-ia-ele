@@ -261,6 +261,24 @@ al usuario.
 - ✅ Testing backend: 22/23 pytest passed; bug HIGH de `/checkout/status`
   corregido y verificado manualmente.
 
+## Implementado en iteración 11 (2026-02 fork, sprint 6 · refactor + module emails)
+- ✅ **Resend dominio verificado**: confirmado envío real (status 200) a
+  `benitezl@go.ugr.es` y otros usuarios. Throttle 220ms evita rate limit.
+- ✅ **Email "módulo desbloqueado"**: cuando el scheduler desbloquea un
+  módulo programado, envía email transaccional a todos los estudiantes
+  inscritos del curso (template branded, ignora `marketing_consent`
+  porque es transaccional, no marketing).
+- ✅ **Refactor backend**: `server.py` 2913 → 1644 líneas (−43%).
+  Extraído a:
+  - `core.py` (config + db + JWT + deps + email helpers)
+  - `models.py` (todos los Pydantic)
+  - `seed_data.py` (seed admin/curso/módulos/lessons/tasks/recursos/eBook)
+  - `pdf_builder.py` (ReportLab PDF: `build_ebook_pdf(chapters) -> bytes`)
+  - `scheduler.py` (jobs APScheduler + templates de email)
+  - `routes/admin_users.py` (5 endpoints de gestión de usuarios + RGPD)
+- ✅ **Testing**: 28/28 tests verde tras cada extracción + smoke E2E
+  (API, admin, eBook PDF 655KB, frontend 200).
+
 ## Implementado en iteración 10 (2026-02 fork, sprint 5 · users + marketing)
 - ✅ **Panel admin: Usuarios registrados**: nueva sección con tabla
   paginable que lista TODOS los usuarios (matriculados o no), búsqueda
