@@ -261,6 +261,22 @@ al usuario.
 - ✅ Testing backend: 22/23 pytest passed; bug HIGH de `/checkout/status`
   corregido y verificado manualmente.
 
+## Implementado en iteración 12 (2026-02 fork, sprint 7 · file uploads & RGPD opt-in)
+- ✅ **Subida real de archivos en entregas — verificado**: ya estaba
+  implementado (`FileUpload.jsx` + `/api/upload` Cloudinary). Confirmado
+  con curl: subida real devuelve URL Cloudinary firmada.
+- ✅ **Casilla RGPD opt-in en login y inscripción**: nuevo checkbox
+  "Acepto recibir emails ocasionales… puedo darme de baja en cualquier
+  momento (RGPD)". Por defecto desmarcado.
+- ✅ Backend: `LoginRequest` ahora acepta `marketing_consent: bool`. El
+  valor viaja firmado dentro del JWT del magic link (`mc` claim) y se
+  persiste en `users.marketing_consent` solo cuando se crea la cuenta
+  por primera vez (`marketing_consent_at` timestamp adjunto). No
+  sobrescribe la decisión de cuentas existentes.
+- ✅ Tests 28/28 verde + smoke E2E (request-link con consent=true →
+  user.marketing_consent=True; consent=false → False; tokens legacy sin
+  claim → no se persiste el campo).
+
 ## Implementado en iteración 11 (2026-02 fork, sprint 6 · refactor + module emails)
 - ✅ **Resend dominio verificado**: confirmado envío real (status 200) a
   `benitezl@go.ugr.es` y otros usuarios. Throttle 220ms evita rate limit.

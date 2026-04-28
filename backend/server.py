@@ -132,7 +132,7 @@ async def get_course(slug: str):
 @api.post("/auth/request-link")
 async def request_magic_link(payload: LoginRequest, request: Request):
     email = payload.email.lower()
-    token = create_magic_token(email)
+    token = create_magic_token(email, marketing_consent=payload.marketing_consent)
     # Always use the configured public FRONTEND_ORIGIN. The Origin header can
     # contain an internal cluster URL in preview environments (e.g.
     # …emergentcf.cloud) which is not publicly reachable and returns 403.
@@ -163,17 +163,24 @@ async def request_magic_link(payload: LoginRequest, request: Request):
 
 @api.post("/auth/verify")
 async def verify_magic_link(payload: VerifyTokenRequest):
-    email = verify_magic_token(payload.token)
+    email, marketing_consent = verify_magic_token(payload.token)
     user = await db.users.find_one({"email": email})
     if not user:
         uid = new_id()
-        await db.users.insert_one({
+        new_user: dict[str, Any] = {
             "id": uid,
             "email": email,
             "name": None,
             "role": "admin" if email == ADMIN_EMAIL.lower() else "student",
             "created_at": now_utc(),
-        })
+        }
+        # Only persist consent decision when the account is first created
+        # (the magic-link request that bootstrapped the account is the user's
+        # explicit choice). Defaults to False if not provided.
+        if marketing_consent is not None:
+            new_user["marketing_consent"] = bool(marketing_consent)
+            new_user["marketing_consent_at"] = now_utc()
+        await db.users.insert_one(new_user)
         user = await db.users.find_one({"id": uid})
     user_c = clean_doc(user)
     jwt_token = create_session_jwt(user_c["id"], user_c["email"], user_c["role"])

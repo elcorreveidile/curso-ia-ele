@@ -146,7 +146,7 @@ def create_session_jwt(user_id: str, email: str, role: str) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
 
-def create_magic_token(email: str) -> str:
+def create_magic_token(email: str, marketing_consent: Optional[bool] = None) -> str:
     payload = {
         "email": email.lower(),
         "purpose": "magic_link",
@@ -154,17 +154,21 @@ def create_magic_token(email: str) -> str:
         "exp": int((now_utc() + timedelta(minutes=30)).timestamp()),
         "nonce": secrets.token_urlsafe(16),
     }
+    if marketing_consent is not None:
+        payload["mc"] = bool(marketing_consent)
     return jwt.encode(payload, MAGIC_LINK_SECRET, algorithm="HS256")
 
 
-def verify_magic_token(token: str) -> str:
+def verify_magic_token(token: str) -> tuple[str, Optional[bool]]:
+    """Returns (email, marketing_consent). marketing_consent is None when the
+    token didn't include a consent decision (back-compat)."""
     try:
         data = jwt.decode(token, MAGIC_LINK_SECRET, algorithms=["HS256"])
     except JWTError as exc:
         raise HTTPException(400, "Enlace inválido o caducado") from exc
     if data.get("purpose") != "magic_link":
         raise HTTPException(400, "Token inválido")
-    return data["email"]
+    return data["email"], data.get("mc")
 
 
 async def current_user_optional(

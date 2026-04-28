@@ -6,6 +6,8 @@ from pydantic import BaseModel, EmailStr, Field
 
 class LoginRequest(BaseModel):
     email: EmailStr
+    # RGPD opt-in: stored on the user only when the account is first created.
+    marketing_consent: bool = False
 
 
 class VerifyTokenRequest(BaseModel):

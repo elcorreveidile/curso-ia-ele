@@ -5,6 +5,7 @@ import { api } from '../../lib/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
+  const [marketingConsent, setMarketingConsent] = useState(false);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -13,7 +14,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true); setError('');
     try {
-      await api.post('/auth/request-link', { email });
+      await api.post('/auth/request-link', { email, marketing_consent: marketingConsent });
       setSent(true);
     } catch (err) {
       setError(err.response?.data?.detail || 'Error al solicitar el enlace');
@@ -57,6 +58,31 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   data-testid="login-email"
                 />
+                <label
+                  style={{
+                    display: 'flex',
+                    gap: '.6rem',
+                    alignItems: 'flex-start',
+                    fontSize: '.82rem',
+                    color: 'var(--ink-muted)',
+                    margin: '.4rem 0 .9rem',
+                    cursor: 'pointer',
+                    lineHeight: 1.45,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={marketingConsent}
+                    onChange={(e) => setMarketingConsent(e.target.checked)}
+                    data-testid="login-marketing-consent"
+                    style={{ marginTop: 3 }}
+                  />
+                  <span>
+                    Acepto recibir emails ocasionales con novedades, recursos y
+                    promociones de La Clase Digital. Puedo darme de baja en
+                    cualquier momento (RGPD).
+                  </span>
+                </label>
                 {error && <p style={{ color: 'var(--clm-red)', fontSize: '.85rem', marginBottom: '.75rem' }}>{error}</p>}
                 <button
                   className="btn btn--primary"

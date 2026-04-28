@@ -10,6 +10,7 @@ export default function Inscripcion() {
   const { slug } = useParams();
   const [course, setCourse] = useState(null);
   const [email, setEmail] = useState('');
+  const [marketingConsent, setMarketingConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { user } = useAuth();
@@ -58,7 +59,7 @@ export default function Inscripcion() {
     if (!email) { setError('Introduce tu email'); return; }
     setLoading(true); setError('');
     try {
-      await api.post('/auth/request-link', { email });
+      await api.post('/auth/request-link', { email, marketing_consent: marketingConsent });
       navigate('/inscripcion/check-email?next=' + encodeURIComponent(`/inscripcion/${slug}`) + '&email=' + encodeURIComponent(email));
     } catch (err) {
       setError(err.response?.data?.detail || 'Error solicitando acceso');
@@ -126,6 +127,30 @@ export default function Inscripcion() {
                     Para procesar tu inscripción necesitamos verificar tu email primero. Te
                     enviaremos un enlace de acceso y al volver podrás completar el pago.
                   </p>
+                  <label
+                    style={{
+                      display: 'flex',
+                      gap: '.6rem',
+                      alignItems: 'flex-start',
+                      fontSize: '.82rem',
+                      color: 'var(--ink-muted)',
+                      margin: '0 0 .9rem',
+                      cursor: 'pointer',
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={marketingConsent}
+                      onChange={(e) => setMarketingConsent(e.target.checked)}
+                      data-testid="inscripcion-marketing-consent"
+                      style={{ marginTop: 3 }}
+                    />
+                    <span>
+                      Acepto recibir emails ocasionales con novedades, recursos y
+                      promociones. Puedo darme de baja en cualquier momento (RGPD).
+                    </span>
+                  </label>
                   <button
                     type="button"
                     onClick={requestLinkAndRedirect}
