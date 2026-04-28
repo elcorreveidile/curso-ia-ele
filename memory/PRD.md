@@ -261,6 +261,21 @@ al usuario.
 - ✅ Testing backend: 22/23 pytest passed; bug HIGH de `/checkout/status`
   corregido y verificado manualmente.
 
+## Implementado en iteración 13 (2026-02 fork, sprint 7 · RGPD double opt-in)
+- ✅ **Email de regularización RGPD para usuarios pre-existentes**: nuevo
+  banner ámbar en la sección de usuarios del admin que muestra cuántos
+  usuarios no tienen aún un consentimiento explícito y un botón "Enviar
+  email de regularización a N".
+- ✅ Backend:
+  - `GET /api/admin/users/regularize-consent/preview` → `{would_send: N}`
+  - `POST /api/admin/users/regularize-consent` → envía un email RGPD a
+    cada usuario sin consent, con dos botones (Sí/No) cada uno con su
+    JWT firmado (`purpose: consent_optin` / `unsubscribe`).
+  - `GET /api/consent/opt-in?token=…` → endpoint público que confirma
+    el opt-in poniendo `marketing_consent: True`.
+- ✅ Tests 28/28 verde + smoke E2E (preview cuenta 82 → opt-in URL pone
+  consent=True · tokens malformados → 400 · UI banner visible).
+
 ## Implementado en iteración 12 (2026-02 fork, sprint 7 · file uploads & RGPD opt-in)
 - ✅ **Subida real de archivos en entregas — verificado**: ya estaba
   implementado (`FileUpload.jsx` + `/api/upload` Cloudinary). Confirmado

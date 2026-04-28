@@ -525,6 +525,8 @@ function UsersControl() {
   const [filter, setFilter] = useState(''); // search box
   const [selected, setSelected] = useState({}); // userId -> bool
   const [showBroadcast, setShowBroadcast] = useState(false);
+  const [pendingConsent, setPendingConsent] = useState(null); // count of users without explicit consent
+  const [regularizing, setRegularizing] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -542,8 +544,26 @@ function UsersControl() {
         setLoadErr(`No se pudieron cargar los usuarios (HTTP ${ex.response?.status || '?'}): ${msg}`);
         setLoading(false);
       });
+    api.get('/admin/users/regularize-consent/preview')
+      .then((r) => setPendingConsent(r.data.would_send))
+      .catch(() => setPendingConsent(null));
   }, []);
   useEffect(() => { load(); }, [load]);
+
+  const regularizeConsent = async () => {
+    if (pendingConsent === 0) return;
+    const msg = `Vas a enviar un email de confirmación RGPD a ${pendingConsent} usuario(s) que aún no han aceptado o rechazado explícitamente recibir marketing.\n\nEl email lleva dos botones (✓ Sí, quiero seguir / No, darme de baja).\nQuienes hagan clic en "Sí" pasarán a estar opt-in. Los demás quedarán como están hasta que decidan.\n\n¿Continuar?`;
+    if (!window.confirm(msg)) return;
+    setRegularizing(true);
+    try {
+      const r = await api.post('/admin/users/regularize-consent');
+      alert(`✓ Email de regularización enviado a ${r.data.sent} usuario(s).${r.data.failed > 0 ? `\n${r.data.failed} fallidos.` : ''}`);
+      load();
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error enviando emails de regularización');
+    }
+    setRegularizing(false);
+  };
 
   const removeUser = async (u) => {
     if (u.role === 'admin') return;
@@ -637,6 +657,31 @@ function UsersControl() {
         Lista completa de usuarios, hayan o no comprado el curso. Puedes
         eliminarlos o seleccionarlos para enviarles un email de marketing.
       </p>
+      {pendingConsent > 0 && (
+        <div
+          className="info-box"
+          style={{ borderLeft: '4px solid #F5A623', marginBottom: '1rem' }}
+          data-testid="admin-rgpd-banner"
+        >
+          <p style={{ margin: '0 0 .5rem', fontWeight: 600 }}>
+            🇪🇺 Regularización RGPD pendiente
+          </p>
+          <p style={{ margin: '0 0 .5rem', fontSize: '.88rem' }}>
+            Hay <strong>{pendingConsent}</strong> usuario(s) sin un consentimiento
+            de marketing explícito. Envíales un email de doble opt-in para
+            cumplir el RGPD limpiamente.
+          </p>
+          <button
+            className="btn btn--primary"
+            style={{ fontSize: '.82rem', padding: '.45rem 1rem' }}
+            onClick={regularizeConsent}
+            disabled={regularizing}
+            data-testid="admin-rgpd-regularize"
+          >
+            {regularizing ? 'Enviando…' : `Enviar email de regularización a ${pendingConsent}`}
+          </button>
+        </div>
+      )}
       {loading ? (
         <p>Cargando…</p>
       ) : loadErr ? (

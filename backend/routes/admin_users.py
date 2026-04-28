@@ -67,6 +67,46 @@ def _make_unsubscribe_token(email: str) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
 
+def _make_consent_token(email: str) -> str:
+    payload = {
+        "sub": email,
+        "purpose": "consent_optin",
+        "iat": int(now_utc().timestamp()),
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+
+
+def _double_optin_email_html(name: str | None, optin_url: str, optout_url: str) -> str:
+    greeting = name or "docente"
+    return f"""
+<div style="max-width:560px;margin:0 auto;padding:24px;font-family:-apple-system,Segoe UI,Helvetica,sans-serif;color:#1A2535;background:#FFFCF4;">
+  <p style="font-size:13px;color:#0F4C81;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;font-weight:700">La Clase Digital · RGPD</p>
+  <h1 style="font-size:22px;margin:0 0 16px;color:#1A2535;font-weight:800">¿Te apetece seguir recibiendo novedades?</h1>
+  <p>Hola {_escape(greeting)} 👋</p>
+  <p>Te escribo para regularizar tu suscripción según el RGPD. De ahora en adelante,
+  necesito tu permiso explícito antes de enviarte emails con novedades, recursos
+  y promociones de <strong>La Clase Digital</strong>.</p>
+  <p>Elige una opción (basta con un clic):</p>
+  <p style="margin:26px 0;text-align:center;">
+    <a href="{optin_url}" style="background:#F5A623;color:#1A2535;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:8px;display:inline-block;margin-right:6px">
+      ✓ Sí, quiero seguir
+    </a>
+    <a href="{optout_url}" style="background:#FFFFFF;color:#0F4C81;text-decoration:none;font-weight:600;padding:11px 22px;border-radius:8px;display:inline-block;border:1.5px solid #0F4C81">
+      No, darme de baja
+    </a>
+  </p>
+  <p style="font-size:13px;color:#6B82A0">Si no haces nada, dejaré de mandarte
+  emails de marketing. Esto no afecta a los emails de tu curso si estás
+  matriculado/a.</p>
+  <hr style="border:none;border-top:1px solid #E8EEF5;margin:24px 0">
+  <p style="font-size:12px;color:#6B82A0;font-family:Georgia,serif;margin:0">
+    <span style="opacity:.9">[|]</span> La Clase Digital · Formación docente ELE ·
+    <a href="https://laclasedigital.com" style="color:#0F4C81">laclasedigital.com</a>
+  </p>
+</div>
+"""
+
+
 async def _delete_user_cascade(user_id: str) -> dict[str, Any]:
     """Delete a user and all their data, restoring founder seats.
     Caller must guard against admin/self-deletion."""
@@ -250,3 +290,76 @@ con tu curso (acceso, certificados, etc.) si estás matriculado/a.</p>
 </p></body></html>""",
             status_code=200,
         )
+
+
+    @api.get("/consent/opt-in")
+    async def public_consent_optin(token: str):
+        """Public RGPD double-opt-in confirmation endpoint."""
+        try:
+            data = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+            if data.get("purpose") != "consent_optin":
+                raise ValueError("bad purpose")
+            email = data["sub"]
+        except Exception:
+            return HTMLResponse(
+                "<html><body style='font-family:sans-serif;padding:48px;text-align:center'>"
+                "<h1>Enlace no válido</h1>"
+                "<p>Este enlace de confirmación no es correcto o ha caducado.</p></body></html>",
+                status_code=400,
+            )
+        await db.users.update_one(
+            {"email": email},
+            {"$set": {"marketing_consent": True, "marketing_consent_at": now_utc()}},
+        )
+        return HTMLResponse(
+            f"""<html><body style="font-family:Georgia,serif;padding:48px;max-width:560px;margin:0 auto;text-align:center;color:#1A2535;background:#FFFCF4">
+<h1 style="color:#0F4C81;font-family:'Syne',sans-serif">¡Genial, gracias!</h1>
+<p>Hemos confirmado tu suscripción para <strong>{_escape(email)}</strong>.</p>
+<p>Recibirás emails ocasionales con novedades, recursos y promociones de
+<strong>La Clase Digital</strong>. Podrás darte de baja en cualquier momento desde el enlace
+al pie de cualquier email.</p>
+<p style="font-size:13px;color:#6B82A0;margin-top:24px">
+<a href="https://laclasedigital.com" style="color:#0F4C81">Volver a laclasedigital.com</a>
+</p></body></html>""",
+            status_code=200,
+        )
+
+    @api.get("/admin/users/regularize-consent/preview")
+    async def admin_regularize_preview(user: dict = Depends(current_admin)):
+        """Count of users that would receive the double-opt-in email
+        (those without explicit marketing_consent set, excluding admins)."""
+        count = await db.users.count_documents({
+            "marketing_consent": {"$exists": False},
+            "role": {"$ne": "admin"},
+        })
+        return {"would_send": count}
+
+    @api.post("/admin/users/regularize-consent")
+    async def admin_regularize_consent(user: dict = Depends(current_admin)):
+        """Send the RGPD double-opt-in email to every user without an
+        explicit marketing_consent decision. Skips admins. Each email
+        carries two signed links: one to confirm opt-in, another to
+        unsubscribe. No bulk DB write — the user's click decides."""
+        base_url = FRONTEND_ORIGIN or "https://laclasedigital.com"
+        sent = 0
+        skipped_admin = 0
+        failed = 0
+        async for u in db.users.find({"marketing_consent": {"$exists": False}}):
+            email = u.get("email")
+            if not email:
+                continue
+            if u.get("role") == "admin":
+                skipped_admin += 1
+                continue
+            optin_url = f"{base_url}/api/consent/opt-in?token={_make_consent_token(email)}"
+            optout_url = f"{base_url}/api/unsubscribe?token={_make_unsubscribe_token(email)}"
+            html_body = _double_optin_email_html(u.get("name"), optin_url, optout_url)
+            subject = "Confirma tu suscripción a La Clase Digital (RGPD)"
+            try:
+                await send_email(email, subject, html_body)
+                sent += 1
+            except Exception as exc:
+                log.exception("Double opt-in failed to %s: %s", email, exc)
+                failed += 1
+            await asyncio.sleep(0.22)  # under Resend's 5 req/s
+        return {"sent": sent, "skipped_admin": skipped_admin, "failed": failed}
