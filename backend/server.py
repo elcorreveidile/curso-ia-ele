@@ -2482,6 +2482,10 @@ class UserBroadcastIn(BaseModel):
     user_ids: Optional[list[str]] = None
 
 
+class UserBulkDeleteIn(BaseModel):
+    user_ids: list[str]
+
+
 def _md_to_simple_html(text: str) -> str:
     """Tiny markdown → safe HTML: paragraphs, **bold**, *italic*, [text](url)."""
     from html import escape as _escape
@@ -2537,20 +2541,16 @@ async def admin_list_users(user: dict = Depends(current_admin)):
     return {"users": items, "total": len(items)}
 
 
-@api.delete("/admin/users/{user_id}")
-async def admin_delete_user(user_id: str, user: dict = Depends(current_admin)):
-    """Delete a user and all their data (enrollments, submissions, threads,
-    progress, certificates, payments, magic links). Admins and the requester
-    cannot be deleted. Restores any founder seats consumed."""
+async def _delete_user_cascade(user_id: str) -> dict[str, Any]:
+    """Cascade-delete a user and their data, restoring founder seats.
+
+    Caller is responsible for guarding against admin/self-deletion.
+    Returns counts of deleted artefacts plus the deleted user's email.
+    """
     target = await db.users.find_one({"id": user_id})
     if not target:
-        raise HTTPException(404, "Usuario no encontrado")
-    if target["id"] == user["id"]:
-        raise HTTPException(400, "No puedes eliminarte a ti mismo")
-    if target.get("role") == "admin":
-        raise HTTPException(400, "No se puede eliminar a un administrador")
+        return {"ok": False, "reason": "not_found"}
 
-    # Restore founder seats consumed by this user, if any
     async for e in db.enrollments.find({"user_id": user_id}):
         if e.get("was_founder"):
             course = await db.courses.find_one({"id": e["course_id"]})
@@ -2572,6 +2572,52 @@ async def admin_delete_user(user_id: str, user: dict = Depends(current_admin)):
     }
     await db.users.delete_one({"id": user_id})
     return {"ok": True, "deleted": deleted, "email": target["email"]}
+
+
+@api.delete("/admin/users/{user_id}")
+async def admin_delete_user(user_id: str, user: dict = Depends(current_admin)):
+    """Delete a user and all their data. Admins and the requester cannot be
+    deleted. Founder seats are restored if applicable."""
+    target = await db.users.find_one({"id": user_id})
+    if not target:
+        raise HTTPException(404, "Usuario no encontrado")
+    if target["id"] == user["id"]:
+        raise HTTPException(400, "No puedes eliminarte a ti mismo")
+    if target.get("role") == "admin":
+        raise HTTPException(400, "No se puede eliminar a un administrador")
+    result = await _delete_user_cascade(user_id)
+    return {"ok": True, "deleted": result["deleted"], "email": result["email"]}
+
+
+@api.post("/admin/users/bulk-delete")
+async def admin_bulk_delete_users(payload: UserBulkDeleteIn, user: dict = Depends(current_admin)):
+    """Delete multiple users in one call. Skips admins and the requester."""
+    if not payload.user_ids:
+        raise HTTPException(400, "Debes seleccionar al menos un usuario")
+    deleted = 0
+    skipped_admin = 0
+    skipped_self = 0
+    not_found = 0
+    for uid in payload.user_ids:
+        target = await db.users.find_one({"id": uid})
+        if not target:
+            not_found += 1
+            continue
+        if target["id"] == user["id"]:
+            skipped_self += 1
+            continue
+        if target.get("role") == "admin":
+            skipped_admin += 1
+            continue
+        result = await _delete_user_cascade(uid)
+        if result.get("ok"):
+            deleted += 1
+    return {
+        "deleted": deleted,
+        "skipped_admin": skipped_admin,
+        "skipped_self": skipped_self,
+        "not_found": not_found,
+    }
 
 
 @api.post("/admin/users/broadcast")

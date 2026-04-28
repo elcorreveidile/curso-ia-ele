@@ -557,6 +557,25 @@ function UsersControl() {
     }
   };
 
+  const bulkDelete = async () => {
+    const ids = Object.keys(selected).filter((k) => selected[k]);
+    if (ids.length === 0) return;
+    const msg = `¿Eliminar definitivamente a ${ids.length} usuario(s) seleccionados?\n\nSe borrarán también todas sus inscripciones, entregas, foros, progreso y certificados.\n\nEsta acción no se puede deshacer.`;
+    if (!window.confirm(msg)) return;
+    try {
+      const r = await api.post('/admin/users/bulk-delete', { user_ids: ids });
+      const parts = [`✓ ${r.data.deleted} usuario(s) eliminado(s)`];
+      if (r.data.skipped_admin) parts.push(`${r.data.skipped_admin} admin(s) omitido(s)`);
+      if (r.data.skipped_self) parts.push(`tu propio usuario omitido`);
+      if (r.data.not_found) parts.push(`${r.data.not_found} no encontrado(s)`);
+      alert(parts.join(' · '));
+      setSelected({});
+      load();
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error al eliminar usuarios');
+    }
+  };
+
   const filtered = users.filter((u) => {
     if (!filter) return true;
     const f = filter.toLowerCase();
@@ -602,6 +621,16 @@ function UsersControl() {
           >
             ✉️ Enviar email{selectedIds.length > 0 ? ` (${selectedIds.length} seleccionados)` : ''}
           </button>
+          {selectedIds.length > 0 && (
+            <button
+              className="btn btn--ghost"
+              style={{ fontSize: '.82rem', padding: '.45rem 1rem', color: 'var(--clm-red)', borderColor: 'var(--clm-red-light)' }}
+              onClick={bulkDelete}
+              data-testid="admin-users-bulk-delete"
+            >
+              🗑 Eliminar {selectedIds.length} seleccionado{selectedIds.length === 1 ? '' : 's'}
+            </button>
+          )}
         </div>
       </div>
       <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', margin: '.5rem 0 1rem' }}>
