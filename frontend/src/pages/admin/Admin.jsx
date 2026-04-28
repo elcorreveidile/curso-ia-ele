@@ -521,16 +521,27 @@ function IntroVideoEditor({ course, onDone }) {
 function UsersControl() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadErr, setLoadErr] = useState('');
   const [filter, setFilter] = useState(''); // search box
   const [selected, setSelected] = useState({}); // userId -> bool
   const [showBroadcast, setShowBroadcast] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
-    api.get('/admin/users').then((r) => {
-      setUsers(r.data.users || []);
-      setLoading(false);
-    });
+    setLoadErr('');
+    api.get('/admin/users')
+      .then((r) => {
+        setUsers(r.data.users || []);
+        setLoading(false);
+      })
+      .catch((ex) => {
+        const msg = ex.response?.data?.detail
+          || ex.response?.statusText
+          || ex.message
+          || 'Error desconocido';
+        setLoadErr(`No se pudieron cargar los usuarios (HTTP ${ex.response?.status || '?'}): ${msg}`);
+        setLoading(false);
+      });
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -599,6 +610,18 @@ function UsersControl() {
       </p>
       {loading ? (
         <p>Cargando…</p>
+      ) : loadErr ? (
+        <div className="info-box" style={{ borderLeft: '4px solid var(--clm-red)' }} data-testid="admin-users-load-error">
+          <p style={{ margin: 0 }}>⚠️ {loadErr}</p>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            style={{ marginTop: '.5rem', fontSize: '.82rem' }}
+            onClick={load}
+          >
+            Reintentar
+          </button>
+        </div>
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table className="admin-table" data-testid="admin-users-table">
