@@ -261,6 +261,22 @@ al usuario.
 - ✅ Testing backend: 22/23 pytest passed; bug HIGH de `/checkout/status`
   corregido y verificado manualmente.
 
+## Implementado en iteración 10 (2026-02 fork, sprint 5 · users + marketing)
+- ✅ **Panel admin: Usuarios registrados**: nueva sección con tabla
+  paginable que lista TODOS los usuarios (matriculados o no), búsqueda
+  por email/nombre, contador de inscripciones, estado de marketing.
+- ✅ **Borrado en cascada**: DELETE /api/admin/users/{id} elimina
+  inscripciones, entregas, foros, progreso, certificados, pagos y magic
+  links. Restaura plazas fundador. Bloqueado para admins y para uno mismo.
+- ✅ **Email marketing masivo**: POST /api/admin/users/broadcast con
+  target `all|enrolled|not_enrolled|selected`. Throttle 220ms para
+  Resend (5 req/s). Excluye admins y usuarios con `marketing_consent=false`.
+- ✅ **Baja RGPD pública**: GET /api/unsubscribe?token=… (JWT firmado)
+  pone `marketing_consent=false` y muestra una página de confirmación.
+  Cada email lleva el enlace en el footer.
+- ✅ **Testing**: 16/16 backend pytest + smoke E2E frontend (search,
+  selección, modal, envío real a 1 usuario). Regresión iter9: 12/12.
+
 ## Implementado en iteración 9 (2026-02 fork, sprint 5 · scheduled unlocks verified)
 - ✅ **Desbloqueo automático programado de módulos (verificado)**: admin
   configura una fecha `unlock_at` desde el panel (date picker); APScheduler

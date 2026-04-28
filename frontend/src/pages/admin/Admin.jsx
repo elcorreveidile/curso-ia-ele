@@ -183,6 +183,10 @@ export default function Admin() {
           </div>
 
           <div className="dash-section">
+            <UsersControl />
+          </div>
+
+          <div className="dash-section">
             <h2 className="dash-title">Entregas pendientes ({data.pending_submissions.length})</h2>
             {data.pending_submissions.length === 0 && <p style={{ color: 'var(--ink-muted)' }}>No hay entregas pendientes.</p>}
             {data.pending_submissions.map((p) => (
@@ -513,3 +517,313 @@ function IntroVideoEditor({ course, onDone }) {
   );
 }
 
+
+function UsersControl() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState(''); // search box
+  const [selected, setSelected] = useState({}); // userId -> bool
+  const [showBroadcast, setShowBroadcast] = useState(false);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    api.get('/admin/users').then((r) => {
+      setUsers(r.data.users || []);
+      setLoading(false);
+    });
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const removeUser = async (u) => {
+    if (u.role === 'admin') return;
+    const msg = `¿Eliminar definitivamente a ${u.email}?\n\nSe borrarán también:\n- ${u.enrollments_count} inscripción(es)\n- entregas, foros, progreso y certificados\n\nEsta acción no se puede deshacer.`;
+    if (!window.confirm(msg)) return;
+    try {
+      await api.delete(`/admin/users/${u.id}`);
+      load();
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error al eliminar usuario');
+    }
+  };
+
+  const filtered = users.filter((u) => {
+    if (!filter) return true;
+    const f = filter.toLowerCase();
+    return (
+      (u.email || '').toLowerCase().includes(f) ||
+      (u.name || '').toLowerCase().includes(f) ||
+      (u.surname || '').toLowerCase().includes(f)
+    );
+  });
+  const selectedIds = Object.keys(selected).filter((k) => selected[k]);
+
+  const toggleAll = (check) => {
+    if (check) {
+      const next = {};
+      filtered.forEach((u) => { if (u.role !== 'admin') next[u.id] = true; });
+      setSelected(next);
+    } else {
+      setSelected({});
+    }
+  };
+
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '.5rem' }}>
+        <h2 className="dash-title" style={{ marginBottom: 0 }}>
+          Usuarios registrados ({users.length})
+        </h2>
+        <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
+          <input
+            type="search"
+            className="form-input"
+            style={{ padding: '.4rem .7rem', fontSize: '.85rem', minWidth: 220 }}
+            placeholder="Buscar por email o nombre…"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            data-testid="admin-users-search"
+          />
+          <button
+            className="btn btn--blue"
+            style={{ fontSize: '.82rem', padding: '.45rem 1rem' }}
+            onClick={() => setShowBroadcast(true)}
+            data-testid="admin-users-broadcast-open"
+          >
+            ✉️ Enviar email{selectedIds.length > 0 ? ` (${selectedIds.length} seleccionados)` : ''}
+          </button>
+        </div>
+      </div>
+      <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', margin: '.5rem 0 1rem' }}>
+        Lista completa de usuarios, hayan o no comprado el curso. Puedes
+        eliminarlos o seleccionarlos para enviarles un email de marketing.
+      </p>
+      {loading ? (
+        <p>Cargando…</p>
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table className="admin-table" data-testid="admin-users-table">
+            <thead>
+              <tr>
+                <th style={{ width: 30 }}>
+                  <input
+                    type="checkbox"
+                    aria-label="Seleccionar todos"
+                    onChange={(e) => toggleAll(e.target.checked)}
+                    checked={
+                      filtered.filter((u) => u.role !== 'admin').length > 0 &&
+                      filtered.filter((u) => u.role !== 'admin').every((u) => selected[u.id])
+                    }
+                    data-testid="admin-users-select-all"
+                  />
+                </th>
+                <th>Email</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Inscripciones</th>
+                <th>Registro</th>
+                <th>Marketing</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((u) => (
+                <tr key={u.id} data-testid={`admin-user-row-${u.id}`}>
+                  <td>
+                    {u.role !== 'admin' && (
+                      <input
+                        type="checkbox"
+                        checked={!!selected[u.id]}
+                        onChange={(e) => setSelected({ ...selected, [u.id]: e.target.checked })}
+                        aria-label={`Seleccionar ${u.email}`}
+                        data-testid={`admin-user-select-${u.id}`}
+                      />
+                    )}
+                  </td>
+                  <td style={{ wordBreak: 'break-all' }}>{u.email}</td>
+                  <td>{[u.name, u.surname].filter(Boolean).join(' ') || <span style={{ color: 'var(--ink-muted)' }}>—</span>}</td>
+                  <td>
+                    <span className={`badge ${u.role === 'admin' ? 'badge--founder' : 'badge--standard'}`}>
+                      {u.role === 'admin' ? 'Admin' : 'Estudiante'}
+                    </span>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>{u.enrollments_count}</td>
+                  <td style={{ fontSize: '.82rem' }}>
+                    {u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES') : '—'}
+                  </td>
+                  <td style={{ fontSize: '.82rem' }}>
+                    {u.marketing_consent === false
+                      ? <span style={{ color: 'var(--clm-red)' }}>❌ Baja</span>
+                      : <span style={{ color: '#16A34A' }}>✓ Activo</span>}
+                  </td>
+                  <td>
+                    {u.role !== 'admin' && (
+                      <button
+                        className="btn btn--ghost"
+                        style={{ fontSize: '.78rem', padding: '.4rem .7rem', color: 'var(--clm-red)', borderColor: 'var(--clm-red-light)' }}
+                        onClick={() => removeUser(u)}
+                        title={`Eliminar ${u.email}`}
+                        data-testid={`admin-delete-user-${u.id}`}
+                      >
+                        🗑
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--ink-muted)', padding: '1.25rem' }}>Sin resultados.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {showBroadcast && (
+        <BroadcastModal
+          selectedIds={selectedIds}
+          onClose={() => setShowBroadcast(false)}
+          onSent={() => { setShowBroadcast(false); setSelected({}); }}
+        />
+      )}
+    </>
+  );
+}
+
+function BroadcastModal({ selectedIds, onClose, onSent }) {
+  const [target, setTarget] = useState(selectedIds.length > 0 ? 'selected' : 'not_enrolled');
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+  const [err, setErr] = useState('');
+
+  const send = async (e) => {
+    e.preventDefault();
+    setErr(''); setResult(null);
+    if (!subject.trim() || !body.trim()) {
+      setErr('Asunto y mensaje son obligatorios');
+      return;
+    }
+    setBusy(true);
+    try {
+      const payload = { subject: subject.trim(), body_md: body.trim(), target };
+      if (target === 'selected') payload.user_ids = selectedIds;
+      const r = await api.post('/admin/users/broadcast', payload);
+      setResult(r.data);
+    } catch (ex) {
+      setErr(ex.response?.data?.detail || 'Error al enviar');
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      data-testid="admin-broadcast-modal"
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(10,22,40,.55)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem',
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget && !busy) onClose(); }}
+    >
+      <div
+        style={{
+          background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.75rem',
+          maxWidth: 620, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+          boxShadow: '0 20px 60px rgba(15,76,129,.25)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>✉️ Email a usuarios</h3>
+          <button
+            type="button"
+            className="linkish"
+            style={{ background: 'none', border: 0, fontSize: '1.4rem', cursor: 'pointer', color: 'var(--ink-muted)' }}
+            onClick={onClose}
+            disabled={busy}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+        {result ? (
+          <div data-testid="admin-broadcast-result">
+            <div className="info-box" style={{ borderLeft: '4px solid #16A34A', marginBottom: '1rem' }}>
+              <p style={{ margin: 0 }}>
+                ✓ <strong>{result.sent}</strong> emails enviados.
+                {result.skipped_audience > 0 && ` · ${result.skipped_audience} fuera del público objetivo.`}
+                {result.skipped_optout > 0 && ` · ${result.skipped_optout} dados de baja.`}
+                {result.skipped_admin > 0 && ` · ${result.skipped_admin} admin(s) excluido(s).`}
+                {result.failed > 0 && ` · ${result.failed} fallidos.`}
+              </p>
+            </div>
+            <button className="btn btn--primary" onClick={onSent} data-testid="admin-broadcast-close">Cerrar</button>
+          </div>
+        ) : (
+          <form onSubmit={send}>
+            <div className="form-group">
+              <label>Destinatarios</label>
+              <select
+                className="form-input"
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                data-testid="admin-broadcast-target"
+              >
+                {selectedIds.length > 0 && (
+                  <option value="selected">Seleccionados ({selectedIds.length})</option>
+                )}
+                <option value="all">Todos los usuarios</option>
+                <option value="not_enrolled">Solo NO matriculados (leads)</option>
+                <option value="enrolled">Solo matriculados</option>
+              </select>
+              <small style={{ color: 'var(--ink-muted)', fontSize: '.78rem' }}>
+                Se excluyen administradores y usuarios dados de baja del marketing automáticamente.
+              </small>
+            </div>
+            <div className="form-group">
+              <label>Asunto</label>
+              <input
+                type="text"
+                className="form-input"
+                maxLength={200}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Ej. Últimos días para la plaza fundador"
+                data-testid="admin-broadcast-subject"
+              />
+            </div>
+            <div className="form-group">
+              <label>Mensaje (admite **negrita**, *cursiva* y [enlaces](https://…))</label>
+              <textarea
+                className="form-input"
+                rows={9}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                placeholder={'Hola,\n\nTe escribo porque…\n\nUn abrazo,\nJavier'}
+                data-testid="admin-broadcast-body"
+              />
+              <small style={{ color: 'var(--ink-muted)', fontSize: '.78rem' }}>
+                Cada email incluye automáticamente un enlace de baja (RGPD).
+              </small>
+            </div>
+            {err && <p style={{ color: 'var(--clm-red)' }} data-testid="admin-broadcast-error">{err}</p>}
+            <div style={{ display: 'flex', gap: '.6rem', justifyContent: 'flex-end' }}>
+              <button type="button" className="btn btn--ghost" onClick={onClose} disabled={busy}>
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={busy}
+                data-testid="admin-broadcast-send"
+              >
+                {busy ? 'Enviando…' : 'Enviar email'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
