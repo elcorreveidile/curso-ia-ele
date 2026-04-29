@@ -220,20 +220,25 @@ export default function Admin() {
                   <p style={{ fontSize: '.82rem' }}>
                     📎{' '}
                     <a
-                      href={p.submission.file_url.replace('/upload/', '/upload/fl_attachment/')}
+                      href={`${process.env.REACT_APP_BACKEND_URL}/api/download/submission/${p.submission.id}?t=${localStorage.getItem('lcd_token')}`}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={async (ev) => {
+                        ev.preventDefault();
+                        try {
+                          const r = await api.get(`/download/submission/${p.submission.id}`, { responseType: 'blob' });
+                          const blobUrl = URL.createObjectURL(r.data);
+                          const a = document.createElement('a');
+                          a.href = blobUrl;
+                          a.download = p.submission.file_url.split('/').pop() || 'entrega';
+                          document.body.appendChild(a); a.click(); a.remove();
+                          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                        } catch {
+                          window.open(p.submission.file_url, '_blank');
+                        }
+                      }}
                     >
-                      Descargar archivo
-                    </a>{' '}
-                    ·{' '}
-                    <a
-                      href={p.submission.file_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ fontSize: '.78rem', color: 'var(--ink-muted)' }}
-                    >
-                      ver online
+                      📥 Descargar archivo
                     </a>
                   </p>
                 )}

@@ -129,12 +129,24 @@ export default function TaskDetail() {
                   <p style={{ fontSize: '.82rem' }}>
                     📎{' '}
                     <a
-                      href={s.file_url.replace('/upload/', '/upload/fl_attachment/')}
-                      target="_blank"
-                      rel="noreferrer"
+                      href="#"
+                      onClick={async (ev) => {
+                        ev.preventDefault();
+                        try {
+                          const r = await api.get(`/download/submission/${s.id}`, { responseType: 'blob' });
+                          const blobUrl = URL.createObjectURL(r.data);
+                          const a = document.createElement('a');
+                          a.href = blobUrl;
+                          a.download = s.file_url.split('/').pop() || 'entrega';
+                          document.body.appendChild(a); a.click(); a.remove();
+                          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                        } catch {
+                          window.open(s.file_url, '_blank');
+                        }
+                      }}
                       style={{ color: 'var(--blue)' }}
                     >
-                      Descargar archivo
+                      📥 Descargar archivo adjunto
                     </a>
                   </p>
                 )}

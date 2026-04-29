@@ -1411,6 +1411,72 @@ async def admin_delete_enrollment(enrollment_id: str, user: dict = Depends(curre
 
 
 # ─────────────────────────── Upload (Cloudinary) ───────────────
+@api.get("/download/submission/{submission_id}")
+async def download_submission_file(
+    submission_id: str, user: dict = Depends(current_user),
+):
+    """Proxy-download a student's submission file.
+
+    Bypasses Cloudinary's "Restrict PDF/ZIP delivery" rule (which otherwise
+    returns 401 for public PDF URLs on the free plan) and enforces our own
+    authorization: only admins or the submission's owner can download.
+    """
+    submission = await db.submissions.find_one({"id": submission_id})
+    if not submission:
+        raise HTTPException(404, "Entrega no encontrada")
+    if user.get("role") != "admin" and submission.get("user_id") != user["id"]:
+        raise HTTPException(403, "No autorizado")
+    file_url = submission.get("file_url")
+    if not file_url:
+        raise HTTPException(404, "Esta entrega no tiene archivo adjunto")
+
+    from urllib.parse import unquote
+    from pathlib import Path as _Path
+    from fastapi.responses import StreamingResponse
+
+    # Derive a nice download filename from the Cloudinary URL so it doesn't
+    # come down as "laclasedigital-admin-37c03fb3-entrega-..."
+    filename = unquote(file_url.rsplit("/", 1)[-1]) or "entrega"
+    if "-" in _Path(filename).stem and len(_Path(filename).stem) > 20:
+        # Strip the 8-char uuid suffix we added on upload (entrega-maria-a7c94b33.pdf)
+        stem = _Path(filename).stem
+        suffix = _Path(filename).suffix
+        if len(stem) > 9 and stem[-9] == "-":
+            filename = stem[:-9] + suffix
+
+    ext = _Path(filename).suffix.lower()
+    content_type = {
+        ".pdf": "application/pdf",
+        ".doc": "application/msword",
+        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".xls": "application/vnd.ms-excel",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".zip": "application/zip",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".txt": "text/plain; charset=utf-8",
+    }.get(ext, "application/octet-stream")
+
+    try:
+        async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
+            response = await client.get(file_url)
+            response.raise_for_status()
+            data = response.content
+    except Exception as exc:
+        log.exception("Failed to fetch submission file from Cloudinary: %s", exc)
+        raise HTTPException(502, "No se pudo recuperar el archivo") from exc
+
+    return StreamingResponse(
+        iter([data]),
+        media_type=content_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Length": str(len(data)),
+        },
+    )
+
+
 @api.post("/upload")
 async def upload_file(file: UploadFile = File(...), user: dict = Depends(current_user)):
     if not CLOUDINARY_CLOUD_NAME:
@@ -1419,16 +1485,27 @@ async def upload_file(file: UploadFile = File(...), user: dict = Depends(current
     data = await file.read()
     if len(data) > max_bytes:
         raise HTTPException(400, "Archivo demasiado grande (máx 20 MB)")
+
+    # Preserve the file extension so Cloudinary serves it with the right MIME
+    # type (otherwise PDFs come down as application/octet-stream with no
+    # extension → users' OS opens them with a text editor).
+    from pathlib import Path as _Path
+    from uuid import uuid4 as _uuid4
+    original = _Path(file.filename or "archivo")
+    ext = original.suffix.lower().lstrip(".") or "bin"
+    stem = "".join(c for c in original.stem if c.isalnum() or c in "-_") or "file"
+    public_id = f"laclasedigital/{user['id']}/{stem}-{_uuid4().hex[:8]}.{ext}"
+
     try:
         result = cloudinary.uploader.upload(
             data,
-            folder=f"laclasedigital/{user['id']}",
             # Store as 'raw' so PDFs/docs/zips are delivered without Cloudinary's
             # default "Restrict PDF/ZIP delivery" security rule blocking them
             # (that rule only applies to resource_type=image).
             resource_type="raw",
-            use_filename=True,
-            unique_filename=True,
+            public_id=public_id,
+            use_filename=False,
+            unique_filename=False,
         )
     except Exception as exc:
         log.exception("Cloudinary upload failed")
@@ -1437,8 +1514,8 @@ async def upload_file(file: UploadFile = File(...), user: dict = Depends(current
         "url": result.get("secure_url"),
         "public_id": result.get("public_id"),
         "bytes": result.get("bytes"),
-        "format": result.get("format"),
-        "original_filename": result.get("original_filename"),
+        "format": ext,
+        "original_filename": original.name,
     }
 
 
