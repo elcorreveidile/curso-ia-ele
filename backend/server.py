@@ -1423,7 +1423,10 @@ async def upload_file(file: UploadFile = File(...), user: dict = Depends(current
         result = cloudinary.uploader.upload(
             data,
             folder=f"laclasedigital/{user['id']}",
-            resource_type="auto",
+            # Store as 'raw' so PDFs/docs/zips are delivered without Cloudinary's
+            # default "Restrict PDF/ZIP delivery" security rule blocking them
+            # (that rule only applies to resource_type=image).
+            resource_type="raw",
             use_filename=True,
             unique_filename=True,
         )

@@ -125,7 +125,19 @@ export default function TaskDetail() {
                   )}
                 </div>
                 <div style={{ fontSize: '.9rem', whiteSpace: 'pre-wrap', marginBottom: '.5rem' }}>{s.content_md}</div>
-                {s.file_url && <p style={{ fontSize: '.82rem' }}>📎 <a href={s.file_url} target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }}>Archivo adjunto</a></p>}
+                {s.file_url && (
+                  <p style={{ fontSize: '.82rem' }}>
+                    📎{' '}
+                    <a
+                      href={s.file_url.replace('/upload/', '/upload/fl_attachment/')}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: 'var(--blue)' }}
+                    >
+                      Descargar archivo
+                    </a>
+                  </p>
+                )}
                 {s.feedback_md && (
                   <div style={{ background: 'var(--canvas)', padding: '.75rem 1rem', borderRadius: 'var(--r-sm)', marginTop: '.75rem', borderLeft: '3px solid var(--green)' }}>
                     <p className="section__tag" style={{ color: 'var(--green)' }}>Feedback del formador</p>

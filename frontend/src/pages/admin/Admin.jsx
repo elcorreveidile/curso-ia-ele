@@ -216,7 +216,27 @@ export default function Admin() {
                   <strong>{p.user?.email}</strong> · {p.task?.title} · {new Date(p.submission.submitted_at).toLocaleString('es-ES')}
                 </div>
                 <div style={{ fontSize: '.9rem', whiteSpace: 'pre-wrap', marginBottom: '.75rem' }}>{p.submission.content_md}</div>
-                {p.submission.file_url && <p style={{ fontSize: '.82rem' }}>📎 <a href={p.submission.file_url} target="_blank" rel="noreferrer">Archivo</a></p>}
+                {p.submission.file_url && (
+                  <p style={{ fontSize: '.82rem' }}>
+                    📎{' '}
+                    <a
+                      href={p.submission.file_url.replace('/upload/', '/upload/fl_attachment/')}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Descargar archivo
+                    </a>{' '}
+                    ·{' '}
+                    <a
+                      href={p.submission.file_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ fontSize: '.78rem', color: 'var(--ink-muted)' }}
+                    >
+                      ver online
+                    </a>
+                  </p>
+                )}
 
                 {editingSub === p.submission.id ? (
                   <div style={{ marginTop: '.75rem' }}>
