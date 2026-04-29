@@ -93,6 +93,19 @@ async def send_email(to_email: str, subject: str, html: str) -> None:
     if not RESEND_API_KEY:
         log.warning("RESEND_API_KEY missing, skipping email to %s", to_email)
         return
+    # Guard against a malformed RESEND_FROM (e.g. "info@" without a domain).
+    # Resend silently substitutes a default verified domain, which can leak
+    # traffic to the wrong account and trigger "Domain not verified" errors.
+    if "@" not in RESEND_FROM or RESEND_FROM.strip().endswith("@"):
+        log.error(
+            "RESEND_FROM is malformed (%r) — must be a full email address like "
+            "'curso@laclasedigital.com'. Skipping send to %s.",
+            RESEND_FROM, to_email,
+        )
+        raise RuntimeError(
+            f"RESEND_FROM está mal configurado: '{RESEND_FROM}'. Debe ser una "
+            "dirección completa, p. ej. curso@laclasedigital.com"
+        )
     payload: dict[str, Any] = {
         "from": f"{RESEND_FROM_NAME} <{RESEND_FROM}>",
         "to": [to_email],
