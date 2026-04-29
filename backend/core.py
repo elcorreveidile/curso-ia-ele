@@ -56,6 +56,17 @@ stripe_sdk.api_key = STRIPE_API_KEY
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("laclasedigital")
 
+# Log the email config seen at boot. Lets us detect "info@" or other malformed
+# values without having to inspect Resend's request log.
+log.info(
+    "Email config at boot: RESEND_DISABLE=%r · RESEND_FROM=%r · RESEND_FROM_NAME=%r · "
+    "RESEND_API_KEY=%s",
+    RESEND_DISABLE,
+    RESEND_FROM,
+    RESEND_FROM_NAME,
+    f"{RESEND_API_KEY[:6]}…{RESEND_API_KEY[-4:]}" if RESEND_API_KEY else "<missing>",
+)
+
 # ─────────────────────────── DB ────────────────────────────────
 mongo_client = AsyncIOMotorClient(MONGO_URL)
 db = mongo_client[DB_NAME]
