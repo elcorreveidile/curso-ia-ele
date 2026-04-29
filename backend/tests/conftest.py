@@ -32,6 +32,13 @@ JWT_SECRET = os.environ["JWT_SECRET"]
 MAGIC_LINK_SECRET = os.environ["MAGIC_LINK_SECRET"]
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "benitezl@go.ugr.es").lower()
 
+# ─── Hard safety: never hit Resend from the test suite ───
+# The test suite spawns dozens of auth/broadcast/unlock emails that would
+# burn through Resend's daily quota and leave the real admin unable to
+# send magic links. Force-disable Resend during pytest runs.
+os.environ["RESEND_DISABLE"] = "1"
+
+
 
 def make_magic_token(email: str) -> str:
     now = datetime.now(timezone.utc)

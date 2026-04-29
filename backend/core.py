@@ -33,6 +33,7 @@ JWT_SECRET = os.environ["JWT_SECRET"]
 MAGIC_LINK_SECRET = os.environ["MAGIC_LINK_SECRET"]
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+RESEND_DISABLE = os.environ.get("RESEND_DISABLE", "0") == "1"
 RESEND_FROM = os.environ.get("RESEND_FROM", "curso@laclasedigital.com")
 RESEND_FROM_NAME = os.environ.get("RESEND_FROM_NAME", "La Clase Digital")
 RESEND_REPLY_TO = os.environ.get("RESEND_REPLY_TO", "")
@@ -86,6 +87,9 @@ def clean_doc(doc: Optional[dict]) -> Optional[dict]:
 
 # ─────────────────────────── Email (Resend) ───────────────────
 async def send_email(to_email: str, subject: str, html: str) -> None:
+    if RESEND_DISABLE:
+        log.info("RESEND_DISABLE=1 → skipping real email to %s (subject: %s)", to_email, subject)
+        return
     if not RESEND_API_KEY:
         log.warning("RESEND_API_KEY missing, skipping email to %s", to_email)
         return
