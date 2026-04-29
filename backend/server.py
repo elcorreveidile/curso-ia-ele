@@ -1121,8 +1121,15 @@ def _build_welcome_email_html(
     amount_cents: int,
     was_founder: bool,
     payment_ref: str,
+    magic_link_url: Optional[str] = None,
 ) -> str:
-    """Build the welcome email HTML used by manual enrollment and resend."""
+    """Build the welcome email HTML used by manual enrollment and resend.
+
+    If ``magic_link_url`` is provided, the CTA button will log the student in
+    with a single click (and the message tells them the link expires in 30
+    minutes). Otherwise the button takes them to the login page where they'll
+    be asked for a fresh magic link.
+    """
     amount_eur = amount_cents / 100
     price_line = (
         "<strong>Gratis</strong>" if amount_cents == 0
@@ -1134,6 +1141,17 @@ def _build_welcome_email_html(
         'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
         'text-transform:uppercase;margin-top:6px">⭐ Fundador/a · plaza única</div>'
         if was_founder else ""
+    )
+    cta_href = magic_link_url or f"{FRONTEND_ORIGIN}/login"
+    cta_caption = (
+        '<p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">'
+        'Este enlace caduca en <strong>30 minutos</strong> y solo tú puedes usarlo. '
+        f'Si caduca, vuelve a entrar con tu email ({email}) y te enviaremos uno nuevo.'
+        '</p>'
+        if magic_link_url else
+        '<p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">'
+        f'Entras con tu email ({email}) — te enviaremos un enlace mágico cada vez.'
+        '</p>'
     )
     return wrap_email(
         f"""
@@ -1172,15 +1190,13 @@ def _build_welcome_email_html(
         </div>
 
         <p style="text-align:center;margin:32px 0 16px">
-          <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
+          <a href="{cta_href}" style="background:#F5A623;color:#0A1628;
              text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
              display:inline-block;font-size:15px">
             Acceder a mi área privada →
           </a>
         </p>
-        <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
-          Entras con tu email ({email}) — te enviaremos un enlace mágico cada vez.
-        </p>
+        {cta_caption}
 
         <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
         <p style="font-size:14px;color:#46476A;margin:0">
@@ -1278,6 +1294,8 @@ async def admin_create_manual_enrollment(
     if payload.send_welcome_email:
         try:
             first_name = _first_name_for(u, email)
+            magic_token = create_magic_token(email)
+            magic_url = f"{FRONTEND_ORIGIN}/auth/verify?token={magic_token}"
             html = _build_welcome_email_html(
                 email=email,
                 first_name=first_name,
@@ -1285,6 +1303,7 @@ async def admin_create_manual_enrollment(
                 amount_cents=amount_cents,
                 was_founder=was_founder,
                 payment_ref=payment_ref,
+                magic_link_url=magic_url,
             )
             await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
         except Exception as e:
@@ -1317,6 +1336,8 @@ async def admin_resend_welcome(enrollment_id: str, user: dict = Depends(current_
     amount_cents = int(enrollment.get("amount_paid_eur") or 0)
     was_founder = bool(enrollment.get("was_founder"))
     payment_ref = enrollment.get("stripe_payment_id") or f"MANUAL-{enrollment['id'][:8].upper()}"
+    magic_token = create_magic_token(email)
+    magic_url = f"{FRONTEND_ORIGIN}/auth/verify?token={magic_token}"
     html = _build_welcome_email_html(
         email=email,
         first_name=first_name,
@@ -1324,6 +1345,7 @@ async def admin_resend_welcome(enrollment_id: str, user: dict = Depends(current_
         amount_cents=amount_cents,
         was_founder=was_founder,
         payment_ref=payment_ref,
+        magic_link_url=magic_url,
     )
     try:
         await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
