@@ -1114,6 +1114,93 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
     )
 
 
+def _build_welcome_email_html(
+    email: str,
+    first_name: str,
+    course_title: str,
+    amount_cents: int,
+    was_founder: bool,
+    payment_ref: str,
+) -> str:
+    """Build the welcome email HTML used by manual enrollment and resend."""
+    amount_eur = amount_cents / 100
+    price_line = (
+        "<strong>Gratis</strong>" if amount_cents == 0
+        else f"<strong>{amount_eur:.2f} €</strong>"
+        + (" · precio fundador 🎉" if was_founder else "")
+    )
+    founder_badge = (
+        '<div style="display:inline-block;background:#F5A623;color:#0A1628;padding:6px 14px;'
+        'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
+        'text-transform:uppercase;margin-top:6px">⭐ Fundador/a · plaza única</div>'
+        if was_founder else ""
+    )
+    return wrap_email(
+        f"""
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
+          <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
+        </div>
+
+        <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:26px;line-height:1.2;margin:0 0 8px">
+          ¡Bienvenido/a, {first_name}! 👋
+        </h2>
+        <p style="color:#46476A;font-size:16px;margin:0 0 4px">
+          Te he inscrito manualmente en
+          <strong style="color:#1A2535">{course_title}</strong>.
+        </p>
+        {founder_badge}
+
+        <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:16px 20px;margin:28px 0;border-radius:4px">
+          <p style="margin:0;font-weight:700;color:#1A2535">📘 ¡Regalo incluido!</p>
+          <p style="margin:6px 0 0;font-size:14px;color:#46476A">
+            El libro <em>«Prompts que funcionan»</em> — 31 capítulos de ingeniería de prompts
+            para docentes de ELE — ya está disponible en tu área privada.
+          </p>
+        </div>
+
+        <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
+        <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
+          <li><a href="{FRONTEND_ORIGIN}/mi-area/perfil?onboarding=1" style="color:#0F4C81;font-weight:600">Completa tu perfil</a> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
+          <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro</a> y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>.</li>
+          <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>.</li>
+        </ol>
+
+        <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
+          <p style="margin:0;font-size:14px;color:#46476A"><strong>Inscripción:</strong> {price_line}</p>
+          <p style="margin:6px 0 0;font-size:13px;color:#6B82A0">Referencia: {payment_ref}</p>
+        </div>
+
+        <p style="text-align:center;margin:32px 0 16px">
+          <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
+             text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
+             display:inline-block;font-size:15px">
+            Acceder a mi área privada →
+          </a>
+        </p>
+        <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
+          Entras con tu email ({email}) — te enviaremos un enlace mágico cada vez.
+        </p>
+
+        <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
+        <p style="font-size:14px;color:#46476A;margin:0">
+          Si tienes cualquier duda, responde directamente a este correo y te leo sin falta.<br>
+          Un abrazo,<br>
+          <strong style="color:#1A2535">Javier</strong>
+        </p>
+        """
+    )
+
+
+def _first_name_for(user_doc: dict, email: str) -> str:
+    raw_name = (user_doc.get("name") or "").strip()
+    if raw_name:
+        return raw_name.split()[0].capitalize()
+    local = email.split("@")[0]
+    fallback = local.split(".")[0].split("-")[0]
+    return fallback.capitalize() if fallback.replace("-", "").replace(".", "").isalpha() else "docente"
+
+
 @api.post("/admin/enrollment/manual")
 async def admin_create_manual_enrollment(
     payload: AdminManualEnrollment, user: dict = Depends(current_admin),
@@ -1190,78 +1277,14 @@ async def admin_create_manual_enrollment(
     # Send welcome email (reuse the same template as paid enrollments)
     if payload.send_welcome_email:
         try:
-            amount_eur = amount_cents / 100
-            price_line = (
-                "<strong>Gratis</strong>" if amount_cents == 0
-                else f"<strong>{amount_eur:.2f} €</strong>"
-                + (" · precio fundador 🎉" if was_founder else "")
-            )
-            raw_name = (u.get("name") or "").strip()
-            if raw_name:
-                first_name = raw_name.split()[0].capitalize()
-            else:
-                local = email.split("@")[0]
-                first_name = local.split(".")[0].split("-")[0].capitalize() if local.replace("-", "").replace(".", "").isalpha() else "docente"
-            founder_badge = (
-                '<div style="display:inline-block;background:#F5A623;color:#0A1628;padding:6px 14px;'
-                'border-radius:100px;font-weight:700;font-size:13px;letter-spacing:1px;'
-                'text-transform:uppercase;margin-top:6px">⭐ Fundador/a · plaza única</div>'
-                if was_founder else ""
-            )
-            html = wrap_email(
-                f"""
-                <div style="text-align:center;margin-bottom:24px">
-                  <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
-                  <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
-                </div>
-
-                <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:26px;line-height:1.2;margin:0 0 8px">
-                  ¡Bienvenido/a, {first_name}! 👋
-                </h2>
-                <p style="color:#46476A;font-size:16px;margin:0 0 4px">
-                  Te he inscrito manualmente en
-                  <strong style="color:#1A2535">{course['title']}</strong>.
-                </p>
-                {founder_badge}
-
-                <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:16px 20px;margin:28px 0;border-radius:4px">
-                  <p style="margin:0;font-weight:700;color:#1A2535">📘 ¡Regalo incluido!</p>
-                  <p style="margin:6px 0 0;font-size:14px;color:#46476A">
-                    El libro <em>«Prompts que funcionan»</em> — 31 capítulos de ingeniería de prompts
-                    para docentes de ELE — ya está disponible en tu área privada.
-                  </p>
-                </div>
-
-                <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:18px;margin:24px 0 10px">🎯 Cómo empezar</h3>
-                <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
-                  <li><a href="{FRONTEND_ORIGIN}/mi-area/perfil?onboarding=1" style="color:#0F4C81;font-weight:600">Completa tu perfil</a> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
-                  <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro</a> y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>.</li>
-                  <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>.</li>
-                </ol>
-
-                <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
-                  <p style="margin:0;font-size:14px;color:#46476A"><strong>Inscripción:</strong> {price_line}</p>
-                  <p style="margin:6px 0 0;font-size:13px;color:#6B82A0">Referencia: {payment_ref}</p>
-                </div>
-
-                <p style="text-align:center;margin:32px 0 16px">
-                  <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
-                     text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
-                     display:inline-block;font-size:15px">
-                    Acceder a mi área privada →
-                  </a>
-                </p>
-                <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
-                  Entras con tu email ({email}) — te enviaremos un enlace mágico cada vez.
-                </p>
-
-                <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
-                <p style="font-size:14px;color:#46476A;margin:0">
-                  Si tienes cualquier duda, responde directamente a este correo y te leo sin falta.<br>
-                  Un abrazo,<br>
-                  <strong style="color:#1A2535">Javier</strong>
-                </p>
-                """
+            first_name = _first_name_for(u, email)
+            html = _build_welcome_email_html(
+                email=email,
+                first_name=first_name,
+                course_title=course["title"],
+                amount_cents=amount_cents,
+                was_founder=was_founder,
+                payment_ref=payment_ref,
             )
             await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
         except Exception as e:
@@ -1273,6 +1296,41 @@ async def admin_create_manual_enrollment(
         "user_id": u["id"],
         "payment_reference": payment_ref,
     }
+
+
+@api.post("/admin/enrollment/{enrollment_id}/resend-welcome")
+async def admin_resend_welcome(enrollment_id: str, user: dict = Depends(current_admin)):
+    """Resend the welcome email for an existing enrollment. Useful when the
+    initial send failed (e.g., Resend quota exhausted) or the student says
+    they never received it."""
+    enrollment = await db.enrollments.find_one({"id": enrollment_id})
+    if not enrollment:
+        raise HTTPException(404, "Inscripción no encontrada")
+    student = await db.users.find_one({"id": enrollment["user_id"]})
+    if not student:
+        raise HTTPException(404, "Estudiante no encontrado")
+    course = await db.courses.find_one({"id": enrollment["course_id"]})
+    if not course:
+        raise HTTPException(404, "Curso no encontrado")
+    email = student["email"]
+    first_name = _first_name_for(student, email)
+    amount_cents = int(enrollment.get("amount_paid_eur") or 0)
+    was_founder = bool(enrollment.get("was_founder"))
+    payment_ref = enrollment.get("stripe_payment_id") or f"MANUAL-{enrollment['id'][:8].upper()}"
+    html = _build_welcome_email_html(
+        email=email,
+        first_name=first_name,
+        course_title=course["title"],
+        amount_cents=amount_cents,
+        was_founder=was_founder,
+        payment_ref=payment_ref,
+    )
+    try:
+        await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+        return {"ok": True, "sent_to": email}
+    except Exception as exc:
+        log.exception("Resend welcome failed for %s: %s", email, exc)
+        raise HTTPException(502, f"No se pudo enviar el email: {exc}")
 
 
 @api.delete("/admin/enrollment/{enrollment_id}")

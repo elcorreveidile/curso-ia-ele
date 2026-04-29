@@ -60,6 +60,16 @@ export default function Admin() {
     }
   };
 
+  const resendWelcome = async (enrollmentId, email) => {
+    if (!window.confirm(`Reenviar el email de bienvenida a ${email}?`)) return;
+    try {
+      await api.post(`/admin/enrollment/${enrollmentId}/resend-welcome`);
+      alert(`✓ Email de bienvenida enviado a ${email}`);
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error reenviando email');
+    }
+  };
+
   const [reseeding, setReseeding] = useState(false);
   const reseedResources = async () => {
     setReseeding(true);
@@ -162,6 +172,17 @@ export default function Admin() {
                           data-testid={`admin-cert-${e.enrollment.id}`}
                         >
                           🏅 Emitir
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn--ghost"
+                          style={{ fontSize: '.78rem', padding: '.4rem .7rem' }}
+                          onClick={() => resendWelcome(e.enrollment.id, e.user?.email || '')}
+                          title="Reenviar email de bienvenida"
+                          data-testid={`admin-resend-welcome-${e.enrollment.id}`}
+                        >
+                          📧
                         </button>
                       </td>
                       <td>
