@@ -335,6 +335,9 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             f"<strong>{amount_eur:.2f} €</strong>"
             + (" · precio fundador 🎉" if tx.get("was_founder") else "")
         )
+        # One-click magic link so the student lands directly in their dashboard.
+        magic_token = create_magic_token(user["email"])
+        magic_url = f"{FRONTEND_ORIGIN}/auth/verify?token={magic_token}"
         # Prefer the stored user.name; fall back to a clean local-part if
         # it looks like a real name (letters only), else a generic greeting.
         raw_name = (user.get("name") or "").strip()
@@ -397,14 +400,15 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             </div>
 
             <p style="text-align:center;margin:32px 0 16px">
-              <a href="{FRONTEND_ORIGIN}/login" style="background:#F5A623;color:#0A1628;
+              <a href="{magic_url}" style="background:#F5A623;color:#0A1628;
                  text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:800;
                  display:inline-block;font-size:15px">
                 Acceder a mi área privada →
               </a>
             </p>
             <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
-              Entras con tu email ({user['email']}) — te enviaremos un enlace mágico cada vez.
+              Este enlace caduca en <strong>30 minutos</strong> y solo tú puedes usarlo.
+              Si caduca, vuelve a entrar con tu email ({user['email']}) y te enviaremos uno nuevo.
             </p>
 
             <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
