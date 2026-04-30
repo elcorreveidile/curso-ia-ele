@@ -261,7 +261,43 @@ al usuario.
 - ✅ Testing backend: 22/23 pytest passed; bug HIGH de `/checkout/status`
   corregido y verificado manualmente.
 
-## Implementado en iteración 13 (2026-02 fork, sprint 7 · RGPD double opt-in)
+## Implementado en iteración 14 (2026-02 fork, sprint 8 · GitHub integration)
+- ✅ **Módulo 0 "Empezar con GitHub"** y **Módulo 5 "Cierre · GitHub Pages"**
+  seed completo en backend (`seed_data.py`) con lecciones, tareas y banner
+  visual en `ModuleDetail.jsx` (match por `module.id` para resistir
+  reordenamientos del admin).
+- ✅ **Campo `github_url` en perfil de usuario**: input opcional en
+  `Profile.jsx`, normalización en backend (admite `https://github.com/x`,
+  `github.com/x` o solo `x` → URL completa).
+- ✅ **`repo_url` opcional en cada entrega**:
+  - Frontend `TaskDetail.jsx`: input URL opcional bajo el upload de
+    archivo. Se incluye en `POST /course/{slug}/task/{id}/submit`.
+  - Submission history del estudiante muestra el repo como link clicable.
+  - Backend `models.SubmissionIn` y endpoint `submit_task` ya persisten
+    `repo_url` en MongoDB. Validado por curl + Playwright.
+- ✅ **Admin grading view enriquecido**: cabecera de cada entrega
+  pendiente muestra el `github_url` del estudiante y el `repo_url` de
+  la entrega como dos enlaces independientes
+  (`data-testid='admin-user-github-{id}'` y `'admin-submission-repo-{id}'`).
+- ✅ **Testing iter14**: backend curl OK + Playwright 8/8 verde
+  (banners M0/M5, ausencia en M1, input repo_url, persistencia,
+  vista admin con ambos links). Reporte `iteration_12.json`.
+
+## Implementado en iteración 13.5 (2026-02 fork · forums + analytics)
+- ✅ **Foros multi-nivel**: foros generales del curso + foros por módulo.
+  Componente `CourseForum.jsx` con scope `course|module`.
+- ✅ **Modal Student Analytics en admin**: progreso por módulo, último
+  acceso, tiempo estimado, conteo de entregas. Endpoint
+  `GET /api/admin/student/{user_id}/analytics`. Fix timezones.
+- ✅ **Cloudinary nuevo (cuenta `dinortt4c`)**: PDFs servidos vía proxy
+  backend con `fl_attachment` para bypass de la restricción de delivery
+  raw de PDFs en cuentas nuevas.
+- ✅ **Magic link embebido en email de bienvenida**: tras inscripción
+  manual o Stripe, el usuario entra con un click sin pasar por `/login`.
+- ✅ **Botón "Reenviar bienvenida"** en tabla de inscripciones del admin.
+- ✅ **Logo más pequeño** en navbar/footer según feedback del usuario.
+
+
 - ✅ **Email de regularización RGPD para usuarios pre-existentes**: nuevo
   banner ámbar en la sección de usuarios del admin que muestra cuántos
   usuarios no tienen aún un consentimiento explícito y un botón "Enviar

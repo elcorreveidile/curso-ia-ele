@@ -56,7 +56,7 @@ export default function ModuleDetail() {
             ← Volver al curso
           </Link>
 
-          {entry.module.order === 0 && (
+          {entry.module.id === 'mod-ia-00' && (
             <div className="info-box" style={{ borderLeft: '4px solid var(--blue)', marginBottom: '1.25rem', background: 'rgba(15,76,129,0.06)' }} data-testid="module-banner-github-intro">
               <p className="info-box__title">🐙 Bienvenido a la Guía de inicio en GitHub</p>
               <p style={{ margin: 0 }}>
@@ -67,7 +67,7 @@ export default function ModuleDetail() {
             </div>
           )}
 
-          {entry.module.order === 5 && (
+          {entry.module.id === 'mod-ia-05' && (
             <div className="info-box" style={{ borderLeft: '4px solid var(--clm-red)', marginBottom: '1.25rem', background: 'rgba(245,166,35,0.08)' }} data-testid="module-banner-github-pages">
               <p className="info-box__title">🚀 Cierre del curso · Publica tu portfolio con GitHub Pages</p>
               <p style={{ margin: 0 }}>
