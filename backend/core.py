@@ -186,17 +186,32 @@ def create_session_jwt(user_id: str, email: str, role: str) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
 
-def create_magic_token(email: str, marketing_consent: Optional[bool] = None) -> str:
+def create_magic_token(
+    email: str,
+    marketing_consent: Optional[bool] = None,
+    expires_in: timedelta = timedelta(minutes=30),
+) -> str:
     payload = {
         "email": email.lower(),
         "purpose": "magic_link",
         "iat": int(now_utc().timestamp()),
-        "exp": int((now_utc() + timedelta(minutes=30)).timestamp()),
+        "exp": int((now_utc() + expires_in).timestamp()),
         "nonce": secrets.token_urlsafe(16),
     }
     if marketing_consent is not None:
         payload["mc"] = bool(marketing_consent)
     return jwt.encode(payload, MAGIC_LINK_SECRET, algorithm="HS256")
+
+
+def create_welcome_magic_token(email: str) -> str:
+    """Long-lived (30 days) magic token used in welcome / re-engagement emails.
+
+    The student often opens the welcome email hours or days after enrollment
+    (or after the manual invite is sent), so the standard 30-minute token
+    expires before they click. 30 days gives them a comfortable window to
+    land directly in their dashboard with one click.
+    """
+    return create_magic_token(email, expires_in=timedelta(days=30))
 
 
 def verify_magic_token(token: str) -> tuple[str, Optional[bool]]:

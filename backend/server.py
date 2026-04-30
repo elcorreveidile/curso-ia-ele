@@ -42,6 +42,7 @@ from core import (
     STRIPE_API_KEY,
     clean_doc,
     create_magic_token,
+    create_welcome_magic_token,
     create_session_jwt,
     current_admin,
     current_user,
@@ -351,7 +352,9 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             + (" · precio fundador 🎉" if tx.get("was_founder") else "")
         )
         # One-click magic link so the student lands directly in their dashboard.
-        magic_token = create_magic_token(user["email"])
+        # Long-lived (30 days) so the student isn't blocked if they open the
+        # email later than 30 minutes after enrollment.
+        magic_token = create_welcome_magic_token(user["email"])
         magic_url = f"{FRONTEND_ORIGIN}/auth/verify?token={magic_token}"
         # Prefer the stored user.name; fall back to a clean local-part if
         # it looks like a real name (letters only), else a generic greeting.
@@ -422,8 +425,8 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
               </a>
             </p>
             <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">
-              Este enlace caduca en <strong>30 minutos</strong> y solo tú puedes usarlo.
-              Si caduca, vuelve a entrar con tu email ({user['email']}) y te enviaremos uno nuevo.
+              Este enlace te lleva directamente a tu área privada (válido <strong>30 días</strong>).
+              Cuando caduque, podrás volver a entrar pidiendo un nuevo enlace con tu email ({user['email']}).
             </p>
 
             <hr style="border:none;border-top:1px solid #E0E2EA;margin:28px 0">
@@ -1388,8 +1391,8 @@ def _build_welcome_email_html(
     cta_href = magic_link_url or f"{FRONTEND_ORIGIN}/login"
     cta_caption = (
         '<p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">'
-        'Este enlace caduca en <strong>30 minutos</strong> y solo tú puedes usarlo. '
-        f'Si caduca, vuelve a entrar con tu email ({email}) y te enviaremos uno nuevo.'
+        'Este enlace te lleva directamente a tu área privada (válido <strong>30 días</strong>). '
+        f'Cuando caduque, podrás volver a entrar pidiendo un nuevo enlace con tu email ({email}).'
         '</p>'
         if magic_link_url else
         '<p style="font-size:13px;color:#6B82A0;text-align:center;margin:0">'
@@ -1537,7 +1540,7 @@ async def admin_create_manual_enrollment(
     if payload.send_welcome_email:
         try:
             first_name = _first_name_for(u, email)
-            magic_token = create_magic_token(email)
+            magic_token = create_welcome_magic_token(email)
             magic_url = f"{FRONTEND_ORIGIN}/auth/verify?token={magic_token}"
             html = _build_welcome_email_html(
                 email=email,
@@ -1579,7 +1582,7 @@ async def admin_resend_welcome(enrollment_id: str, user: dict = Depends(current_
     amount_cents = int(enrollment.get("amount_paid_eur") or 0)
     was_founder = bool(enrollment.get("was_founder"))
     payment_ref = enrollment.get("stripe_payment_id") or f"MANUAL-{enrollment['id'][:8].upper()}"
-    magic_token = create_magic_token(email)
+    magic_token = create_welcome_magic_token(email)
     magic_url = f"{FRONTEND_ORIGIN}/auth/verify?token={magic_token}"
     html = _build_welcome_email_html(
         email=email,
