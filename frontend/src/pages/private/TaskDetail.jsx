@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
@@ -12,6 +13,7 @@ export default function TaskDetail() {
   const [data, setData] = useState(null);
   const [content, setContent] = useState('');
   const [fileUrl, setFileUrl] = useState('');
+  const [repoUrl, setRepoUrl] = useState('');
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState('');
 
@@ -25,8 +27,12 @@ export default function TaskDetail() {
     e.preventDefault();
     setSending(true); setErr('');
     try {
-      await api.post(`/course/${slug}/task/${taskId}/submit`, { content_md: content, file_url: fileUrl || null });
-      setContent(''); setFileUrl('');
+      await api.post(`/course/${slug}/task/${taskId}/submit`, {
+        content_md: content,
+        file_url: fileUrl || null,
+        repo_url: repoUrl.trim() || null,
+      });
+      setContent(''); setFileUrl(''); setRepoUrl('');
       load();
     } catch (ex) {
       setErr(ex.response?.data?.detail || 'Error');
@@ -36,6 +42,9 @@ export default function TaskDetail() {
 
   if (err && !data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem', color: 'var(--clm-red)' }}>{err}</div><Footer /></>;
   if (!data) return <><Navbar /><div className="inner-page" style={{ padding: '6rem 2rem' }}>Cargando…</div><Footer /></>;
+
+  const pending = data.pending_resources || [];
+  const canSubmit = data.can_submit !== false;
 
   return (
     <>
@@ -49,15 +58,41 @@ export default function TaskDetail() {
 
           <div className="lesson-body" data-testid="task-instructions">
             <p className="section__tag">Instrucciones</p>
-            <ReactMarkdown>{data.task.instructions_md || ''}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.task.instructions_md || ''}</ReactMarkdown>
           </div>
+
+          {!canSubmit && pending.length > 0 && (
+            <div className="info-box" style={{ borderLeft: '4px solid var(--clm-red)', marginBottom: '1.25rem' }} data-testid="task-gate-banner">
+              <p className="info-box__title">📖 Antes de entregar, lee los materiales del módulo</p>
+              <p style={{ marginBottom: '.75rem' }}>
+                Te quedan <strong>{pending.length}</strong> {pending.length === 1 ? 'material por leer' : 'materiales por leer'} de este módulo.
+                Una vez los leas, podrás enviar tu entrega.
+              </p>
+              <ul style={{ margin: 0, paddingLeft: '1.25rem' }} data-testid="task-gate-list">
+                {pending.map((r) => (
+                  <li key={r.slug} style={{ marginBottom: '.35rem' }}>
+                    <Link to={`/recurso/${r.slug}`} style={{ color: 'var(--blue)' }} data-testid={`task-gate-item-${r.slug}`}>
+                      {r.title}
+                    </Link>
+                    <span style={{ fontSize: '.78rem', color: 'var(--ink-muted)', marginLeft: '.4rem' }}>· {r.type_label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {canSubmit && pending.length === 0 && (data.module_resources || []).length > 0 && (
+            <div className="info-box" style={{ borderLeft: '4px solid #16A34A', marginBottom: '1.25rem' }} data-testid="task-gate-ok">
+              <p style={{ margin: 0 }}>✓ Has leído todos los materiales del módulo. ¡Puedes entregar la tarea!</p>
+            </div>
+          )}
 
           <div className="lesson-body">
             <p className="section__tag">Entregar</p>
             <form onSubmit={submit} data-testid="task-submit-form">
               <div className="form-group">
                 <label>Contenido de tu entrega (Markdown)</label>
-                <textarea className="form-input" value={content} onChange={(e) => setContent(e.target.value)} required data-testid="task-submit-content" />
+                <textarea className="form-input" value={content} onChange={(e) => setContent(e.target.value)} required disabled={!canSubmit} data-testid="task-submit-content" />
               </div>
               <div className="form-group">
                 <label>Archivo adjunto (opcional)</label>
@@ -71,9 +106,25 @@ export default function TaskDetail() {
                   </p>
                 )}
               </div>
+              <div className="form-group">
+                <label>Repositorio de GitHub (opcional)</label>
+                <input
+                  className="form-input"
+                  type="url"
+                  inputMode="url"
+                  placeholder="https://github.com/tu-usuario/curso-ia-ele"
+                  value={repoUrl}
+                  onChange={(e) => setRepoUrl(e.target.value)}
+                  disabled={!canSubmit}
+                  data-testid="task-submit-repo"
+                />
+                <p style={{ fontSize: '.78rem', color: 'var(--ink-muted)', marginTop: '.35rem' }}>
+                  Si has subido tu trabajo a GitHub, pega aquí la URL del repositorio.
+                </p>
+              </div>
               {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
-              <button className="btn btn--primary" disabled={sending} data-testid="task-submit-btn">
-                {sending ? 'Enviando…' : 'Enviar entrega'}
+              <button className="btn btn--primary" disabled={sending || !canSubmit} data-testid="task-submit-btn">
+                {sending ? 'Enviando…' : canSubmit ? 'Enviar entrega' : 'Lee primero los materiales'}
               </button>
             </form>
           </div>
@@ -95,7 +146,39 @@ export default function TaskDetail() {
                   )}
                 </div>
                 <div style={{ fontSize: '.9rem', whiteSpace: 'pre-wrap', marginBottom: '.5rem' }}>{s.content_md}</div>
-                {s.file_url && <p style={{ fontSize: '.82rem' }}>📎 <a href={s.file_url} target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }}>Archivo adjunto</a></p>}
+                {s.repo_url && (
+                  <p style={{ fontSize: '.82rem', marginBottom: '.35rem' }}>
+                    🐙{' '}
+                    <a href={s.repo_url} target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }} data-testid={`task-submission-repo-${s.id}`}>
+                      {s.repo_url}
+                    </a>
+                  </p>
+                )}
+                {s.file_url && (
+                  <p style={{ fontSize: '.82rem' }}>
+                    📎{' '}
+                    <a
+                      href="#"
+                      onClick={async (ev) => {
+                        ev.preventDefault();
+                        try {
+                          const r = await api.get(`/download/submission/${s.id}`, { responseType: 'blob' });
+                          const blobUrl = URL.createObjectURL(r.data);
+                          const a = document.createElement('a');
+                          a.href = blobUrl;
+                          a.download = s.file_url.split('/').pop() || 'entrega';
+                          document.body.appendChild(a); a.click(); a.remove();
+                          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                        } catch {
+                          window.open(s.file_url, '_blank');
+                        }
+                      }}
+                      style={{ color: 'var(--blue)' }}
+                    >
+                      📥 Descargar archivo adjunto
+                    </a>
+                  </p>
+                )}
                 {s.feedback_md && (
                   <div style={{ background: 'var(--canvas)', padding: '.75rem 1rem', borderRadius: 'var(--r-sm)', marginTop: '.75rem', borderLeft: '3px solid var(--green)' }}>
                     <p className="section__tag" style={{ color: 'var(--green)' }}>Feedback del formador</p>

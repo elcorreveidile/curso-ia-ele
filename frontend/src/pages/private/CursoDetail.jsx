@@ -35,6 +35,34 @@ export default function CursoDetail() {
           desc={data.course.description}
         />
         <div className="inner-content">
+          {data.course.intro_video_youtube_id && (
+            <div className="module-video" data-testid="course-intro-video" style={{ marginBottom: '1.5rem' }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${data.course.intro_video_youtube_id}?rel=0&modestbranding=1`}
+                title="Vídeo de presentación del curso"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          )}
+          <div style={{ marginBottom: '1rem', display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
+            <Link
+              to={`/curso/${slug}/recursos`}
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-resources"
+            >
+              📚 Ver todos los materiales del curso
+            </Link>
+            <Link
+              to={`/curso/${slug}/foro`}
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-forum"
+            >
+              💬 Foro del curso
+            </Link>
+          </div>
           <div className="dash-section">
             <h2 className="dash-title">Módulos</h2>
             {data.modules.map((m) => (

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { useCourse } from '../lib/course';
+import ThemeToggle from './ThemeToggle';
 
 const publicLinks = [
   { to: '/descripcion', label: 'El curso' },
@@ -87,6 +88,7 @@ export default function Navbar() {
             Acceder
           </NavLink>
         )}
+        <ThemeToggle />
       </div>
       <button
         className={`inner-nav__burger${open ? ' open' : ''}`}

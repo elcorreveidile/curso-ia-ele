@@ -1,0 +1,27 @@
+{
+  "summary": "Iteration 5 — BOTH backend + frontend tested. Backend: 12/12 pytest passing (PUT /auth/profile happy + validation + auth + whitespace; task-detail gate for students; submit 400 when pending; submit 200 after reading all; admin bypass on /submit; resources listing regression; student auto-view mark regression; admin does NOT auto-mark). Frontend (Playwright, 1440x900): 4/4 scenarios pass — (1) Navbar 'Acceder' is visible without hover (bg=rgb(245,166,35), not transparent). (2) Onboarding: fresh student is redirected from dashboard → /mi-area/perfil?onboarding=1 via the complete-profile banner CTA, form submits PUT /auth/profile, profile-ok toast, auto-redirect to /dashboard, hero shows 'Hola, TestFE', banner disappears. (3) Task gate UI on /curso/ia-ele/tarea/mod-ia-01-task: red banner with 4 pending materials, textarea and submit btn disabled (btn text 'Lee primero los materiales'). After reading all 4 module-1 resources via GET /api/resource/{slug}, reload shows green banner '✓ Has leído todos los materiales', form enabled, btn text 'Enviar entrega'. (4) dashboard-profile-link navigates to /mi-area/perfil where profile-enrollment section renders curso (IA para la enseñanza de ELE), fecha (22/4/2026), importe (149.00 €), plaza fundador badge, and Stripe ref. No new bugs found.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iter5_profile_and_task_gate.py",
+    "/app/test_reports/pytest/iter5_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py update_profile (lines 658-669): ProfileUpdate uses min_length=1 so whitespace-only payloads ('   ') pass Pydantic but are then rejected by a 400 after .strip(). Works, but consider using a Pydantic validator to return 422 consistently for empty-after-strip.",
+    "server.py task_detail (line 1015) and submit_task (line 1056): the user_progress lookup filters by {resource_slug: {$exists: true}} WITHOUT restricting by course_id. If a student is ever enrolled in multiple courses, reads from course A could satisfy the gate of a module in course B (only if slug collision happens, currently impossible because resources use unique slugs). Worth scoping to course_id or task.module_id-bounded resources for defensive correctness.",
+    "server.py submit_task (line 1063): db.resources.find({module_id: task['module_id']}) does NOT apply any visibility filter and includes resource_type='encuesta' etc. If in the future resources are seeded with a published=false flag or module-agnostic items, they'd still block the gate. Consider filtering on the same criteria used by the public resource listing.",
+    "server.py submit_task (line 1069-1070): error message truncates to first 5 pending titles with ' …' sentinel; UI already lists all in the red banner, so backend truncation is a nice safety — no change needed.",
+    "Profile.jsx (line 41): navigate('/dashboard') fires 700ms after successful save; if the user navigates away in that window they'll be pulled back. Consider using useNavigate replace=true or cancelling on unmount to avoid the edge case."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter5_profile_and_task_gate.py"
+  ],
+  "success_rate": {"backend": "100% (12/12)", "frontend": "100% (4/4)"},
+  "test_credentials": "Admin: benitezl@go.ugr.es (via make_magic_token in conftest). Students minted per-test: TEST_iter5_*@example.com, TEST_fe_iter5_*, TEST_gate_fe_*.",
+  "seed_data_creation": "Inserted fresh enrollments directly into Mongo for the newly-created test students (patterned after enrolled_student fixture). All test data prefixed TEST_ for cleanup. Admin submitted one bypass submission (TEST admin bypass iter5) which persists in db.submissions with status='pending'.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "To reproduce frontend flow: (1) mint a session JWT: POST /api/auth/verify with a magic token signed by MAGIC_LINK_SECRET (see conftest.make_magic_token). (2) page.goto('/'), page.evaluate(`localStorage.setItem('lcd_token', <jwt>)`). (3) For gate testing: enroll via db.enrollments.insert_one(...) and purge db.user_progress. (4) To clear the gate in-browser: await page.evaluate async fetch loop over /api/resource/{slug} with Bearer header (auto-marks). (5) Known testids: nav-login, dashboard-complete-profile-banner, dashboard-complete-profile-cta, dashboard-profile-link, profile-name-input, profile-surname-input, profile-email-input, profile-save-btn, profile-ok, profile-enrollment, task-gate-banner, task-gate-list, task-gate-ok, task-submit-content, task-submit-btn. Admin never gets the gate (can_submit=true). Seeded task ids: mod-ia-01-task .. mod-ia-04-task; module 01 has 4 resources.",
+  "rca of the issue": "No issues to RCA. All iter5 features work as designed: profile PUT/GET round-trip, task resource-gate blocking submits with clear 400 message, admin bypass, onboarding redirect, dashboard banner toggle, profile page enrollment panel, Navbar Acceder button amber background."
+}

@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /mi-area/
+Disallow: /curso/
+Disallow: /recurso/
+Disallow: /libro
+Disallow: /libro/
+Disallow: /admin
+Disallow: /auth/
+Disallow: /api/
+
+Sitemap: https://laclasedigital.com/sitemap.xml

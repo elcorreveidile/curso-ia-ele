@@ -96,7 +96,7 @@ export default function Descripcion() {
                 </p>
                 {[
                   'Tienes experiencia docente en ELE y conoces los fundamentos del MCER.',
-                  'Usas herramientas digitales básicas (correo, Moodle, videoconferencias) con soltura.',
+                  'Usas herramientas digitales básicas (correo, la plataforma del curso, videoconferencias) con soltura.',
                   'Nunca has usado herramientas de IA o las has probado puntualmente sin método.',
                   'Quieres ahorrar tiempo en la preparación de clases sin sacrificar calidad didáctica.',
                   'Estás dispuesto/a a experimentar y a evaluar críticamente lo que genera la IA.',

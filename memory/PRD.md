@@ -34,6 +34,166 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 8 (2026-02 fork, sprint 4 · bugfix producción)
+- ✅ **PDF del libro en producción** (BUG FIX CRÍTICO): WeasyPrint no
+  funcionaba en el deploy nativo porque necesita libs del sistema
+  (cairo, pango, gdk-pixbuf). Reescrito `/api/ebook.pdf` con **ReportLab**
+  (pure Python, sin system deps). Incluye portada navy + marca ámbar,
+  TOC, separadores de parte, headers/footers con número de página.
+  Resultado: 557 KB · 246 páginas verificado.
+- ✅ **Email de bienvenida mejorado** (post inscripción Stripe):
+  saludo por primer nombre (con fallback sensato si el email no parece
+  nombre real), badge fundador si corresponde, caja del regalo del
+  libro, 4 pasos para empezar, importe + referencia Stripe, CTA a
+  login. Envío via send_email(Resend) desde webhook.
+- ✅ **Normalización API**: `video_youtube_id` siempre presente (None)
+  en todos los módulos del endpoint `/api/course/{slug}/content`.
+- ✅ **Testing iter8**: backend 12/12 pytest + frontend 5/5 Playwright.
+
+## Refactor pendiente (prioridad baja)
+Dividir `/app/backend/server.py` (~2300 líneas) en routers FastAPI
+modulares: auth, courses, dashboard, tasks, ebook, payments, admin,
+public. Mejora mantenibilidad y velocidad del IDE. Cero cambio visible
+al usuario.
+
+## Implementado en iteración 7 (2026-02 fork, sprint 3)
+- ✅ **Regalo del libro en landing**: banner "📘 Incluye de regalo el libro
+  *Prompts que funcionan*" en Home hero (contraste ámbar sobre oscuro)
+  y bullet en el precio fundador de Precios.
+- ✅ **SEO + Open Graph**:
+  - Meta tags OG (site_name, locale, image 1200x630, alt) + Twitter Card.
+  - JSON-LD con `@graph` Organization + Person (Javier) + Course +
+    CourseInstance + Offer (149 €, LimitedAvailability).
+  - Generada `public/og-image.png` (91 KB, azul degradado + branding).
+  - `public/sitemap.xml` con 9 rutas prioridad 0.6-1.0.
+  - `public/robots.txt` permitiendo rutas públicas y bloqueando /api,
+    /dashboard, /admin, /libro, /recurso.
+- ✅ **Animaciones scroll-reveal**: hook `useScrollReveal` con
+  IntersectionObserver, marca above-the-fold como visible inmediatamente
+  y aplica fade+slide a elementos below-fold. Aplicado en Home y Precios.
+- ✅ **Resultado del cuestionario visual**: tarjeta con emoji + título,
+  barras animadas por dimensión (Práctica / Actitud / Uso) con color
+  propio cada una, módulos clave con ✓ verde, bloque "Próximos pasos"
+  mencionando el libro, botón "Reservar plaza →".
+- ✅ **Contador de plazas live**: CourseProvider con polling 60 s +
+  refresh al volver de otra pestaña (`visibilitychange`).
+- ✅ **Email semanal automático** (APScheduler + Resend):
+  - Cron diario 09:00 Europe/Madrid, función `run_inactivity_nudge`.
+  - Detecta estudiantes inscritos sin `user_progress.viewed_at` en 7 días,
+    respeta grace week para recién inscritos y idempotencia por
+    `user.last_nudge_at`.
+  - Endpoint admin `POST /api/admin/inactivity/run` para disparo manual.
+  - Email HTML con saludo personalizado + CTA "Entrar a mi área".
+- ✅ **Modo oscuro** con toggle + `prefers-color-scheme`:
+  - Componente `ThemeToggle` en Navbar (☀️/🌙).
+  - Variable CSS `--surface` para fondos de tarjetas (evita romper los
+    títulos blancos que usaban `var(--white)`).
+  - Script inline en `index.html` previene FOUC aplicando `data-theme`
+    antes de React.
+  - Persistencia en `localStorage.lcd_theme`, respeta `prefers-color-scheme`.
+- ✅ **Bugfix contraste**: en iter7.1 arreglé dos reportes del usuario:
+  (1) el regalo del libro usaba `color: var(--ink)` que quedaba oscuro
+  sobre el hero → ahora texto `#F3F7FC`; (2) en modo oscuro los títulos
+  blancos desaparecían porque `--white` se sobrescribía → introducido
+  `--surface` para separar "fondo de card" de "color blanco puro".
+- ✅ **Testing iter7**: backend 19/19 pytest + frontend 6/6 Playwright
+  (nudge idempotency, SEO meta/JSON-LD, sitemap/robots/og-image,
+  theme toggle persistencia, cuestionario full flow, regalo landing).
+
+## Implementado en iteración 6 (2026-02 fork, sprint 2)
+- ✅ **Libro "Prompts que funcionan"** completo integrado:
+  - Seed automático de 31 capítulos desde `/app/legacy/ebook/**/*.md`
+    en 7 partes (Intro · P1 Fundamentos · P2 Niveles · P3 Destrezas
+    · P4 Géneros · P5 Aplicaciones · Apéndices).
+  - Nuevas páginas `/libro` (TOC con banner + descarga) y
+    `/libro/:slug` (lector con sidebar desktop + drawer móvil +
+    breadcrumb + Anterior/Siguiente).
+  - **PDF descargable generado con WeasyPrint**: portada azul
+    degradado con marca `[ | ]` y acento ámbar, índice paginado con
+    `target-counter`, separadores por parte, tipografía Helvetica,
+    ~150 páginas, 1.7 MB. Endpoint `GET /api/ebook.pdf`.
+  - Acceso solo a estudiantes con enrollment activo+paid
+    (admin bypass).
+  - Link destacado "📘 Mi libro" en Dashboard.
+- ✅ **Vídeos de YouTube por módulo**:
+  - Campo `video_youtube_id` en `modules` editable desde admin
+    (validación regex `^[A-Za-z0-9_-]{11}$` para evitar XSS).
+  - Embed iframe con `?rel=0&modestbranding=1` arriba de la página
+    del módulo cuando está definido.
+- ✅ **Fix botón "Acceder"**: visible sin hover (fondo ámbar con
+  `!important` para ganar especificidad).
+- ✅ **Perfil + nombre/apellidos**:
+  - Modelo `UserOut` extendido con `surname`.
+  - `PUT /api/auth/profile` con validación.
+  - Onboarding: tras magic-link, si falta nombre → redirección a
+    `/mi-area/perfil?onboarding=1` con form pre-focused.
+  - Dashboard saluda con `name` y muestra banner "Completa tu
+    perfil" si incompleto.
+  - Página `/mi-area/perfil` con datos personales editables + panel
+    "Mi inscripción" (curso, fecha, importe, badge fundador, ref pago).
+- ✅ **Bloqueo de tarea hasta leer materiales**:
+  - `/api/course/{slug}/task/{id}` devuelve `module_resources`,
+    `pending_resources`, `can_submit`.
+  - `POST /submit` devuelve 400 con lista de materiales pendientes
+    si quedan sin leer.
+  - UI: banner rojo con lista clicable + textarea y botón
+    deshabilitados ("Lee primero los materiales"); banner verde
+    "✓ Has leído todos los materiales" cuando está listo.
+  - Admin bypass.
+- ✅ **Testing iter6**: backend 19/19 pytest + frontend 7/7 Playwright.
+
+## Implementado en iteración 5 (2026-02 fork)
+- ✅ **Check "Leído" + progreso** en materiales:
+  - Auto-marcado idempotente al abrir cualquier recurso (estudiantes, no admins).
+  - Sidebar y drawer muestran ✓ verde en cada material leído y un dot
+    vacío en los no leídos; el contador "X / 17 leídos" con barra de
+    progreso ámbar→verde.
+  - Índice `/curso/:slug/recursos` muestra banner "Has leído X de Y
+    materiales" + badge ✓ en cada card leído.
+  - Backend: `user_progress` reutilizado con `resource_slug`; limpieza
+    al borrar inscripción incluye los rows de recursos.
+- ✅ **Navegación entre materiales** en `/recurso/:slug`:
+  - Sidebar sticky en desktop con los 17 materiales agrupados por módulo.
+  - Drawer deslizable en móvil con botón "📚 Índice de materiales".
+  - Breadcrumb clicable: `Mis cursos › Curso › Módulo N › Título`.
+  - Botones Anterior / Siguiente con título del recurso.
+  - `/api/resource/{slug}` devuelve `course_slug`, `course_title`,
+    `module_order`, `module_title`.
+- ✅ **Fix visor Markdown**: `remark-gfm` + CSS overflow. Validado 5/5.
+- ✅ **Fix generador PDF**: soporte fences + tablas GFM.
+
+## Implementado en iteración 4 (2026-04-20)
+- ✅ **Sistema de recursos del curso** importado automáticamente desde
+  `/app/legacy/materiales/**/*.md`. Colección `resources` en MongoDB.
+  17 materiales activos: 4 M1 · 3 M2 · 5 M3 · 3 M4 · 2 transversales.
+  Excluidos: vídeos (uso personal del formador) y guías Moodle.
+- ✅ **Visor de recurso** `/recurso/:slug` con ReactMarkdown + botón
+  "📄 Descargar PDF" en plantillas/rúbricas/glosario (generación
+  on-the-fly con `@react-pdf/renderer` replicando el estilo de la
+  plantilla original: franja ámbar, cabecera/pie con nombre del
+  formador, tipografía Helvetica y colores `#F5A623` / `#0F4C81` /
+  `#FEF6DC`).
+- ✅ **Índice de materiales** `/curso/:slug/recursos` con recursos
+  agrupados por módulo + sección transversal. Cards con emoji por
+  tipo y hover con transición a ámbar.
+- ✅ **Sección "📚 Materiales de este módulo"** en cada página de
+  módulo, listando solo los recursos de ese módulo.
+- ✅ **Botón "📚 Materiales"** en dashboard junto al CTA del curso.
+- ✅ **Normalización inteligente de títulos**: salta "ÍNDICE",
+  convierte shouty-caps a sentence case pero respeta acrónimos
+  (ELE, IA, MCER, A1-C2).
+- ✅ **Eliminar inscripciones desde admin** con botón 🗑 — borra
+  todo lo relacionado (entregas, foros, progreso, certificados) y
+  restaura la plaza fundador si aplica.
+- ✅ **Reescanear materiales** con botón 🔄 en admin
+  (`POST /api/admin/resources/reseed`) para importar nuevos `.md`
+  sin reiniciar el servidor.
+- ✅ **Stripe + webhook** ahora usa el SDK oficial directamente
+  (bypass del wrapper que daba bugs de Pydantic con `StripeObject`).
+- ✅ **Reply-To dinámico en contacto y cuestionario**: el correo
+  del visitante se pone como Reply-To para que el admin responda
+  con un clic.
+
 ## Implementado en iteración 3 (2026-04-20)
 - ✅ **Cuestionario de diagnóstico** `/cuestionario` portado del legacy:
   27 preguntas en 4 bloques (perfil · práctica · IA · expectativas),
@@ -100,6 +260,120 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
   pagado, nueva entrega (al admin), feedback disponible (al estudiante).
 - ✅ Testing backend: 22/23 pytest passed; bug HIGH de `/checkout/status`
   corregido y verificado manualmente.
+
+## Implementado en iteración 14 (2026-02 fork, sprint 8 · GitHub integration)
+- ✅ **Módulo 0 "Empezar con GitHub"** y **Módulo 5 "Cierre · GitHub Pages"**
+  seed completo en backend (`seed_data.py`) con lecciones, tareas y banner
+  visual en `ModuleDetail.jsx` (match por `module.id` para resistir
+  reordenamientos del admin).
+- ✅ **Campo `github_url` en perfil de usuario**: input opcional en
+  `Profile.jsx`, normalización en backend (admite `https://github.com/x`,
+  `github.com/x` o solo `x` → URL completa).
+- ✅ **`repo_url` opcional en cada entrega**:
+  - Frontend `TaskDetail.jsx`: input URL opcional bajo el upload de
+    archivo. Se incluye en `POST /course/{slug}/task/{id}/submit`.
+  - Submission history del estudiante muestra el repo como link clicable.
+  - Backend `models.SubmissionIn` y endpoint `submit_task` ya persisten
+    `repo_url` en MongoDB. Validado por curl + Playwright.
+- ✅ **Admin grading view enriquecido**: cabecera de cada entrega
+  pendiente muestra el `github_url` del estudiante y el `repo_url` de
+  la entrega como dos enlaces independientes
+  (`data-testid='admin-user-github-{id}'` y `'admin-submission-repo-{id}'`).
+- ✅ **Testing iter14**: backend curl OK + Playwright 8/8 verde
+  (banners M0/M5, ausencia en M1, input repo_url, persistencia,
+  vista admin con ambos links). Reporte `iteration_12.json`.
+
+## Implementado en iteración 13.5 (2026-02 fork · forums + analytics)
+- ✅ **Foros multi-nivel**: foros generales del curso + foros por módulo.
+  Componente `CourseForum.jsx` con scope `course|module`.
+- ✅ **Modal Student Analytics en admin**: progreso por módulo, último
+  acceso, tiempo estimado, conteo de entregas. Endpoint
+  `GET /api/admin/student/{user_id}/analytics`. Fix timezones.
+- ✅ **Cloudinary nuevo (cuenta `dinortt4c`)**: PDFs servidos vía proxy
+  backend con `fl_attachment` para bypass de la restricción de delivery
+  raw de PDFs en cuentas nuevas.
+- ✅ **Magic link embebido en email de bienvenida**: tras inscripción
+  manual o Stripe, el usuario entra con un click sin pasar por `/login`.
+- ✅ **Botón "Reenviar bienvenida"** en tabla de inscripciones del admin.
+- ✅ **Logo más pequeño** en navbar/footer según feedback del usuario.
+
+
+- ✅ **Email de regularización RGPD para usuarios pre-existentes**: nuevo
+  banner ámbar en la sección de usuarios del admin que muestra cuántos
+  usuarios no tienen aún un consentimiento explícito y un botón "Enviar
+  email de regularización a N".
+- ✅ Backend:
+  - `GET /api/admin/users/regularize-consent/preview` → `{would_send: N}`
+  - `POST /api/admin/users/regularize-consent` → envía un email RGPD a
+    cada usuario sin consent, con dos botones (Sí/No) cada uno con su
+    JWT firmado (`purpose: consent_optin` / `unsubscribe`).
+  - `GET /api/consent/opt-in?token=…` → endpoint público que confirma
+    el opt-in poniendo `marketing_consent: True`.
+- ✅ Tests 28/28 verde + smoke E2E (preview cuenta 82 → opt-in URL pone
+  consent=True · tokens malformados → 400 · UI banner visible).
+
+## Implementado en iteración 12 (2026-02 fork, sprint 7 · file uploads & RGPD opt-in)
+- ✅ **Subida real de archivos en entregas — verificado**: ya estaba
+  implementado (`FileUpload.jsx` + `/api/upload` Cloudinary). Confirmado
+  con curl: subida real devuelve URL Cloudinary firmada.
+- ✅ **Casilla RGPD opt-in en login y inscripción**: nuevo checkbox
+  "Acepto recibir emails ocasionales… puedo darme de baja en cualquier
+  momento (RGPD)". Por defecto desmarcado.
+- ✅ Backend: `LoginRequest` ahora acepta `marketing_consent: bool`. El
+  valor viaja firmado dentro del JWT del magic link (`mc` claim) y se
+  persiste en `users.marketing_consent` solo cuando se crea la cuenta
+  por primera vez (`marketing_consent_at` timestamp adjunto). No
+  sobrescribe la decisión de cuentas existentes.
+- ✅ Tests 28/28 verde + smoke E2E (request-link con consent=true →
+  user.marketing_consent=True; consent=false → False; tokens legacy sin
+  claim → no se persiste el campo).
+
+## Implementado en iteración 11 (2026-02 fork, sprint 6 · refactor + module emails)
+- ✅ **Resend dominio verificado**: confirmado envío real (status 200) a
+  `benitezl@go.ugr.es` y otros usuarios. Throttle 220ms evita rate limit.
+- ✅ **Email "módulo desbloqueado"**: cuando el scheduler desbloquea un
+  módulo programado, envía email transaccional a todos los estudiantes
+  inscritos del curso (template branded, ignora `marketing_consent`
+  porque es transaccional, no marketing).
+- ✅ **Refactor backend**: `server.py` 2913 → 1644 líneas (−43%).
+  Extraído a:
+  - `core.py` (config + db + JWT + deps + email helpers)
+  - `models.py` (todos los Pydantic)
+  - `seed_data.py` (seed admin/curso/módulos/lessons/tasks/recursos/eBook)
+  - `pdf_builder.py` (ReportLab PDF: `build_ebook_pdf(chapters) -> bytes`)
+  - `scheduler.py` (jobs APScheduler + templates de email)
+  - `routes/admin_users.py` (5 endpoints de gestión de usuarios + RGPD)
+- ✅ **Testing**: 28/28 tests verde tras cada extracción + smoke E2E
+  (API, admin, eBook PDF 655KB, frontend 200).
+
+## Implementado en iteración 10 (2026-02 fork, sprint 5 · users + marketing)
+- ✅ **Panel admin: Usuarios registrados**: nueva sección con tabla
+  paginable que lista TODOS los usuarios (matriculados o no), búsqueda
+  por email/nombre, contador de inscripciones, estado de marketing.
+- ✅ **Borrado en cascada**: DELETE /api/admin/users/{id} elimina
+  inscripciones, entregas, foros, progreso, certificados, pagos y magic
+  links. Restaura plazas fundador. Bloqueado para admins y para uno mismo.
+- ✅ **Email marketing masivo**: POST /api/admin/users/broadcast con
+  target `all|enrolled|not_enrolled|selected`. Throttle 220ms para
+  Resend (5 req/s). Excluye admins y usuarios con `marketing_consent=false`.
+- ✅ **Baja RGPD pública**: GET /api/unsubscribe?token=… (JWT firmado)
+  pone `marketing_consent=false` y muestra una página de confirmación.
+  Cada email lleva el enlace en el footer.
+- ✅ **Testing**: 16/16 backend pytest + smoke E2E frontend (search,
+  selección, modal, envío real a 1 usuario). Regresión iter9: 12/12.
+
+## Implementado en iteración 9 (2026-02 fork, sprint 5 · scheduled unlocks verified)
+- ✅ **Desbloqueo automático programado de módulos (verificado)**: admin
+  configura una fecha `unlock_at` desde el panel (date picker); APScheduler
+  corre cada hora (`CronTrigger(minute=5)`) y ejecuta `run_module_auto_unlock`
+  que desbloquea los módulos cuya fecha ya pasó.
+- ✅ **UX hardening**: al auto-desbloquearse un módulo, el scheduler también
+  limpia `unlock_at` (evita re-desbloqueo silencioso si el admin re-bloquea
+  manualmente después).
+- ✅ **Testing**: 12/12 backend pytest + 4/4 flujos frontend Playwright
+  (iter 9). Tests cubren PATCH (date / ISO / empty / invalid), trigger
+  manual `/admin/modules/auto-unlock/run`, pasado-desbloquea / futuro-no,
+  403 para no-admin, regresión de `unlocked` toggle y `video_youtube_id`.
 
 ## Backlog priorizado
 **P0 — Integraciones reales**

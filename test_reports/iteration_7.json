@@ -1,0 +1,29 @@
+{
+  "summary": "Iter 7 — BOTH backend + frontend tested. Backend: 19/19 pytest passing (test_iter7_nudge_and_seo.py). Frontend: 6/6 Playwright scenarios passing (home ebook gift, SEO head tags, theme toggle with persistence, Precios gift bullet, full quiz flow to quiz-result with 3 dims/barras/quiz-next-steps/quiz-go-precios, course polling API reachable).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iter7_nudge_and_seo.py",
+    "/app/test_reports/pytest/iter7_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py run_inactivity_nudge (lines 2062-2111): `cutoff` and `recent_nudge_cutoff` both use the same _INACTIVITY_DAYS value. Intent seems to be identical but the two variables suggest they could diverge — consider one constant or document the relationship to avoid future drift.",
+    "server.py run_inactivity_nudge iterates enrollments first and then fetches user per iteration (N+1 query). For larger enrollment counts this will be slow; consider aggregation or a single $lookup stage.",
+    "server.py `send_email` failure inside nudge logs error but still leaves the user un-nudged with no retry queue — acceptable for now; note in README that nudges are best-effort.",
+    "Home.jsx: the useScrollReveal hook attaches .is-visible on elements in viewport at load. All 5 .reveal elements become visible immediately on desktop 1440x900 (above-the-fold). Consider running the observer with a rootMargin that excludes the first fold to preserve the 'scroll in' UX, or only apply .reveal to below-fold content.",
+    "ThemeToggle.jsx: initial render mounts with theme='light' and only reads localStorage inside useEffect. This causes a brief flash of light theme on every page load for users who chose dark mode (FOUC). Consider reading the theme attribute from an inline script in public/index.html before React hydrates (set data-theme on <html> synchronously)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter7_nudge_and_seo.py",
+    "/app/test_reports/iteration_7.json",
+    "/app/test_reports/pytest/iter7_results.xml"
+  ],
+  "success_rate": {"backend": "100% (19/19)", "frontend": "100% (6/6 scenarios)"},
+  "test_credentials": "Admin: benitezl@go.ugr.es via make_magic_token + POST /api/auth/verify. Student tokens: session-scoped unique email. Nudge seeds: nudge.stale@example.com, nudge.fresh@example.com, nudge.active@example.com, nudge.recentlynudged@example.com.",
+  "seed_data_creation": "Inserted 4 test users + active paid enrollments in Mongo for nudge tests (30d stale, 3d fresh, 30d active w/ recent progress, 30d stale w/ recent last_nudge_at). Cleaned up in module-scoped fixture (before+after). stripe_payment_id prefix 'TEST_NUDGE_'. Emails use @example.com (IANA reserved) so Resend calls don't spam real inboxes.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter 7 adds: (1) POST /api/admin/inactivity/run endpoint + APScheduler cron 09:00 Europe/Madrid; (2) SEO static assets in /app/frontend/public/ (sitemap.xml, robots.txt, og-image.png 91KB 1200x630, index.html with OG + Twitter + JSON-LD Course/Person/Organization); (3) scroll-reveal via useScrollReveal hook (.reveal + .reveal--delay-N + .is-visible); (4) Cuestionario result page redesign: data-testid=quiz-result with 3x quiz-dim-{0,1,2}, .quiz-dim__fill style.width driven by score, quiz-next-steps (mentions 'Prompts que funcionan'), quiz-go-precios, quiz-next (for Continuar button), quiz-prev; (5) ThemeToggle.jsx in Navbar with data-testid=theme-toggle, ls key 'lcd_theme', sets html[data-theme]; (6) Home ebook-gift card data-testid=home-ebook-gift; (7) Precios featured card .price-includes contains 'Prompts que funcionan' + 'De regalo'. Backend nudge logic uses _INACTIVITY_DAYS=7 default, checks users with enrollments {status:'active', payment_status:'paid'}, skips admins, skips if user_progress.viewed_at >= cutoff, skips if enrollment.paid_at > cutoff (grace week), skips if user.last_nudge_at > recent_nudge_cutoff. On send: updates user.last_nudge_at. The live backend's send_email cannot be monkey-patched cross-process — tests rely on DB-side effects (last_nudge_at set/not-set) rather than intercepting email dispatch. Real Resend API call happens but to @example.com addresses so it's harmless. If future tests need to assert email content, add an INACTIVITY_NUDGE_DRY_RUN env flag to the server to skip the actual send while still updating last_nudge_at.",
+  "rca of the issue": "No iter7 bugs found. All 19 pytest + 6 Playwright scenarios pass. Two UX observations logged as non-blocking: (a) all .reveal elements are above-the-fold on desktop so the scroll-reveal animation fires at load rather than while scrolling, (b) ThemeToggle defers reading localStorage to useEffect causing a brief light-mode flash for dark-mode users (FOUC)."
+}

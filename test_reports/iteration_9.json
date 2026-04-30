@@ -1,0 +1,36 @@
+{
+  "summary": "Iter 9 — BOTH backend + frontend tested for the new 'scheduled automatic module unlocking' feature. Backend: 12/12 pytest passing (test_iter9_module_auto_unlock.py) covering PATCH unlock_at (date/ISO/empty/invalid), manual /admin/modules/auto-unlock/run trigger, past-date-unlocks / future-stays-locked / already-unlocked-not-re-touched semantics, 403 access control, and regression on unlocked toggle + video_youtube_id. Frontend (Playwright as admin via generated JWT): /admin → Curso section renders, date inputs with data-testid=admin-module-unlock-date-<order> appear ONLY on locked rows (3 inputs = 3 .module-row--locked vs 1 .module-row--unlocked), onChange fires PATCH /api/admin/module/<id> with {unlock_at:'YYYY-MM-DD'}, and the 'Se desbloquea ...' label renders after save. All test state was restored (no stale unlock_at left in the admin panel).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter9_module_auto_unlock.py",
+    "/app/test_reports/pytest/iter9_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py run_module_auto_unlock (~2566-2579): correctly filters unlocked_at: None so already-unlocked modules are never re-touched. Good. However, it does NOT clear unlock_at after unlocking — the module now has both unlock_at and unlocked_at set. That's fine semantically, but if an admin re-locks the module (unlocked:false → unlocked_at:null), the stale unlock_at will re-trigger the scheduler on its next run and silently re-unlock. Consider clearing unlock_at alongside setting unlocked_at in the job, OR clearing unlocked_at AND unlock_at when admin re-locks. Current behavior is a minor UX trap, not a security bug.",
+    "server.py AdminModuleUpdate.unlock_at (line ~236): typed as Optional[str]; accepts both YYYY-MM-DD and ISO-8601. Parsing is done in-handler with a try/except → HTTPException(400). Clean. Consider moving the parsing to a Pydantic validator so the 400 message is consistently generated and documented in OpenAPI.",
+    "server.py start_inactivity_scheduler (~2599): uses CronTrigger(minute=5) for the auto-unlock job which runs hourly at minute 5. Given unlock_at is stored with hour=9 UTC for date-only inputs, students can see a locked module for up to 1h after its scheduled time — acceptable. Consider CronTrigger(hour=9, minute=5) if only date-granularity is intended (less load).",
+    "Admin.jsx saveUnlockAt (line 284-287): reloads the entire course content after every change event of the date picker. Native <input type=date> fires onChange on every keystroke for year/month typing in some browsers — could cause a burst of PATCH + reload. Consider debouncing or only saving on blur.",
+    "Admin.jsx line 350: defaultValue (not value) — if the same module is re-rendered after load(), the displayed date may desync from m.module.unlock_at. Prefer controlled value with a local state map keyed by module id."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter9_module_auto_unlock.py",
+    "/app/test_reports/iteration_9.json",
+    "/app/test_reports/pytest/iter9_results.xml"
+  ],
+  "success_rate": {"backend": "100% (12/12)", "frontend": "100% (4/4 scenarios)"},
+  "test_credentials": "Admin: benitezl@go.ugr.es — JWT minted via create_magic_token helper pattern (make_magic_token in conftest) + POST /api/auth/verify. Student: per-session unique test.student+<ts>@example.com via magic-link verify (no enrollment needed for 403 access-control tests).",
+  "seed_data_creation": "No new seed data. Tests pick a currently-locked module from the seeded ia-ele course, cache its original {unlock_at, unlocked_at, video_youtube_id}, mutate via API or direct Mongo, then restore in teardown. Frontend cleanup loop iterates modules and PATCHes {unlock_at:''} on any with a non-null value so the admin UI is clean after the run.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter 9 verified the scheduled-auto-unlock feature end-to-end. The backend test fixture `locked_module` is reusable — it picks the highest-order locked module and restores state. If the seed evolves and no locked modules remain, tests will skip gracefully. Frontend testing pattern for admin pages: visit /, localStorage.setItem('lcd_token', JWT), then navigate to /admin. The admin Curso section is rendered inline on /admin (no tab switch needed in current build) — the 'Curso' get_by_role button doesn't exist but modules are visible unconditionally. Date input is native <input type=date>; set value via page.evaluate + dispatch 'change' event rather than page.fill to guarantee onChange fires. Pattern preserved in the script. Motor/AsyncIOMotorClient: each _run() coroutine creates its own client and closes it — avoids the 'future belongs to different loop' error that hit iter8's pattern of a module-level shared client.",
+  "rca of the issue": "No bugs. Feature works as specified. Minor UX observation: if an admin sets unlock_at, the job unlocks, then the admin re-locks via the manual toggle, the stale unlock_at will re-unlock the module on the next hourly run. Recommended fix noted in critical_code_review_comments but not blocking."
+}

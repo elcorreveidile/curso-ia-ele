@@ -1,0 +1,29 @@
+{
+  "summary": "Iter 11 — Three deliverables: (1) Resend domain verified — confirmed live deliveries to benitezl@go.ugr.es with 200 status; throttle 220ms prevents 429 rate limits. (2) Module unlock notification: when scheduler unlocks a module, all enrolled students get a transactional email with branded HTML template. (3) Refactor: server.py 2913→1644 lines (-43%). New modules: core.py (config/db/auth/email helpers), models.py (Pydantic), seed_data.py (DB seeding + COURSE_IA_ELE), pdf_builder.py (ReportLab), scheduler.py (jobs + templates), routes/admin_users.py (users+broadcast+unsubscribe). All 28 tests pass after each step. Smoke E2E: API, admin users, ebook PDF, frontend all 200.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/test_reports/pytest/iter9_results.xml",
+    "/app/test_reports/pytest/iter10_results.xml"
+  ],
+  "action_items": [],
+  "files_created": [
+    "/app/backend/core.py (config + db + auth deps + email helpers, 196 lines)",
+    "/app/backend/models.py (all Pydantic models, 117 lines)",
+    "/app/backend/seed_data.py (DB seeding, 343 lines)",
+    "/app/backend/pdf_builder.py (ReportLab PDF generator, 282 lines)",
+    "/app/backend/scheduler.py (APScheduler jobs + email templates, 171 lines)",
+    "/app/backend/routes/admin_users.py (admin users + broadcast + unsubscribe, 252 lines)",
+    "/app/backend/routes/__init__.py"
+  ],
+  "files_modified": [
+    "/app/backend/server.py (-1269 lines, now 1644)",
+    "/app/memory/PRD.md (iter 11 entry)"
+  ],
+  "success_rate": {"backend": "100% (28/28)", "frontend": "100% (smoke E2E)"},
+  "test_credentials": "Admin: benitezl@go.ugr.es. Student: any *@example.com via magic link.",
+  "seed_data_creation": "No new seeds. 81 users in DB after iter 10/11 testing.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Refactor complete. Module structure: core.py owns env/db/auth/email helpers; models.py the Pydantic schemas; seed_data.py the seeding logic invoked from server.py on_startup; pdf_builder.py exposes build_ebook_pdf(chapters)->bytes; scheduler.py exposes run_inactivity_nudge, run_module_auto_unlock, start_inactivity_scheduler; routes/admin_users.py exposes register(api). server.py imports all of these. NO `from __future__ import annotations` in any file (breaks Pydantic v2 + FastAPI). Future extraction candidates: routes/auth.py, routes/payments.py (Stripe is huge), routes/ebook.py, routes/student.py, routes/admin.py."
+}

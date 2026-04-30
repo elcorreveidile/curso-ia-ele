@@ -1,0 +1,35 @@
+{
+  "summary": "Iter 10 — Admin user management + marketing broadcast feature. Backend 16/16 pytest passing (test_iter10_admin_users_broadcast.py). Frontend smoke E2E executed by main agent: search filter, single-user selection, broadcast modal, and POST /admin/users/broadcast with target=selected returns sent=1 → modal renders '✓ 1 emails enviados'. Regression: iter9 12/12 still green (28/28 total).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iter10_admin_users_broadcast.py",
+    "/app/test_reports/pytest/iter10_results.xml"
+  ],
+  "action_items": [],
+  "applied_fixes_post_test": [
+    "server.py admin_delete_user: swapped guard order — self-DELETE now returns 'No puedes eliminarte a ti mismo' (was masked by admin guard). 28/28 still passing."
+  ],
+  "deferred_review_comments": [
+    "user_ids ignored when target!='selected' — kept silent for now (low risk).",
+    "_make_unsubscribe_token has no exp — RGPD-acceptable; revisit if abuse observed.",
+    "Broadcast 220ms/user sleep: for target=all on >500 users the request may time out. Future: convert to background task with job-id polling.",
+    "GET /admin/users does N+1 enrollment counts — fine at current scale (~80 users); switch to $lookup if it grows.",
+    "UserBroadcastIn: max_length on subject/body could move to Pydantic Field for OpenAPI.",
+    "/admin/users response includes raw user docs — consider explicit projection if PII fields multiply."
+  ],
+  "updated_files": [
+    "/app/backend/server.py (UserBroadcastIn + 4 endpoints + 220ms throttle + guard order fix)",
+    "/app/frontend/src/pages/admin/Admin.jsx (UsersControl + BroadcastModal sections)",
+    "/app/backend/tests/test_iter10_admin_users_broadcast.py",
+    "/app/test_reports/iteration_10.json",
+    "/app/test_reports/pytest/iter10_results.xml"
+  ],
+  "success_rate": {"backend": "100% (16/16)", "frontend": "100% (smoke E2E by main agent)"},
+  "test_credentials": "Admin: benitezl@go.ugr.es. JWT minted via create_session_jwt with seeded admin id (admin-<md5(email)[:8]>).",
+  "seed_data_creation": "Per-test users prefixed test_iter10_*@example.com, auto-cleaned. Founder seat snapshot restored.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iter 10 added GET /admin/users, DELETE /admin/users/{id} (cascade + founder-seat restore), POST /admin/users/broadcast (target=all|enrolled|not_enrolled|selected with marketing_consent + admin filtering and 220ms Resend throttle), and public GET /api/unsubscribe?token=... (RGPD). Frontend has UsersControl + BroadcastModal in Admin.jsx with full data-testid coverage. Resend rate limit: 5/s — keep broadcast tests bounded to target='selected' with ≤2 controlled users.",
+  "rca of the issue": "No bugs. One small spec-compliance fix applied: self-delete guard order swapped so the 'self' message wins over the 'admin' message."
+}
