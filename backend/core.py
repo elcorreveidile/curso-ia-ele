@@ -82,16 +82,28 @@ def now_utc() -> datetime:
 
 
 def iso(dt: Optional[datetime]) -> Optional[str]:
-    return dt.isoformat() if dt else None
+    """Serialise a datetime to ISO-8601 with timezone info.
+
+    Datetimes we write via ``now_utc()`` are tz-aware, but Motor/MongoDB
+    returns them as naive UTC. We normalise naive values as UTC so the
+    browser converts them to the viewer's local time correctly.
+    """
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.isoformat()
 
 
 def clean_doc(doc: Optional[dict]) -> Optional[dict]:
-    """Remove Mongo _id and convert datetimes to ISO strings."""
+    """Remove Mongo _id and convert datetimes to ISO strings (UTC-aware)."""
     if not doc:
         return doc
     out = {k: v for k, v in doc.items() if k != "_id"}
     for k, v in list(out.items()):
         if isinstance(v, datetime):
+            if v.tzinfo is None:
+                v = v.replace(tzinfo=timezone.utc)
             out[k] = v.isoformat()
     return out
 
