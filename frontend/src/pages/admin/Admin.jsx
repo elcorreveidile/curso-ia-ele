@@ -719,6 +719,7 @@ function UsersControl() {
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [pendingConsent, setPendingConsent] = useState(null); // count of users without explicit consent
   const [regularizing, setRegularizing] = useState(false);
+  const [analyticsForUser, setAnalyticsForUser] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -945,17 +946,30 @@ function UsersControl() {
                       : <span style={{ color: '#16A34A' }}>✓ Activo</span>}
                   </td>
                   <td>
-                    {u.role !== 'admin' && (
-                      <button
-                        className="btn btn--ghost"
-                        style={{ fontSize: '.78rem', padding: '.4rem .7rem', color: 'var(--clm-red)', borderColor: 'var(--clm-red-light)' }}
-                        onClick={() => removeUser(u)}
-                        title={`Eliminar ${u.email}`}
-                        data-testid={`admin-delete-user-${u.id}`}
-                      >
-                        🗑
-                      </button>
-                    )}
+                    <div style={{ display: 'flex', gap: '.3rem', justifyContent: 'flex-end' }}>
+                      {u.role !== 'admin' && (
+                        <button
+                          className="btn btn--ghost"
+                          style={{ fontSize: '.78rem', padding: '.4rem .7rem' }}
+                          onClick={() => setAnalyticsForUser(u.id)}
+                          title={`Ver actividad de ${u.email}`}
+                          data-testid={`admin-user-analytics-${u.id}`}
+                        >
+                          📊
+                        </button>
+                      )}
+                      {u.role !== 'admin' && (
+                        <button
+                          className="btn btn--ghost"
+                          style={{ fontSize: '.78rem', padding: '.4rem .7rem', color: 'var(--clm-red)', borderColor: 'var(--clm-red-light)' }}
+                          onClick={() => removeUser(u)}
+                          title={`Eliminar ${u.email}`}
+                          data-testid={`admin-delete-user-${u.id}`}
+                        >
+                          🗑
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -965,6 +979,13 @@ function UsersControl() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {analyticsForUser && (
+        <StudentAnalyticsModal
+          userId={analyticsForUser}
+          onClose={() => setAnalyticsForUser(null)}
+        />
       )}
 
       {showBroadcast && (

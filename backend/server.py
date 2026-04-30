@@ -841,19 +841,19 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
         if not course:
             continue
         total_resources = await db.resources.count_documents({"course_id": course["id"]})
+        # A "read" is any user_progress row with a resource_slug for this course
         read_resources = await db.user_progress.count_documents({
             "user_id": user_id,
-            "kind": "resource",
             "course_id": course["id"],
-            "action": "read",
+            "resource_slug": {"$exists": True},
         })
         total_lessons = 0
         async for m in db.modules.find({"course_id": course["id"]}):
             total_lessons += await db.lessons.count_documents({"module_id": m["id"]})
         viewed_lessons = await db.user_progress.count_documents({
             "user_id": user_id,
-            "kind": "lesson",
             "course_id": course["id"],
+            "lesson_id": {"$exists": True},
         })
         submissions_count = await db.submissions.count_documents({
             "user_id": user_id, "course_id": course["id"],
@@ -861,7 +861,22 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
         submissions_graded = await db.submissions.count_documents({
             "user_id": user_id, "course_id": course["id"], "grade": {"$ne": None},
         })
-        forum_posts = await db.threads.count_documents({"user_id": user_id})
+        # Forum posts across all scopes (task/module/general) for this course.
+        # Task threads store `task_id`; module/general threads carry `scope_key`.
+        course_task_ids = [t["id"] async for t in db.tasks.find(
+            {"course_id": course["id"]}, {"id": 1}
+        )]
+        course_module_ids = [m["id"] async for m in db.modules.find(
+            {"course_id": course["id"]}, {"id": 1}
+        )]
+        forum_posts = await db.threads.count_documents({
+            "user_id": user_id,
+            "$or": [
+                {"task_id": {"$in": course_task_ids}},
+                {"scope": "module", "scope_key": {"$in": course_module_ids}},
+                {"scope": "general", "scope_key": course["slug"]},
+            ],
+        })
         enrollments_out.append({
             "course_id": course["id"],
             "course_title": course["title"],
@@ -884,9 +899,10 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
     # Activity timeline (last 50 events)
     timeline: list[dict] = []
     async for ev in db.user_progress.find({"user_id": user_id}).sort("viewed_at", -1).limit(50):
+        kind = "lesson" if ev.get("lesson_id") else ("resource" if ev.get("resource_slug") else "otro")
         timeline.append({
-            "kind": ev.get("kind"),
-            "action": ev.get("action"),
+            "kind": kind,
+            "action": None,
             "ref_id": ev.get("lesson_id") or ev.get("resource_slug"),
             "viewed_at": iso(ev.get("viewed_at")),
         })
