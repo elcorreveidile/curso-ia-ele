@@ -198,10 +198,23 @@ async def update_profile(payload: ProfileUpdate, user: dict = Depends(current_us
     surname = payload.surname.strip()
     if not name or not surname:
         raise HTTPException(400, "Nombre y apellido son obligatorios")
-    await db.users.update_one(
-        {"id": user["id"]},
-        {"$set": {"name": name, "surname": surname, "updated_at": now_utc()}},
-    )
+    update: dict[str, Any] = {"name": name, "surname": surname, "updated_at": now_utc()}
+    # GitHub URL is optional. Accept the bare username, profile URL, or repo URL.
+    raw_gh = (payload.github_url or "").strip()
+    if raw_gh:
+        # Normalise common shapes:
+        #   "elcorreveidile" → "https://github.com/elcorreveidile"
+        #   "github.com/elcorreveidile/curso-ia-ele" → "https://github.com/…"
+        if raw_gh.startswith(("http://", "https://")):
+            update["github_url"] = raw_gh
+        elif raw_gh.startswith("github.com/"):
+            update["github_url"] = f"https://{raw_gh}"
+        else:
+            cleaned = raw_gh.lstrip("@").rstrip("/")
+            update["github_url"] = f"https://github.com/{cleaned}"
+    else:
+        update["github_url"] = None
+    await db.users.update_one({"id": user["id"]}, {"$set": update})
     updated = await db.users.find_one({"id": user["id"]})
     return UserOut(**clean_doc(updated))
 
@@ -688,6 +701,7 @@ async def submit_task(
         "user_email": user["email"],
         "content_md": payload.content_md,
         "file_url": payload.file_url,
+        "repo_url": payload.repo_url,
         "submitted_at": now_utc(),
         "status": "pending",
         "grade": None,
@@ -1305,6 +1319,22 @@ async def get_ebook_full(user: dict = Depends(current_user)):
         "author": "Javier Benítez Láinez",
         "parts": [parts_map[k] for k in sorted(parts_map.keys())],
     }
+
+
+@api.get("/course/{slug}/github-guide.pdf")
+async def download_github_guide_pdf(slug: str, user: dict = Depends(current_user)):
+    """Serve the cached PDF of the GitHub onboarding guide."""
+    from pathlib import Path as _P
+    from fastapi.responses import FileResponse
+    await _ensure_enrollment_for(user, slug)
+    pdf_path = _P("/app/backend/seed_content/github_guide.pdf")
+    if not pdf_path.exists():
+        raise HTTPException(404, "Guía no disponible")
+    return FileResponse(
+        pdf_path,
+        media_type="application/pdf",
+        filename="GUIA_INICIO_GITHUB.pdf",
+    )
 
 
 @api.get("/ebook.pdf")

@@ -14,6 +14,7 @@ export default function Profile() {
 
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
+  const [githubUrl, setGithubUrl] = useState('');
   const [dashboard, setDashboard] = useState(null);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
@@ -23,6 +24,7 @@ export default function Profile() {
     if (user) {
       setName(user.name || '');
       setSurname(user.surname || '');
+      setGithubUrl(user.github_url || '');
     }
   }, [user]);
 
@@ -34,7 +36,11 @@ export default function Profile() {
     e.preventDefault();
     setSaving(true); setErr(''); setOk(false);
     try {
-      await api.put('/auth/profile', { name: name.trim(), surname: surname.trim() });
+      await api.put('/auth/profile', {
+        name: name.trim(),
+        surname: surname.trim(),
+        github_url: githubUrl.trim() || null,
+      });
       await reload();
       setOk(true);
       if (isOnboarding) {
@@ -106,6 +112,25 @@ export default function Profile() {
               <div className="form-group">
                 <label>Email (no se puede cambiar)</label>
                 <input type="email" className="form-input" value={user.email} readOnly style={{ background: 'var(--canvas)', color: 'var(--ink-muted)' }} data-testid="profile-email-input" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="profile-github">
+                  Mi repositorio de GitHub <span style={{ fontWeight: 400, color: 'var(--ink-muted)' }}>(opcional)</span>
+                </label>
+                <input
+                  id="profile-github"
+                  type="text"
+                  className="form-input"
+                  value={githubUrl}
+                  onChange={(e) => setGithubUrl(e.target.value)}
+                  placeholder="https://github.com/tu-usuario/curso-ia-ele"
+                  maxLength={200}
+                  data-testid="profile-github-input"
+                />
+                <small style={{ color: 'var(--ink-muted)', fontSize: '.78rem' }}>
+                  La URL del repositorio donde guardas tus trabajos del curso. Aparecerá automáticamente en cada entrega.
+                  Puedes pegar la URL completa o solo tu nombre de usuario.
+                </small>
               </div>
               {err && <p style={{ color: 'var(--clm-red)', marginBottom: '.5rem' }} data-testid="profile-error">{err}</p>}
               {ok && <p style={{ color: '#16A34A', marginBottom: '.5rem' }} data-testid="profile-ok">✓ Guardado correctamente</p>}

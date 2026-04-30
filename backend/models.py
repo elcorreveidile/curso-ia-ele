@@ -19,6 +19,7 @@ class UserOut(BaseModel):
     email: str
     name: Optional[str] = None
     surname: Optional[str] = None
+    github_url: Optional[str] = None
     role: Literal["student", "admin"] = "student"
     created_at: str
 
@@ -26,6 +27,7 @@ class UserOut(BaseModel):
 class ProfileUpdate(BaseModel):
     name: str = Field(min_length=1, max_length=80)
     surname: str = Field(min_length=1, max_length=120)
+    github_url: Optional[str] = Field(default=None, max_length=200)
 
 
 class CourseOut(BaseModel):
@@ -51,6 +53,7 @@ class CheckoutRequest(BaseModel):
 class SubmissionIn(BaseModel):
     content_md: str = ""
     file_url: Optional[str] = None
+    repo_url: Optional[str] = Field(default=None, max_length=300)
 
 
 class FeedbackIn(BaseModel):

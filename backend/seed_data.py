@@ -27,7 +27,148 @@ COURSE_IA_ELE = {
     "start_date": "2026-05-04",
 }
 
+
+# Loaded at module load — keeps `MODULES_SEED` declarations clean below.
+def _load_seed_text(filename: str) -> str:
+    p = Path("/app/backend/seed_content") / filename
+    if not p.exists():
+        return ""
+    return p.read_text(encoding="utf-8")
+
+
+_GITHUB_GUIDE_FALLBACK_PLACEHOLDER = _load_seed_text("github_guide.md") or (
+    "# Guía de inicio en GitHub\n\nEl contenido completo de esta guía se "
+    "actualizará al desplegar la última versión."
+)
+_GITHUB_PAGES_GUIDE = """# Publica tu web del curso con GitHub Pages
+
+Has llegado al final del curso 🎉 — y este es el momento de transformar todo
+tu repositorio en una **web pública** que puedas enseñar a colegas, añadir a tu
+CV o linkear desde tus redes.
+
+## ¿Qué es GitHub Pages?
+
+GitHub Pages es un servicio gratuito que convierte tu repositorio en una web
+accesible desde una URL pública (`https://tu-usuario.github.io/curso-ia-ele`).
+No necesitas hosting, dominio ni servidor — GitHub lo hace todo por ti.
+
+## Pasos paso a paso
+
+### 1. Asegúrate de tener un README.md decente
+
+Tu archivo `README.md` será la **portada** de tu web. Si lo has cuidado
+durante el curso, ya tienes la mitad del trabajo hecho. Si no, dedícale 10
+minutos:
+
+- Título del curso y tu nombre.
+- Breve presentación profesional (2-3 líneas).
+- Índice con enlaces a cada uno de tus módulos:
+  ```markdown
+  ## Mis trabajos del curso
+  - [Módulo 1 · Ética y prompts](modulo-01.md)
+  - [Módulo 2 · Mi asistente ELE](modulo-02.md)
+  - [Módulo 3 · Plan MCER](modulo-03.md)
+  - [Módulo 4 · Recursos multimodales](modulo-04.md)
+  ```
+
+### 2. Activa GitHub Pages
+
+1. Ve a tu repo en `github.com/tu-usuario/curso-ia-ele`.
+2. Haz clic en **Settings** (arriba a la derecha).
+3. En el menú lateral izquierdo, busca y pulsa **Pages**.
+4. En *"Source"*, despliega *"Branch"* y elige **`main`** (la rama principal).
+5. Deja la carpeta como **`/ (root)`** y pulsa **Save**.
+
+### 3. Espera 1-2 minutos
+
+GitHub tarda un momento en construir tu web. Recarga la página de Settings →
+Pages al cabo de un par de minutos: aparecerá un mensaje verde con la URL de tu
+sitio:
+
+> *Your site is live at https://tu-usuario.github.io/curso-ia-ele*
+
+¡Pulsa la URL y compártela! 🎉
+
+## ¿Y si quiero algo más bonito?
+
+GitHub Pages soporta **temas** (themes) gratuitos. Para activar uno:
+
+1. Vuelve a Settings → Pages.
+2. En *"Theme chooser"* pulsa **Choose a theme**.
+3. Elige el que más te guste (recomendados para portfolio educativo:
+   *Cayman*, *Minimal*, *Slate*).
+4. Pulsa **Select theme**. GitHub crea automáticamente un commit y tu web
+   se actualiza con el nuevo diseño.
+
+## Comparte tu web en el foro
+
+Cuando tu web esté online, **pásate por el foro general del curso** y
+comparte la URL. Vamos a hacer una lista de todas las webs creadas en el curso
+para que podamos visitarnos y aprender unos de otros.
+
+## ¿Qué hago después del curso?
+
+- **Sigue añadiendo trabajos a tu repo** según los vayas haciendo en tu aula.
+- Cada vez que actualices el README, GitHub Pages se reconstruye solo.
+- Si quieres un dominio propio (`tu-nombre.com`), GitHub Pages lo permite —
+  cuéntanos en el foro si necesitas ayuda.
+
+## ¡Enhorabuena!
+
+Has completado un curso intenso y te llevas un portfolio público que pocos
+cursos te dan. Estoy muy orgulloso de tu trabajo.
+
+— Javier
+"""
+
 MODULES_SEED = [
+    {
+        "order": 0,
+        "title": "Empezar con GitHub",
+        "description": (
+            "Antes de los módulos del curso: configura tu cuenta de GitHub "
+            "y crea el repositorio donde irás guardando todos tus trabajos. "
+            "Al final del curso publicarás tu propia web con todo lo aprendido."
+        ),
+        "lessons": [
+            {
+                "title": "Por qué usamos GitHub",
+                "content_md": (
+                    "# Por qué empezamos con GitHub\n\n"
+                    "**GitHub** será tu cuaderno digital durante el curso. En él irás "
+                    "guardando todas las tareas que hagas, los prompts que te funcionen "
+                    "y los recursos que prepares para tu aula.\n\n"
+                    "**¿Qué te llevarás al final del curso?**\n\n"
+                    "- Un **repositorio** con todo tu trabajo organizado.\n"
+                    "- Una **web pública** (con GitHub Pages) que puedes compartir como "
+                    "  portfolio profesional.\n"
+                    "- La práctica de un flujo de trabajo que muchas instituciones "
+                    "  educativas y editoriales usan a diario.\n\n"
+                    "**No te preocupes si no eres técnico**: vamos paso a paso. Si te "
+                    "atascas en algún punto, escribe en el foro general y te ayudamos."
+                ),
+            },
+            {
+                "title": "Guía completa: tu primer repositorio",
+                "content_md": _GITHUB_GUIDE_FALLBACK_PLACEHOLDER,
+            },
+        ],
+        "task": {
+            "title": "Comparte tu repositorio en el foro",
+            "instructions_md": (
+                "1. Sigue la guía de la lección anterior y crea tu repo del curso.\n"
+                "2. Ve a **Mi área → Mi perfil** y pega ahí la URL de tu repo de "
+                "GitHub. Esa URL aparecerá automáticamente como referencia en cada "
+                "entrega de los módulos siguientes.\n"
+                "3. Pasa por el **foro general del curso** y preséntate brevemente "
+                "compartiendo tu repo: qué materia/nivel impartes, qué te trae al "
+                "curso, y un enlace a tu repo recién creado.\n\n"
+                "*Esta tarea no se puntúa: es solo el punto de partida. Si tu URL ya "
+                "está en tu perfil, ¡hecho!*"
+            ),
+            "due_days": 7,
+        },
+    },
     {
         "order": 1,
         "title": "Ética y prompts eficaces",
@@ -94,6 +235,33 @@ MODULES_SEED = [
             "title": "Kit de recursos multimodales",
             "instructions_md": "Crea un kit completo (imagen + audio + mapa mental) para una unidad real que impartas. Añade una reflexión final en el foro.",
             "due_days": 7,
+        },
+    },
+    {
+        "order": 5,
+        "title": "Cierre · Publica tu web del curso",
+        "description": (
+            "Convierte tu repositorio en una web pública con GitHub Pages. "
+            "Te llevas un portfolio profesional que puedes compartir y "
+            "ampliar después del curso."
+        ),
+        "lessons": [
+            {
+                "title": "Publica tu web con GitHub Pages",
+                "content_md": _GITHUB_PAGES_GUIDE,
+            },
+        ],
+        "task": {
+            "title": "Comparte tu web en el foro general",
+            "instructions_md": (
+                "Cuando tu web esté online, comparte la URL en el **foro general "
+                "del curso**. Vamos a celebrar el cierre con una lista de todas "
+                "las webs creadas por la promoción.\n\n"
+                "Pega en este formulario la URL de tu web (algo como "
+                "`https://tu-usuario.github.io/curso-ia-ele`) y, opcionalmente, "
+                "una breve reflexión sobre qué te llevas del curso."
+            ),
+            "due_days": 14,
         },
     },
 ]
@@ -166,40 +334,44 @@ async def seed_database() -> None:
         await db.courses.insert_one({**COURSE_IA_ELE, "created_at": now_utc()})
         log.info("Seeded course ia-ele")
 
-    existing = await db.modules.count_documents({"course_id": "course-ia-ele"})
-    if existing == 0:
-        for mdata in MODULES_SEED:
-            mid = f"mod-ia-{mdata['order']:02d}"
-            await db.modules.insert_one({
-                "id": mid,
-                "course_id": "course-ia-ele",
-                "order": mdata["order"],
-                "title": mdata["title"],
-                "description": mdata["description"],
-                "unlocked_at": now_utc() if mdata["order"] == 1 else None,
-                "created_at": now_utc(),
-            })
-            for lidx, lesson in enumerate(mdata["lessons"], start=1):
-                await db.lessons.insert_one({
-                    "id": f"{mid}-l{lidx}",
-                    "module_id": mid,
-                    "order": lidx,
-                    "title": lesson["title"],
-                    "content_md": lesson["content_md"],
-                    "video_url": None,
-                    "visible": True,
-                    "created_at": now_utc(),
-                })
-            await db.tasks.insert_one({
-                "id": f"{mid}-task",
+    # Seed any modules that don't yet exist (idempotent — supports adding
+    # new modules later, e.g. Module 0 / Module 5 introduced after launch).
+    for mdata in MODULES_SEED:
+        mid = f"mod-ia-{mdata['order']:02d}"
+        if await db.modules.find_one({"id": mid}):
+            continue
+        await db.modules.insert_one({
+            "id": mid,
+            "course_id": "course-ia-ele",
+            "order": mdata["order"],
+            "title": mdata["title"],
+            "description": mdata["description"],
+            # Modules 0, 1 and 5 are unlocked by default; the rest unlock
+            # progressively (admin or scheduled) as the course advances.
+            "unlocked_at": now_utc() if mdata["order"] in (0, 1, 5) else None,
+            "created_at": now_utc(),
+        })
+        for lidx, lesson in enumerate(mdata["lessons"], start=1):
+            await db.lessons.insert_one({
+                "id": f"{mid}-l{lidx}",
                 "module_id": mid,
-                "order": 1,
-                "title": mdata["task"]["title"],
-                "instructions_md": mdata["task"]["instructions_md"],
-                "due_days": mdata["task"]["due_days"],
+                "order": lidx,
+                "title": lesson["title"],
+                "content_md": lesson["content_md"],
+                "video_url": None,
+                "visible": True,
                 "created_at": now_utc(),
             })
-        log.info("Seeded modules/lessons/tasks for ia-ele")
+        await db.tasks.insert_one({
+            "id": f"{mid}-task",
+            "module_id": mid,
+            "order": 1,
+            "title": mdata["task"]["title"],
+            "instructions_md": mdata["task"]["instructions_md"],
+            "due_days": mdata["task"]["due_days"],
+            "created_at": now_utc(),
+        })
+        log.info("Seeded module %s · %s", mid, mdata["title"])
 
 
 def _smart_case(s: str) -> str:
