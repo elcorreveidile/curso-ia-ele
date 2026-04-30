@@ -24,6 +24,7 @@ import CursoDetail from './pages/private/CursoDetail';
 import ModuleDetail from './pages/private/ModuleDetail';
 import TaskDetail from './pages/private/TaskDetail';
 import Forum from './pages/private/Forum';
+import CourseForum from './pages/private/CourseForum';
 
 import Admin from './pages/admin/Admin';
 import Certificate from './pages/public/Certificate';
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/curso/:slug/modulo/:moduleId" element={<Protected><ModuleDetail /></Protected>} />
             <Route path="/curso/:slug/tarea/:taskId" element={<Protected><TaskDetail /></Protected>} />
             <Route path="/curso/:slug/tarea/:taskId/foro" element={<Protected><Forum /></Protected>} />
+            <Route path="/curso/:slug/foro" element={<Protected><CourseForum /></Protected>} />
             <Route path="/curso/:slug/recursos" element={<Protected><CourseResources /></Protected>} />
             <Route path="/recurso/:slug" element={<Protected><Resource /></Protected>} />
 

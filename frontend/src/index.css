@@ -374,7 +374,17 @@ body.has-founder-strip .home-hero { padding-top: 40px; }
   font-size: 1.05rem; color: rgba(255,255,255,.65);
   max-width: 560px; line-height: 1.7; margin-bottom: 2.5rem;
 }
-.home-logo-img { height: 76px; margin: 0 auto 1.5rem; filter: brightness(1.05); }
+.home-logo-img {
+  height: 52px;
+  width: auto;
+  max-width: 60%;
+  display: block;
+  margin: 0 auto 1.25rem;
+  filter: brightness(1.05);
+}
+@media (max-width: 640px) {
+  .home-logo-img { height: 44px; margin-bottom: 1rem; }
+}
 
 .test-card {
   background: rgba(255,255,255,.06);

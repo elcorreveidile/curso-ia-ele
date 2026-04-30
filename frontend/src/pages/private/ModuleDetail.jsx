@@ -92,6 +92,14 @@ export default function ModuleDetail() {
               >
                 Abrir tarea →
               </Link>
+              <Link
+                to={`/curso/${slug}/foro?scope=module&key=${moduleId}`}
+                className="btn btn--ghost"
+                style={{ marginTop: '1rem', marginLeft: '.5rem', fontSize: '.85rem' }}
+                data-testid="module-go-forum"
+              >
+                💬 Foro del módulo
+              </Link>
             </div>
           )}
 

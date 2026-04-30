@@ -45,7 +45,7 @@ export default function CursoDetail() {
               />
             </div>
           )}
-          <div style={{ marginBottom: '1rem' }}>
+          <div style={{ marginBottom: '1rem', display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
             <Link
               to={`/curso/${slug}/recursos`}
               className="btn btn--ghost"
@@ -53,6 +53,14 @@ export default function CursoDetail() {
               data-testid="curso-link-resources"
             >
               📚 Ver todos los materiales del curso
+            </Link>
+            <Link
+              to={`/curso/${slug}/foro`}
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-forum"
+            >
+              💬 Foro del curso
             </Link>
           </div>
           <div className="dash-section">

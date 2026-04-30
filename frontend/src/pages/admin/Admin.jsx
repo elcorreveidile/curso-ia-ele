@@ -10,6 +10,7 @@ export default function Admin() {
   const [feedback, setFeedback] = useState('');
   const [grade, setGrade] = useState('');
   const [err, setErr] = useState('');
+  const [analyticsFor, setAnalyticsFor] = useState(null);
 
   const load = useCallback(() => {
     api.get('/admin/overview').then((r) => setData(r.data));
@@ -150,7 +151,7 @@ export default function Admin() {
             <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
               <table className="admin-table" data-testid="admin-enrollments-table">
                 <thead>
-                  <tr><th>Email</th><th>Curso</th><th>Importe</th><th>Tipo</th><th>Fecha</th><th>Certificado</th><th></th></tr>
+                  <tr><th>Email</th><th>Curso</th><th>Importe</th><th>Tipo</th><th>Fecha</th><th>Certificado</th><th></th><th></th><th></th></tr>
                 </thead>
                 <tbody>
                   {data.enrollments.map((e) => (
@@ -172,6 +173,17 @@ export default function Admin() {
                           data-testid={`admin-cert-${e.enrollment.id}`}
                         >
                           🏅 Emitir
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn--ghost"
+                          style={{ fontSize: '.78rem', padding: '.4rem .7rem' }}
+                          onClick={() => setAnalyticsFor(e.user?.id)}
+                          title="Ver actividad del estudiante"
+                          data-testid={`admin-analytics-${e.enrollment.id}`}
+                        >
+                          📊
                         </button>
                       </td>
                       <td>
@@ -307,7 +319,141 @@ export default function Admin() {
         </div>
       </div>
       <Footer />
+      {analyticsFor && (
+        <StudentAnalyticsModal
+          userId={analyticsFor}
+          onClose={() => setAnalyticsFor(null)}
+        />
+      )}
     </>
+  );
+}
+
+function StudentAnalyticsModal({ userId, onClose }) {
+  const [d, setD] = useState(null);
+  const [err, setErr] = useState('');
+  useEffect(() => {
+    api.get(`/admin/student/${userId}/analytics`)
+      .then((r) => setD(r.data))
+      .catch((ex) => setErr(ex.response?.data?.detail || 'Error'));
+  }, [userId]);
+
+  const fmtMin = (m) => (m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}min` : `${m} min`);
+  const fmtDate = (iso) => (iso ? new Date(iso).toLocaleString('es-ES') : '—');
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      data-testid="admin-analytics-modal"
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(10,22,40,.55)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, padding: '1rem',
+      }}
+      onClick={(ev) => { if (ev.target === ev.currentTarget) onClose(); }}
+    >
+      <div
+        style={{
+          background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.75rem 2rem',
+          maxWidth: 760, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+          boxShadow: '0 20px 60px rgba(15,76,129,.25)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+          <div>
+            <h3 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>📊 Actividad del estudiante</h3>
+            {d && (
+              <p style={{ margin: '.2rem 0 0', fontSize: '.85rem', color: 'var(--ink-muted)' }}>
+                {d.student.email}
+                {d.student.name && ` · ${d.student.name} ${d.student.surname || ''}`}
+              </p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="linkish"
+            style={{ background: 'none', border: 0, fontSize: '1.4rem', cursor: 'pointer', color: 'var(--ink-muted)' }}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+        {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
+        {!d ? (
+          <p>Cargando…</p>
+        ) : (
+          <>
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+              gap: '.75rem', marginBottom: '1.25rem',
+            }}>
+              <StatBox label="Primera actividad" value={fmtDate(d.totals.first_seen)} />
+              <StatBox label="Última actividad" value={fmtDate(d.totals.last_seen)} />
+              <StatBox label="Días activos" value={d.totals.active_days} />
+              <StatBox label="Tiempo aprox." value={fmtMin(d.totals.approx_total_minutes)} hint="Basado en sesiones de ≤30 min" />
+            </div>
+            {d.enrollments.length === 0 ? (
+              <p style={{ color: 'var(--ink-muted)' }}>Sin inscripciones.</p>
+            ) : d.enrollments.map((e) => (
+              <div key={e.course_id} style={{ marginBottom: '1.25rem', padding: '1rem 1.1rem', background: 'var(--white)', borderRadius: 10, border: '1px solid var(--line)' }}>
+                <h4 style={{ margin: '0 0 .75rem', fontFamily: 'var(--font-display)' }}>{e.course_title}</h4>
+                <ProgressRow label="📚 Materiales leídos" value={e.read_resources} total={e.total_resources} pct={e.read_resources_pct} />
+                <ProgressRow label="🎓 Lecciones vistas" value={e.viewed_lessons} total={e.total_lessons} pct={e.viewed_lessons_pct} />
+                <div style={{ display: 'flex', gap: '1.25rem', fontSize: '.85rem', marginTop: '.5rem', color: 'var(--ink-soft)', flexWrap: 'wrap' }}>
+                  <span>✍️ Entregas: <strong>{e.submissions_count}</strong> ({e.submissions_graded} corregidas)</span>
+                  <span>💬 Foro: <strong>{e.forum_posts}</strong> mensaje(s)</span>
+                  {e.was_founder && <span>⭐ Fundador/a</span>}
+                </div>
+              </div>
+            ))}
+            {d.timeline.length > 0 && (
+              <details style={{ marginTop: '1rem' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600 }}>
+                  🕒 Últimos {d.timeline.length} eventos
+                </summary>
+                <ul style={{ fontSize: '.82rem', color: 'var(--ink-soft)', margin: '.5rem 0 0', paddingLeft: '1.2rem' }}>
+                  {d.timeline.map((ev, i) => (
+                    <li key={i}>
+                      {fmtDate(ev.viewed_at)} · <strong>{ev.kind}</strong>
+                      {ev.action && ` (${ev.action})`} · {ev.ref_id}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StatBox({ label, value, hint }) {
+  return (
+    <div style={{ padding: '.75rem .9rem', background: 'var(--white)', borderRadius: 10, border: '1px solid var(--line)' }}>
+      <div style={{ fontSize: '.72rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'var(--ink-muted)' }}>
+        {label}
+      </div>
+      <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--ink)', marginTop: '.2rem' }}>
+        {value}
+      </div>
+      {hint && <div style={{ fontSize: '.68rem', color: 'var(--ink-muted)', fontStyle: 'italic', marginTop: '.15rem' }}>{hint}</div>}
+    </div>
+  );
+}
+
+function ProgressRow({ label, value, total, pct }) {
+  return (
+    <div style={{ marginBottom: '.55rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.82rem', marginBottom: '.2rem' }}>
+        <span>{label}</span>
+        <span style={{ color: 'var(--ink-muted)' }}>{value}/{total} · {pct}%</span>
+      </div>
+      <div style={{ height: 6, background: 'var(--line)', borderRadius: 10, overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: 'var(--blue)', transition: 'width .4s' }} />
+      </div>
+    </div>
   );
 }
 

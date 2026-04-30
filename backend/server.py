@@ -712,11 +712,49 @@ async def submit_task(
 
 
 # ─────────────────────────── Forum threads ────────────────────
+#
+# Threads tienen un `scope`:
+#   - `task`    → foro de una tarea (el que existía originalmente)
+#   - `module`  → foro de un módulo entero
+#   - `general` → foro general del curso
+# Se mantiene la clave histórica `task_id` por compatibilidad con los mensajes
+# antiguos; los nuevos endpoints usan `scope_key` que combina tipo + id.
+
+
+def _forum_filter(scope: str, scope_key: str) -> dict:
+    """Build a Mongo filter for threads of a given scope/key."""
+    if scope == "task":
+        return {"task_id": scope_key}
+    return {"scope": scope, "scope_key": scope_key}
+
+
+async def _notify_new_forum_post(user: dict, scope: str, scope_key: str, body_md: str) -> None:
+    if user.get("role") == "admin":
+        return
+    try:
+        if scope == "task":
+            t = await db.tasks.find_one({"id": scope_key})
+            title = f"Tarea · {t['title']}" if t else "Tarea"
+        elif scope == "module":
+            m = await db.modules.find_one({"id": scope_key})
+            title = f"Módulo {m.get('order')} · {m.get('title')}" if m else "Módulo"
+        else:
+            title = "Foro general"
+        html = wrap_email(
+            f"<h3>Nuevo mensaje en foro</h3>"
+            f"<p><strong>{user['email']}</strong> escribió en «{title}».</p>"
+            f'<pre style="background:#F4F7FA;padding:10px;border-radius:6px">{body_md[:500]}</pre>'
+        )
+        await send_email(ADMIN_EMAIL, f"Nuevo mensaje en foro: {title}", html)
+    except Exception as exc:  # pragma: no cover
+        log.exception("Forum notify failed: %s", exc)
+
+
 @api.get("/course/{slug}/task/{task_id}/threads")
 async def list_threads(slug: str, task_id: str, user: dict = Depends(current_user)):
     await _ensure_enrollment_for(user, slug)
     posts = []
-    async for t in db.threads.find({"task_id": task_id}).sort("created_at", 1):
+    async for t in db.threads.find(_forum_filter("task", task_id)).sort("created_at", 1):
         posts.append(clean_doc(t))
     return {"posts": posts}
 
@@ -729,24 +767,177 @@ async def create_thread(
     tid = new_id()
     await db.threads.insert_one({
         "id": tid,
-        "task_id": task_id,
+        "scope": "task",
+        "scope_key": task_id,
+        "task_id": task_id,  # legacy mirror for backwards compat
         "user_id": user["id"],
         "user_email": user["email"],
         "parent_id": payload.parent_id,
         "body_md": payload.body_md,
         "created_at": now_utc(),
     })
-    # Notify admin if student posted
-    if user.get("role") != "admin":
-        task = await db.tasks.find_one({"id": task_id})
-        title = task["title"] if task else "Foro"
-        html = wrap_email(
-            f"<h3>Nuevo mensaje en foro</h3>"
-            f"<p><strong>{user['email']}</strong> escribió en «{title}».</p>"
-            f'<pre style="background:#F4F7FA;padding:10px;border-radius:6px">{payload.body_md[:500]}</pre>'
-        )
-        await send_email(ADMIN_EMAIL, f"Nuevo mensaje en foro: {title}", html)
+    await _notify_new_forum_post(user, "task", task_id, payload.body_md)
     return {"id": tid}
+
+
+@api.get("/course/{slug}/forum/{scope}/{scope_key}/threads")
+async def list_scoped_threads(
+    slug: str, scope: str, scope_key: str, user: dict = Depends(current_user),
+):
+    """List posts for the course-general forum or a module forum.
+
+    scope ∈ {'general', 'module'} — for 'general' scope_key should be the course slug.
+    """
+    if scope not in ("general", "module"):
+        raise HTTPException(400, "Ámbito de foro inválido")
+    await _ensure_enrollment_for(user, slug)
+    posts = []
+    async for t in db.threads.find(_forum_filter(scope, scope_key)).sort("created_at", 1):
+        posts.append(clean_doc(t))
+    return {"posts": posts}
+
+
+@api.post("/course/{slug}/forum/{scope}/{scope_key}/threads")
+async def create_scoped_thread(
+    slug: str, scope: str, scope_key: str,
+    payload: ThreadPostIn, user: dict = Depends(current_user),
+):
+    if scope not in ("general", "module"):
+        raise HTTPException(400, "Ámbito de foro inválido")
+    await _ensure_enrollment_for(user, slug)
+    tid = new_id()
+    await db.threads.insert_one({
+        "id": tid,
+        "scope": scope,
+        "scope_key": scope_key,
+        "user_id": user["id"],
+        "user_email": user["email"],
+        "parent_id": payload.parent_id,
+        "body_md": payload.body_md,
+        "created_at": now_utc(),
+    })
+    await _notify_new_forum_post(user, scope, scope_key, payload.body_md)
+    return {"id": tid}
+
+
+# ─────────────────────────── Admin analytics ──────────────────
+@api.get("/admin/student/{user_id}/analytics")
+async def admin_student_analytics(user_id: str, admin: dict = Depends(current_admin)):
+    """Activity snapshot for a single student across all their enrollments.
+
+    Notes on "time spent": we don't track heartbeats — the estimate is
+    derived from the timestamps of `user_progress` events (views) during
+    the same session (gap < 30 min). It's labelled in the UI as
+    "aproximado" for the admin's benefit.
+    """
+    student = await db.users.find_one({"id": user_id})
+    if not student:
+        raise HTTPException(404, "Estudiante no encontrado")
+
+    # Enrollments + per-enrollment progress
+    enrollments_out: list[dict] = []
+    async for en in db.enrollments.find({"user_id": user_id}):
+        course = await db.courses.find_one({"id": en["course_id"]})
+        if not course:
+            continue
+        total_resources = await db.resources.count_documents({"course_id": course["id"]})
+        read_resources = await db.user_progress.count_documents({
+            "user_id": user_id,
+            "kind": "resource",
+            "course_id": course["id"],
+            "action": "read",
+        })
+        total_lessons = 0
+        async for m in db.modules.find({"course_id": course["id"]}):
+            total_lessons += await db.lessons.count_documents({"module_id": m["id"]})
+        viewed_lessons = await db.user_progress.count_documents({
+            "user_id": user_id,
+            "kind": "lesson",
+            "course_id": course["id"],
+        })
+        submissions_count = await db.submissions.count_documents({
+            "user_id": user_id, "course_id": course["id"],
+        })
+        submissions_graded = await db.submissions.count_documents({
+            "user_id": user_id, "course_id": course["id"], "grade": {"$ne": None},
+        })
+        forum_posts = await db.threads.count_documents({"user_id": user_id})
+        enrollments_out.append({
+            "course_id": course["id"],
+            "course_title": course["title"],
+            "course_slug": course["slug"],
+            "payment_status": en.get("payment_status"),
+            "status": en.get("status"),
+            "paid_at": iso(en.get("paid_at")),
+            "was_founder": bool(en.get("was_founder")),
+            "total_resources": total_resources,
+            "read_resources": read_resources,
+            "read_resources_pct": round(100 * read_resources / total_resources) if total_resources else 0,
+            "total_lessons": total_lessons,
+            "viewed_lessons": viewed_lessons,
+            "viewed_lessons_pct": round(100 * viewed_lessons / total_lessons) if total_lessons else 0,
+            "submissions_count": submissions_count,
+            "submissions_graded": submissions_graded,
+            "forum_posts": forum_posts,
+        })
+
+    # Activity timeline (last 50 events)
+    timeline: list[dict] = []
+    async for ev in db.user_progress.find({"user_id": user_id}).sort("viewed_at", -1).limit(50):
+        timeline.append({
+            "kind": ev.get("kind"),
+            "action": ev.get("action"),
+            "ref_id": ev.get("lesson_id") or ev.get("resource_slug"),
+            "viewed_at": iso(ev.get("viewed_at")),
+        })
+
+    # Session-based time-spent approximation
+    all_events_times = []
+    async for ev in db.user_progress.find({"user_id": user_id}, {"viewed_at": 1}):
+        if ev.get("viewed_at"):
+            all_events_times.append(ev["viewed_at"])
+    all_events_times.sort()
+    total_minutes = 0
+    if all_events_times:
+        session_start = all_events_times[0]
+        prev = session_start
+        for t in all_events_times[1:]:
+            gap = (t - prev).total_seconds()
+            if gap > 30 * 60:  # new session
+                total_minutes += int((prev - session_start).total_seconds() / 60)
+                # minimum 1 min per isolated event
+                if prev == session_start:
+                    total_minutes += 1
+                session_start = t
+            prev = t
+        # close the last session
+        total_minutes += max(1, int((prev - session_start).total_seconds() / 60))
+
+    first_seen = all_events_times[0] if all_events_times else None
+    last_seen = all_events_times[-1] if all_events_times else None
+    active_days = len({t.date().isoformat() for t in all_events_times})
+
+    return {
+        "student": {
+            "id": student["id"],
+            "email": student["email"],
+            "name": student.get("name"),
+            "surname": student.get("surname"),
+            "role": student.get("role"),
+            "created_at": iso(student.get("created_at")),
+            "last_nudge_at": iso(student.get("last_nudge_at")),
+            "marketing_consent": student.get("marketing_consent"),
+        },
+        "enrollments": enrollments_out,
+        "timeline": timeline,
+        "totals": {
+            "total_events": len(all_events_times),
+            "first_seen": iso(first_seen),
+            "last_seen": iso(last_seen),
+            "active_days": active_days,
+            "approx_total_minutes": total_minutes,
+        },
+    }
 
 
 # ─────────────────────────── Admin endpoints ───────────────────
