@@ -56,6 +56,28 @@ export default function ModuleDetail() {
             ← Volver al curso
           </Link>
 
+          {entry.module.order === 0 && (
+            <div className="info-box" style={{ borderLeft: '4px solid var(--blue)', marginBottom: '1.25rem', background: 'rgba(15,76,129,0.06)' }} data-testid="module-banner-github-intro">
+              <p className="info-box__title">🐙 Bienvenido a la Guía de inicio en GitHub</p>
+              <p style={{ margin: 0 }}>
+                Antes de empezar el curso, configuraremos tu cuenta de GitHub y tu repositorio de trabajo.
+                Será tu cuaderno digital durante todo el curso: aquí guardarás tus prompts, tus entregas y, al final,
+                publicarás tu propia web con GitHub Pages.
+              </p>
+            </div>
+          )}
+
+          {entry.module.order === 5 && (
+            <div className="info-box" style={{ borderLeft: '4px solid var(--clm-red)', marginBottom: '1.25rem', background: 'rgba(245,166,35,0.08)' }} data-testid="module-banner-github-pages">
+              <p className="info-box__title">🚀 Cierre del curso · Publica tu portfolio con GitHub Pages</p>
+              <p style={{ margin: 0 }}>
+                ¡Llegaste al último módulo! Ahora vas a convertir tu repositorio en una web pública con GitHub Pages.
+                Al terminar tendrás una URL real (`https://tu-usuario.github.io/curso-ia-ele`) que podrás compartir
+                con tus colegas, alumnos y centros.
+              </p>
+            </div>
+          )}
+
           {entry.module.video_youtube_id && (
             <div className="module-video" data-testid="module-video">
               <iframe

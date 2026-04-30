@@ -1,0 +1,24 @@
+{
+  "summary": "Iter 12 — Frontend-only verification of the GitHub-integration deliverables for La Clase Digital. Tested via Playwright using JWT minted directly with JWT_SECRET (HS256). 8/8 checks passed: Module 0 banner (mod-ia-00) renders with data-testid='module-banner-github-intro' and not the M5 banner; Module 5 banner (mod-ia-05) renders with data-testid='module-banner-github-pages' and not the M0 banner; Module 1 (mod-ia-01) shows neither banner. TaskDetail.jsx exposes the optional repo_url input (data-testid='task-submit-repo'), the existing pending submission for test.student renders the clickable link data-testid='task-submission-repo-92f61751-…' pointing to https://github.com/test-student/curso-ia-ele, and a brand-new submission posted via the form persists repo_url=https://github.com/test-student/iter12-test and re-renders it as a link in 'Mis entregas'. Admin /admin 'Entregas pendientes' shows BOTH the user's profile github_url (data-testid='admin-user-github-{id}', href=https://github.com/test-student) and the per-submission repo_url (data-testid='admin-submission-repo-{id}', href=https://github.com/test-student/curso-ia-ele) above the submission body, exactly as required. Backend POST /course/ia-ele/task/mod-ia-00-task/submit accepted {repo_url} → 200 and the value round-tripped through GET /course/ia-ele/task/{id} and GET /admin/overview.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Cosmetic only: TaskDetail.jsx submit() does not strip whitespace from repo_url input on the URL field but does .trim() before posting — fine. Consider adding client-side URL validation (regex github.com) before submit to give immediate feedback; today the server accepts any string in repo_url. Not blocking.",
+    "Admin.jsx inline anchor for downloading submission embeds token in href as ?t=… as a fallback before the onClick blob fetch — token-in-URL would leak via referrer if the user middle-clicked. The onClick preventDefault+blob path is the primary path so this is mitigated; consider removing the t= fallback href to avoid token leakage.",
+    "ModuleDetail.jsx hardcodes order===0 and order===5 for the two banners. If module ordering is reshuffled via the admin reorder endpoint, the banners follow `order` and could drift from the intended modules (mod-ia-00 / mod-ia-05). Safer would be matching on entry.module.id === 'mod-ia-00' / 'mod-ia-05'. Not blocking for current data."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "100% (8/8)"},
+  "test_credentials": "Admin user-id admin-37c03fb3 (benitezl@go.ugr.es). Student user-id 62f48df5-ee8d-4751-bdb7-0ecabc403c11 (test.student@example.com). Tokens minted in-test with HS256 + JWT_SECRET from /app/backend/.env, stored under localStorage key 'lcd_token'.",
+  "seed_data_creation": "Created one new pending submission for test.student on task mod-ia-00-task with content 'TEST submission via Playwright iter12' and repo_url 'https://github.com/test-student/iter12-test' as part of the persistence test. There are now 8 pending submissions (was 7).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All GitHub-integration UI is working end-to-end. JWT-bypass pattern: localStorage.setItem('lcd_token', jwt) where jwt = HS256({sub:user_id, role, exp}, JWT_SECRET). RESEND_DISABLE=1 is set so emails are mocked — keep it. The student test.student@example.com is pre-enrolled in ia-ele as paid+active and now has TWO pending submissions on mod-ia-00-task (one with repo_url=…/curso-ia-ele, another with repo_url=…/iter12-test). If you want to clean the iter12 noise, delete submission with content_md='TEST submission via Playwright iter12'.",
+  "rca of the issue": "n/a — feature verification, no bugs."
+}

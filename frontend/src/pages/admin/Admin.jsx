@@ -227,6 +227,26 @@ export default function Admin() {
                 <div className="sub-card__meta">
                   <strong>{p.user?.email}</strong> · {p.task?.title} · {new Date(p.submission.submitted_at).toLocaleString('es-ES')}
                 </div>
+                {(p.user?.github_url || p.submission.repo_url) && (
+                  <div style={{ fontSize: '.82rem', marginBottom: '.5rem', display: 'flex', flexWrap: 'wrap', gap: '.75rem' }}>
+                    {p.user?.github_url && (
+                      <span>
+                        👤 GitHub:{' '}
+                        <a href={p.user.github_url} target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }} data-testid={`admin-user-github-${p.submission.id}`}>
+                          {p.user.github_url.replace(/^https?:\/\//, '')}
+                        </a>
+                      </span>
+                    )}
+                    {p.submission.repo_url && (
+                      <span>
+                        🐙 Repo de la entrega:{' '}
+                        <a href={p.submission.repo_url} target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }} data-testid={`admin-submission-repo-${p.submission.id}`}>
+                          {p.submission.repo_url.replace(/^https?:\/\//, '')}
+                        </a>
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div style={{ fontSize: '.9rem', whiteSpace: 'pre-wrap', marginBottom: '.75rem' }}>{p.submission.content_md}</div>
                 {p.submission.file_url && (
                   <p style={{ fontSize: '.82rem' }}>

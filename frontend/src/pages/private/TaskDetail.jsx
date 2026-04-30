@@ -13,6 +13,7 @@ export default function TaskDetail() {
   const [data, setData] = useState(null);
   const [content, setContent] = useState('');
   const [fileUrl, setFileUrl] = useState('');
+  const [repoUrl, setRepoUrl] = useState('');
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState('');
 
@@ -26,8 +27,12 @@ export default function TaskDetail() {
     e.preventDefault();
     setSending(true); setErr('');
     try {
-      await api.post(`/course/${slug}/task/${taskId}/submit`, { content_md: content, file_url: fileUrl || null });
-      setContent(''); setFileUrl('');
+      await api.post(`/course/${slug}/task/${taskId}/submit`, {
+        content_md: content,
+        file_url: fileUrl || null,
+        repo_url: repoUrl.trim() || null,
+      });
+      setContent(''); setFileUrl(''); setRepoUrl('');
       load();
     } catch (ex) {
       setErr(ex.response?.data?.detail || 'Error');
@@ -101,6 +106,22 @@ export default function TaskDetail() {
                   </p>
                 )}
               </div>
+              <div className="form-group">
+                <label>Repositorio de GitHub (opcional)</label>
+                <input
+                  className="form-input"
+                  type="url"
+                  inputMode="url"
+                  placeholder="https://github.com/tu-usuario/curso-ia-ele"
+                  value={repoUrl}
+                  onChange={(e) => setRepoUrl(e.target.value)}
+                  disabled={!canSubmit}
+                  data-testid="task-submit-repo"
+                />
+                <p style={{ fontSize: '.78rem', color: 'var(--ink-muted)', marginTop: '.35rem' }}>
+                  Si has subido tu trabajo a GitHub, pega aquí la URL del repositorio.
+                </p>
+              </div>
               {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
               <button className="btn btn--primary" disabled={sending || !canSubmit} data-testid="task-submit-btn">
                 {sending ? 'Enviando…' : canSubmit ? 'Enviar entrega' : 'Lee primero los materiales'}
@@ -125,6 +146,14 @@ export default function TaskDetail() {
                   )}
                 </div>
                 <div style={{ fontSize: '.9rem', whiteSpace: 'pre-wrap', marginBottom: '.5rem' }}>{s.content_md}</div>
+                {s.repo_url && (
+                  <p style={{ fontSize: '.82rem', marginBottom: '.35rem' }}>
+                    🐙{' '}
+                    <a href={s.repo_url} target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }} data-testid={`task-submission-repo-${s.id}`}>
+                      {s.repo_url}
+                    </a>
+                  </p>
+                )}
                 {s.file_url && (
                   <p style={{ fontSize: '.82rem' }}>
                     📎{' '}
