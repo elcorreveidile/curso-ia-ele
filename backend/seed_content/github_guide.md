@@ -225,13 +225,13 @@ Ahora vamos a subir tu primera tarea al repositorio. **Este es el proceso que re
 
 ---
 
-## 5️⃣ COMPARTIR TU REPOSITORIO CON LA FORMADORA
+## 5️⃣ COMPARTIR TU REPOSITORIO CON EL FORMADOR
 
 Cuando quieras entregar una tarea para evaluación, tienes **dos opciones**:
 
 ---
 
-### 🔵 OPCIÓN A: Compartir el enlace en Moodle (MÁS SENCILLO)
+### 🔵 OPCIÓN A: Compartir el enlace en la plataforma del curso (MÁS SENCILLO)
 
 Esta es la forma más directa. Simplemente comparte la URL de tu repositorio.
 
@@ -241,23 +241,23 @@ Esta es la forma más directa. Simplemente comparte la URL de tu repositorio.
    - Ejemplo: `https://github.com/tu-usuario/curso-ia-ele`
 2. Guárdala en un documento de notas
 
-#### Paso 2: Compartir en Moodle
+#### Paso 2: Compartir en la plataforma del curso
 
-1. Ve a la tarea correspondiente en Moodle
+1. Ve a la tarea correspondiente en la plataforma del curso
 2. En el campo de entrega, pega la URL de tu repositorio
 3. Añade una nota con el nombre del archivo específico si hay varios:
    - Ejemplo: `Mi repositorio: https://github.com/maria-garcia/curso-ia-ele`
    - Ejemplo: `Archivo: modulo-1-declaracion-etica.md`
 
-#### Paso 3: La formador te pedirá acceso
+#### Paso 3: El formador te pedirá acceso
 
 > **⚠️ IMPORTANTE:** Como tu repositorio es **Private**, cuando el formador abra el enlace, GitHub le mostrará un mensaje:
 > - "Repository not found" o "You need permission to access this repository"
-> - Entonces ella te solicitará acceso a través de GitHub
+> - Entonces él te solicitará acceso a través de GitHub
 > - **Tú recibirás un email** de GitHub con el asunto: "[GitHub] Access requested to your repository"
 > - Abre el email y haz clic en **"View request"** (Ver solicitud)
 > - Luego haz clic en **"Approve request"** (Aprobar solicitud)
-> - ¡Listo! La formador ya podrá ver tu repositorio
+> - ¡Listo! El formador ya podrá ver tu repositorio
 
 ---
 
@@ -279,11 +279,11 @@ Esta opción requiere un paso extra al principio, pero es más rápida para las 
 4. Haz clic en **"Add repository collaborator"** (Añadir colaborador al repositorio)
 5. **Confirmar:** Aparecerá un mensaje confirmando que se ha enviado una invitación
 
-#### Paso 3: La formador acepta la invitación
+#### Paso 3: El formador acepta la invitación
 
-1. La formador recibirá un email de invitación
+1. El formador recibirá un email de invitación
 2. Cuando acepte, ya tendrá acceso permanente a tu repositorio
-3. **Ventaja:** Para futuras entregas, no necesitarás aprobar nada — solo pega el enlace en Moodle
+3. **Ventaja:** Para futuras entregas, no necesitarás aprobar nada — solo pega el enlace en la plataforma del curso
 
 ---
 
@@ -309,7 +309,7 @@ Esta opción requiere un paso extra al principio, pero es más rápida para las 
    - Cada persona creará su cuenta
    - Crearemos el repositorio del curso
    - Subiremos un archivo de prueba
-3. **Preguntas y troubleshooting (15 min)** - Resolución de problemas
+3. **Preguntas y resolución de problemas (15 min)** - Resolución de problemas
 4. **Presentación del Módulo 1 (30 min)** - Ética en la IA
 5. **Cierre y próximos pasos (20 min)** - Tarea para la semana
 
@@ -400,7 +400,7 @@ Antes de nuestra primera sesión síncrona (lunes 4 de mayo, 16:00h), verifica q
 **Organizativamente:**
 - [ ] Has bloqueado tiempo para la sesión (lunes 4 de mayo, 16:00-17:30h)
 - [ ] Tienes esta guía abierta o impresa para consultar
-- [ ] Sabes cómo acceder al enlace de la sesión (en Moodle)
+- [ ] Sabes cómo acceder al enlace de la sesión (en la plataforma del curso)
 
 **Durante la sesión haremos:**
 - [ ] Crear cuenta en GitHub (si no la tienes)
@@ -435,9 +435,9 @@ Si has llegado hasta aquí, tienes toda la información que necesitas.
 - Trae tus dudas a la sesión síncrona
 
 **Durante el curso:**
-- **Foro de dudas en Moodle:** Publica tu pregunta allí
+- **Foro de dudas en la plataforma del curso:** Publica tu pregunta allí
 - **Correo directo:** benitezl@go.ugr.es
-- **Sesiones síncronas:** Trae tus preguntas (fechas en Moodle)
+- **Sesiones síncronas:** Trae tus preguntas
 
 **Recursos adicionales:**
 - **Guía oficial de GitHub:** https://docs.github.com/es
@@ -468,7 +468,6 @@ Si has llegado hasta aquí, tienes toda la información que necesitas.
 **Formador del curso:**
 - Nombre: Javier Benítez Láinez
 - Correo: benitezl@go.ugr.es
-- Horario de atención: [Indicar si aplica]
 
 **Soporte técnico GitHub:**
 - Help Center: https://docs.github.com/es

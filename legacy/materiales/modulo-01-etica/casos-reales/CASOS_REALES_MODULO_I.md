@@ -357,7 +357,7 @@ La IA inventó una palabra:
 
 Para tu actividad de este módulo, te pido que:
 
-1. **Analiza cada caso** usando la rúbrica que encontrarás en Moodle.
+1. **Analiza cada caso** usando la rúbrica que encontrarás en la plataforma del curso.
 2. **Identifica 3 lecciones** de cada caso para tu práctica docente.
 3. **Reflexiona:** ¿Te ves más en Carmen o en Luis? ¿Por qué?
 4. **Propón:** ¿Qué harías tú en una situación similar?
