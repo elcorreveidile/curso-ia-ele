@@ -78,6 +78,7 @@ from models import (
 from seed_data import (
     MODULE_BY_FOLDER,
     RESOURCE_LABELS,
+    migrate_lesson_content,
     seed_database,
     seed_ebook,
     seed_resources,
@@ -102,6 +103,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def on_startup() -> None:
     await seed_database()
+    await migrate_lesson_content()
     await seed_resources()
     await seed_ebook()
     start_inactivity_scheduler()

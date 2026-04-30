@@ -513,3 +513,36 @@ async def seed_ebook() -> None:
             await db.ebook_chapters.insert_one(doc)
             new_count += 1
     log.info("Ebook seeded: %d new, %d updated", new_count, upd_count)
+
+
+
+# ---------------------------------------------------------------------------
+# Content migrations — run on every startup so that already-seeded lessons
+# pick up text corrections from the source MD files. Each migration is
+# idempotent: it only writes when the stored value differs from the source.
+# ---------------------------------------------------------------------------
+
+async def migrate_lesson_content() -> None:
+    """Refresh hard-coded lesson content_md from the seed source files.
+
+    Necessary because `seed_database()` is idempotent at the module level
+    (it skips if the module already exists), so text fixes inside lessons
+    never reach existing DB rows otherwise.
+    """
+    targets = [
+        # (lesson_id, expected source content)
+        ("mod-ia-00-l2", _GITHUB_GUIDE_FALLBACK_PLACEHOLDER),
+    ]
+    updated = 0
+    for lesson_id, expected in targets:
+        if not expected:
+            continue
+        existing = await db.lessons.find_one({"id": lesson_id}, {"content_md": 1})
+        if existing and existing.get("content_md") != expected:
+            await db.lessons.update_one(
+                {"id": lesson_id},
+                {"$set": {"content_md": expected, "updated_at": now_utc()}},
+            )
+            updated += 1
+    if updated:
+        log.info("Lesson content migration: %d lesson(s) refreshed", updated)
