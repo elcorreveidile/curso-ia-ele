@@ -1,0 +1,34 @@
+Página `/curso/ia-ele` ahora tiene los 4 botones bien agrupados:
+1. 📚 Ver todos los materiales del curso
+2. 💬 Foro del curso
+3. 📘 Mi libro
+4. 📂 Documentos del curso
+
+Y el dashboard ya no muestra ni "Documentos" ni "Mi libro" — solo "Mi perfil" (que sí es información del usuario, no del curso). 
+
+## Resumen del refactor
+
+| Concepto | Naturaleza | Ubicación previa | Ubicación final |
+|---|---|---|---|
+| 🎥 Sala Zoom | Curso | Dashboard | `/curso/:slug` |
+| 📂 Documentos | Curso | Dashboard | `/curso/:slug` |
+| 📘 Mi libro | Curso | Dashboard | `/curso/:slug` |
+| 👤 Mi perfil | Usuario | Dashboard | Dashboard ✓ (correcto) |
+
+### Por qué es la decisión correcta
+
+Cuando lances un segundo curso (p. ej. *"IA para evaluación formativa"*), automáticamente:
+- Tendrá su propia sala Zoom (añades una entrada en `SESSIONS_BY_COURSE`).
+- Sus propios documentos (añades entradas en `COURSE_DOCUMENTS` en `documents_lib.py`).
+- Su propio libro/manual (cuando llegue el momento, generas otro PDF y lo asocias por curso en backend).
+
+El dashboard sigue siendo el mismo: lista limpia de "Mis cursos" + acceso rápido a "Mi perfil". Cada curso es un mundo cerrado con todo lo suyo dentro.
+
+### URLs (sin cambios — siguen funcionando)
+- `/mi-area/documentos` y `/libro` siguen siendo válidas. Los emails que ya enviaste apuntan a esas rutas y siguen funcionando.
+- En el futuro, si lanzas un segundo curso con sus propios docs/libro, podríamos migrar a `/curso/:slug/documentos` y `/curso/:slug/libro`. Por ahora no hace falta.
+
+### Para producción
+Solo redeploy del frontend.
+
+Listo para el deploy definitivo. ✅
