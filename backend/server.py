@@ -406,11 +406,12 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
                   <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro «Prompts que funcionan»</a>
                       y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>
                       para ir preparando tu cabeza.</li>
-                  <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>
-                      (te enviaré el enlace unos días antes).</li>
+                  <li><strong>Apunta las videotutorías en tu agenda</strong> (calendario debajo).</li>
                   <li><strong>Hazme caso si te pido que entregues tareas</strong>: el feedback personalizado
                       es el corazón del curso.</li>
                 </ol>
+
+                {_videotutorias_calendar_html()}
 
             <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
               <p style="margin:0;font-size:14px;color:#46476A"><strong>Pago confirmado:</strong> {price_line}</p>
@@ -1538,8 +1539,10 @@ def _build_welcome_email_html(
         <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
           <li><a href="{FRONTEND_ORIGIN}/mi-area/perfil?onboarding=1" style="color:#0F4C81;font-weight:600">Completa tu perfil</a> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
           <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro</a> y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>.</li>
-          <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>.</li>
+          <li><strong>Apunta las videotutorías en tu agenda</strong> (calendario debajo).</li>
         </ol>
+
+        {_videotutorias_calendar_html()}
 
         <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
           <p style="margin:0;font-size:14px;color:#46476A"><strong>Inscripción:</strong> {price_line}</p>
@@ -1563,6 +1566,75 @@ def _build_welcome_email_html(
         </p>
         """
     )
+
+
+def _videotutorias_calendar_html() -> str:
+    """Compact 3-session calendar block reused by all welcome emails.
+
+    Mirrors the LiveSessionsCard on the student dashboard. Edit the entries
+    here AND in /app/frontend/src/components/LiveSessionsCard.jsx if dates
+    change."""
+    sessions = [
+        {
+            "n": 1,
+            "date": "Lunes, 4 de mayo de 2026",
+            "topic": "Bienvenida y Módulo 0 (GitHub)",
+            "desc": (
+                "Presentación del curso, configuración del repositorio de "
+                "GitHub, primeras reflexiones éticas e introducción a la "
+                "ingeniería de prompts."
+            ),
+        },
+        {
+            "n": 2,
+            "date": "Jueves, 14 de mayo de 2026",
+            "topic": "Módulos 1-2",
+            "desc": (
+                "Revisión de mini asistentes, puesta en común de planes de "
+                "clase y resolución de dudas."
+            ),
+        },
+        {
+            "n": 3,
+            "date": "Jueves, 21 de mayo de 2026",
+            "topic": "Módulos 3-4",
+            "desc": (
+                "Presentación de kits de recursos multimodales y cierre del "
+                "curso."
+            ),
+        },
+    ]
+    rows = "".join(
+        f"""
+        <tr>
+          <td style="padding:10px 12px;border-bottom:1px solid #E8EEF5;vertical-align:top;width:34px">
+            <div style="background:#0F4C81;color:#fff;width:26px;height:26px;border-radius:50%;
+                        text-align:center;line-height:26px;font-weight:700;font-size:13px">{s['n']}</div>
+          </td>
+          <td style="padding:10px 12px 10px 0;border-bottom:1px solid #E8EEF5;font-size:14px;color:#46476A;line-height:1.55">
+            <div style="font-weight:700;color:#1A2535">{s['date']} · 16:00 h</div>
+            <div style="font-size:13px;color:#0F4C81;font-weight:600;margin-top:2px">{s['topic']}</div>
+            <div style="font-size:13px;color:#6B82A0;margin-top:3px">{s['desc']}</div>
+          </td>
+        </tr>
+        """
+        for s in sessions
+    )
+    return f"""
+    <div style="background:#F4F7FA;border-radius:8px;padding:6px 14px;margin:18px 0">
+      <p style="margin:14px 4px 8px;font-weight:700;color:#1A2535;font-size:14px">
+        🗓️ Calendario de las 3 videotutorías
+      </p>
+      <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">
+        {rows}
+      </table>
+      <p style="margin:10px 4px 12px;font-size:12px;color:#6B82A0;line-height:1.5">
+        Todas las sesiones son a las <strong>16:00 h hora peninsular española</strong> (GMT+2)
+        y duran 90 minutos. La sala de Zoom es la misma para las tres — encontrarás el
+        enlace y el ID de reunión en tu área privada.
+      </p>
+    </div>
+    """
 
 
 def _build_videotutoria1_email_html(first_name: str, area_url: str) -> str:
@@ -1615,6 +1687,8 @@ def _build_videotutoria1_email_html(first_name: str, area_url: str) -> str:
           <li>Primera práctica en directo: construir un prompt desde cero, componente a componente.</li>
           <li>Resolver las dudas que hayan surgido tras revisar los materiales del Módulo I.</li>
         </ul>
+
+        {_videotutorias_calendar_html()}
 
         <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:20px 0">
           <p style="margin:0 0 6px;font-weight:700;color:#1A2535;font-size:14px">📎 Te adjunto en este correo</p>
