@@ -3,10 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
+import ForumPost, { MarkdownHelp } from '../../components/ForumPost';
 import { api } from '../../lib/api';
+import { useAuth } from '../../lib/auth';
 
 export default function Forum() {
   const { slug, taskId } = useParams();
+  const { user: currentUser } = useAuth();
   const [posts, setPosts] = useState([]);
   const [text, setText] = useState('');
   const [parent, setParent] = useState(null);
@@ -31,6 +34,11 @@ export default function Forum() {
     }
   };
 
+  const handleReply = (postId) => {
+    setParent(postId);
+    document.getElementById('forum-textarea')?.focus();
+  };
+
   const roots = posts.filter((p) => !p.parent_id);
   const children = (pid) => posts.filter((p) => p.parent_id === pid);
 
@@ -48,27 +56,20 @@ export default function Forum() {
 
           {roots.map((p) => (
             <div key={p.id}>
-              <div className="thread-post" data-testid={`thread-${p.id}`}>
-                <div className="thread-post__meta">
-                  <strong>{p.user_email}</strong> · {new Date(p.created_at).toLocaleString('es-ES')}
-                </div>
-                <div className="thread-post__body">{p.body_md}</div>
-                <button
-                  className="linkish"
-                  onClick={() => { setParent(p.id); document.getElementById('forum-textarea')?.focus(); }}
-                  style={{ marginTop: '.5rem', fontSize: '.82rem', color: 'var(--blue)' }}
-                  data-testid={`thread-reply-${p.id}`}
-                >
-                  Responder →
-                </button>
-              </div>
+              <ForumPost
+                post={p}
+                currentUser={currentUser}
+                onChange={load}
+                onReply={handleReply}
+              />
               {children(p.id).map((c) => (
-                <div key={c.id} className="thread-post thread-post--child" data-testid={`thread-${c.id}`}>
-                  <div className="thread-post__meta">
-                    <strong>{c.user_email}</strong> · {new Date(c.created_at).toLocaleString('es-ES')}
-                  </div>
-                  <div className="thread-post__body">{c.body_md}</div>
-                </div>
+                <ForumPost
+                  key={c.id}
+                  post={c}
+                  currentUser={currentUser}
+                  onChange={load}
+                  childPost
+                />
               ))}
             </div>
           ))}
@@ -88,6 +89,7 @@ export default function Forum() {
               required
               data-testid="forum-textarea"
             />
+            <MarkdownHelp />
             {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
             <button className="btn btn--primary" style={{ marginTop: '.75rem' }} data-testid="forum-submit">
               Publicar mensaje

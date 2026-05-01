@@ -109,7 +109,18 @@ def clean_doc(doc: Optional[dict]) -> Optional[dict]:
 
 
 # ─────────────────────────── Email (Resend) ───────────────────
-async def send_email(to_email: str, subject: str, html: str) -> None:
+async def send_email(
+    to_email: str,
+    subject: str,
+    html: str,
+    attachments: Optional[list[dict]] = None,
+) -> None:
+    """Send a transactional email via Resend.
+
+    ``attachments`` is an optional list of dicts ``{filename, content_b64, content_type?}``
+    where ``content_b64`` is the file contents encoded as base64. Resend's API
+    expects ``content`` already base64-encoded for binary files.
+    """
     if RESEND_DISABLE:
         log.info("RESEND_DISABLE=1 → skipping real email to %s (subject: %s)", to_email, subject)
         return
@@ -137,8 +148,17 @@ async def send_email(to_email: str, subject: str, html: str) -> None:
     }
     if RESEND_REPLY_TO:
         payload["reply_to"] = RESEND_REPLY_TO
+    if attachments:
+        payload["attachments"] = [
+            {
+                "filename": a["filename"],
+                "content": a["content_b64"],
+                **({"content_type": a["content_type"]} if a.get("content_type") else {}),
+            }
+            for a in attachments
+        ]
     try:
-        async with httpx.AsyncClient(timeout=15) as client:
+        async with httpx.AsyncClient(timeout=20) as client:
             r = await client.post(
                 "https://api.resend.com/emails",
                 headers={

@@ -27,7 +27,7 @@ export default function Calendario() {
                   <div className="session-card__num">{s.n}</div>
                   <div className="session-card__info">
                     <p className="session-card__date">{s.date}</p>
-                    <p className="session-card__time">⏱ 15:00 – 16:30 h · GMT+2 España peninsular</p>
+                    <p className="session-card__time">⏱ 16:00 – 17:30 h · hora peninsular española (GMT+2)</p>
                     <p className="session-card__note">{s.note}</p>
                   </div>
                   <span className="session-card__badge">Sesión {s.n}</span>

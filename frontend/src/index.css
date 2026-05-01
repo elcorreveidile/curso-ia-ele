@@ -1508,6 +1508,41 @@ textarea.form-input {
   display: flex; gap: .5rem; align-items: center;
 }
 .thread-post__body { font-size: .9rem; color: var(--ink); line-height: 1.6; white-space: pre-wrap; }
+.thread-post__body.markdown-body { white-space: normal; }
+.thread-post__body.markdown-body p { margin: 0 0 .6rem; }
+.thread-post__body.markdown-body p:last-child { margin-bottom: 0; }
+.thread-post__body.markdown-body a { color: var(--blue); text-decoration: underline; word-break: break-word; }
+.thread-post__body.markdown-body a:hover { color: var(--blue-mid); }
+.thread-post__body.markdown-body ul,
+.thread-post__body.markdown-body ol { margin: .25rem 0 .6rem; padding-left: 1.4rem; }
+.thread-post__body.markdown-body li { margin-bottom: .15rem; }
+.thread-post__body.markdown-body code {
+  background: var(--canvas-alt); padding: .08em .35em;
+  border-radius: 4px; font-size: .88em;
+}
+.thread-post__body.markdown-body pre {
+  background: var(--canvas-alt); padding: .75rem 1rem;
+  border-radius: var(--r-sm); overflow-x: auto; margin: .4rem 0;
+}
+.thread-post__body.markdown-body pre code { background: transparent; padding: 0; }
+.thread-post__body.markdown-body blockquote {
+  border-left: 3px solid var(--blue); margin: .4rem 0;
+  padding: .2rem 0 .2rem .85rem; color: var(--ink-soft);
+}
+.thread-post__body.markdown-body strong { color: var(--ink); }
+.thread-post__body.markdown-body h1,
+.thread-post__body.markdown-body h2,
+.thread-post__body.markdown-body h3 {
+  font-size: 1rem; margin: .6rem 0 .35rem; font-family: var(--font-display);
+}
+
+/* Inline link-styled buttons used outside the inner-nav (forum, etc.) */
+button.linkish {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; color: var(--blue); text-decoration: none;
+}
+button.linkish:hover { text-decoration: underline; }
+button.linkish:disabled { opacity: .5; cursor: not-allowed; text-decoration: none; }
 
 /* Admin table */
 .admin-table {

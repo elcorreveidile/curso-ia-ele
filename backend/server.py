@@ -71,6 +71,7 @@ from models import (
     QuizSubmitIn,
     SubmissionIn,
     ThreadPostIn,
+    ThreadPostUpdate,
     UserBroadcastIn,
     UserBulkDeleteIn,
     UserOut,
@@ -84,6 +85,7 @@ from seed_data import (
     seed_ebook,
     seed_resources,
 )
+from documents_lib import COURSE_DOCUMENTS, get_document, render_document_pdf
 
 
 # ─────────────────────────── App + router ──────────────────────
@@ -404,11 +406,12 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
                   <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro «Prompts que funcionan»</a>
                       y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>
                       para ir preparando tu cabeza.</li>
-                  <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>
-                      (te enviaré el enlace unos días antes).</li>
+                  <li><strong>Apunta las videotutorías en tu agenda</strong> (calendario debajo).</li>
                   <li><strong>Hazme caso si te pido que entregues tareas</strong>: el feedback personalizado
                       es el corazón del curso.</li>
                 </ol>
+
+                {_videotutorias_calendar_html()}
 
             <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
               <p style="margin:0;font-size:14px;color:#46476A"><strong>Pago confirmado:</strong> {price_line}</p>
@@ -439,6 +442,8 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             """
         )
         await send_email(user["email"], f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+        # Second email: practical info for the first videotutoría + consent PDF.
+        await _send_videotutoria1_email(user["email"], first_name)
 
         # Notify admin of new enrollment
         admin_html = wrap_email(
@@ -837,6 +842,54 @@ async def create_scoped_thread(
     })
     await _notify_new_forum_post(user, scope, scope_key, payload.body_md)
     return {"id": tid}
+
+
+# ─────────────────────────── Forum thread edit / delete ────────
+# Admins can edit or delete any post. Students can only edit or delete their
+# own posts. Replies that were attached to a deleted root thread cascade so
+# the thread doesn't leave dangling orphans.
+
+async def _get_thread_or_404(thread_id: str) -> dict:
+    thread = await db.threads.find_one({"id": thread_id})
+    if not thread:
+        raise HTTPException(404, "Mensaje no encontrado")
+    return thread
+
+
+def _can_edit_thread(user: dict, thread: dict) -> bool:
+    return user.get("role") == "admin" or thread.get("user_id") == user["id"]
+
+
+@api.patch("/forum/thread/{thread_id}")
+async def edit_thread(
+    thread_id: str, payload: ThreadPostUpdate, user: dict = Depends(current_user),
+):
+    thread = await _get_thread_or_404(thread_id)
+    if not _can_edit_thread(user, thread):
+        raise HTTPException(403, "No puedes editar este mensaje")
+    await db.threads.update_one(
+        {"id": thread_id},
+        {"$set": {
+            "body_md": payload.body_md,
+            "edited_at": now_utc(),
+            "edited_by_email": user["email"],
+        }},
+    )
+    return clean_doc(await db.threads.find_one({"id": thread_id}))
+
+
+@api.delete("/forum/thread/{thread_id}")
+async def delete_thread(thread_id: str, user: dict = Depends(current_user)):
+    thread = await _get_thread_or_404(thread_id)
+    if not _can_edit_thread(user, thread):
+        raise HTTPException(403, "No puedes borrar este mensaje")
+    await db.threads.delete_one({"id": thread_id})
+    # If we just deleted a root thread, cascade-delete its replies.
+    cascaded = 0
+    if not thread.get("parent_id"):
+        res = await db.threads.delete_many({"parent_id": thread_id})
+        cascaded = res.deleted_count
+    return {"deleted": True, "cascaded_replies": cascaded}
 
 
 # ─────────────────────────── Admin analytics ──────────────────
@@ -1360,6 +1413,65 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
     )
 
 
+# ─────────────────────────── Course documents ─────────────────
+# Static course documents (welcome letter, RGPD recording consent, …).
+# Visible to enrolled students and admins. Each document is stored as a DOCX
+# under static_documents/ and rendered on-the-fly to a brand-consistent PDF
+# via documents_lib.render_document_pdf().
+
+@api.get("/documents")
+async def list_documents(user: dict = Depends(current_user)):
+    await _ensure_any_enrollment(user)
+    return {
+        "documents": [
+            {
+                "slug": d.slug,
+                "title": d.title,
+                "description": d.description,
+                "icon": d.icon,
+                "requires_signature": d.requires_signature,
+                "available_formats": ["pdf", "docx"],
+            }
+            for d in COURSE_DOCUMENTS
+        ]
+    }
+
+
+@api.get("/documents/{slug}/download")
+async def download_document(
+    slug: str,
+    format: str = "pdf",
+    user: dict = Depends(current_user),
+):
+    """Serve a course document as PDF (rendered on the fly) or as the
+    original DOCX. ``format`` defaults to PDF for clean cross-device viewing.
+    """
+    from fastapi.responses import FileResponse, Response
+    await _ensure_any_enrollment(user)
+    doc = get_document(slug)
+    if not doc:
+        raise HTTPException(404, "Documento no encontrado")
+    fmt = format.lower()
+    if fmt == "docx":
+        if not doc.docx_path.exists():
+            raise HTTPException(404, "Documento no disponible")
+        return FileResponse(
+            doc.docx_path,
+            media_type=(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ),
+            filename=doc.docx_filename,
+        )
+    if fmt != "pdf":
+        raise HTTPException(400, "Formato no soportado (usa pdf o docx)")
+    pdf_bytes = render_document_pdf(slug)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{doc.pdf_basename}"'},
+    )
+
+
 def _build_welcome_email_html(
     email: str,
     first_name: str,
@@ -1427,8 +1539,10 @@ def _build_welcome_email_html(
         <ol style="color:#46476A;font-size:15px;line-height:1.7;padding-left:22px;margin:0 0 20px">
           <li><a href="{FRONTEND_ORIGIN}/mi-area/perfil?onboarding=1" style="color:#0F4C81;font-weight:600">Completa tu perfil</a> (nombre y apellidos) en <em>Mi área → Mi perfil</em>.</li>
           <li>Echa un vistazo al <a href="{FRONTEND_ORIGIN}/libro" style="color:#0F4C81;font-weight:600">libro</a> y al <a href="{FRONTEND_ORIGIN}/curso/ia-ele" style="color:#0F4C81;font-weight:600">Módulo 1 del curso</a>.</li>
-          <li><strong>Apunta la primera videotutoría</strong>: <strong>4 de mayo de 2026</strong>.</li>
+          <li><strong>Apunta las videotutorías en tu agenda</strong> (calendario debajo).</li>
         </ol>
+
+        {_videotutorias_calendar_html()}
 
         <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:24px 0">
           <p style="margin:0;font-size:14px;color:#46476A"><strong>Inscripción:</strong> {price_line}</p>
@@ -1452,6 +1566,188 @@ def _build_welcome_email_html(
         </p>
         """
     )
+
+
+def _videotutorias_calendar_html() -> str:
+    """Compact 3-session calendar block reused by all welcome emails.
+
+    Mirrors the LiveSessionsCard on the student dashboard. Edit the entries
+    here AND in /app/frontend/src/components/LiveSessionsCard.jsx if dates
+    change."""
+    sessions = [
+        {
+            "n": 1,
+            "date": "Lunes, 4 de mayo de 2026",
+            "topic": "Bienvenida y Módulo 0 (GitHub)",
+            "desc": (
+                "Presentación del curso, configuración del repositorio de "
+                "GitHub, primeras reflexiones éticas e introducción a la "
+                "ingeniería de prompts."
+            ),
+        },
+        {
+            "n": 2,
+            "date": "Jueves, 14 de mayo de 2026",
+            "topic": "Módulos 1-2",
+            "desc": (
+                "Revisión de mini asistentes, puesta en común de planes de "
+                "clase y resolución de dudas."
+            ),
+        },
+        {
+            "n": 3,
+            "date": "Jueves, 21 de mayo de 2026",
+            "topic": "Módulos 3-4",
+            "desc": (
+                "Presentación de kits de recursos multimodales y cierre del "
+                "curso."
+            ),
+        },
+    ]
+    rows = "".join(
+        f"""
+        <tr>
+          <td style="padding:10px 12px;border-bottom:1px solid #E8EEF5;vertical-align:top;width:34px">
+            <div style="background:#0F4C81;color:#fff;width:26px;height:26px;border-radius:50%;
+                        text-align:center;line-height:26px;font-weight:700;font-size:13px">{s['n']}</div>
+          </td>
+          <td style="padding:10px 12px 10px 0;border-bottom:1px solid #E8EEF5;font-size:14px;color:#46476A;line-height:1.55">
+            <div style="font-weight:700;color:#1A2535">{s['date']} · 16:00 h</div>
+            <div style="font-size:13px;color:#0F4C81;font-weight:600;margin-top:2px">{s['topic']}</div>
+            <div style="font-size:13px;color:#6B82A0;margin-top:3px">{s['desc']}</div>
+          </td>
+        </tr>
+        """
+        for s in sessions
+    )
+    return f"""
+    <div style="background:#F4F7FA;border-radius:8px;padding:6px 14px;margin:18px 0">
+      <p style="margin:14px 4px 8px;font-weight:700;color:#1A2535;font-size:14px">
+        🗓️ Calendario de las 3 videotutorías
+      </p>
+      <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">
+        {rows}
+      </table>
+      <p style="margin:10px 4px 12px;font-size:12px;color:#6B82A0;line-height:1.5">
+        Todas las sesiones son a las <strong>16:00 h hora peninsular española</strong> (GMT+2)
+        y duran 90 minutos. La sala de Zoom es la misma para las tres — encontrarás el
+        enlace y el ID de reunión en tu área privada.
+      </p>
+    </div>
+    """
+
+
+def _build_videotutoria1_email_html(first_name: str, area_url: str) -> str:
+    """Second welcome email: Zoom invite for videotutoría 1, sent right after
+    the main welcome email so the student gets all the practical info upfront.
+    The recording-consent PDF is attached to this email (see send helper)."""
+    return wrap_email(
+        f"""
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
+          <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
+        </div>
+
+        <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:24px;line-height:1.25;margin:0 0 12px">
+          {first_name}, esto es lo que necesitas para la primera sesión 🎥
+        </h2>
+        <p style="color:#46476A;font-size:15px;margin:0 0 12px;line-height:1.6">
+          Me alegra mucho que formes parte de la primera edición de
+          <em>«IA para la enseñanza de ELE»</em>. Somos un grupo pequeño y
+          selecto: un espacio donde podamos trabajar de verdad, compartir
+          dudas reales y construir materiales que uses directamente en clase.
+        </p>
+
+        <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:18px 22px;margin:24px 0;border-radius:4px">
+          <p style="margin:0 0 10px;font-weight:700;color:#1A2535;font-size:15px">📅 Datos de conexión · Videotutoría 1</p>
+          <table cellpadding="3" style="font-size:14px;color:#46476A;line-height:1.55">
+            <tr><td><strong>Fecha</strong></td><td>Lunes, 4 de mayo de 2026</td></tr>
+            <tr><td><strong>Hora</strong></td><td>16:00 h (hora peninsular española)</td></tr>
+            <tr><td><strong>Duración</strong></td><td>90 minutos</td></tr>
+            <tr><td><strong>Plataforma</strong></td><td>Zoom</td></tr>
+            <tr><td><strong>ID de reunión</strong></td><td>882 0755 1531</td></tr>
+          </table>
+          <p style="margin:14px 0 0;text-align:center">
+            <a href="https://us06web.zoom.us/j/88207551531?pwd=hXoWzDCi2wdN01dP4a5BGhkgQ6Xe30.1"
+               style="background:#0F4C81;color:#fff;text-decoration:none;
+               padding:12px 22px;border-radius:6px;font-weight:700;
+               display:inline-block;font-size:14px">
+              Entrar al Zoom →
+            </a>
+          </p>
+        </div>
+
+        <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:17px;margin:22px 0 8px">
+          Qué haremos en esta sesión
+        </h3>
+        <ul style="color:#46476A;font-size:14px;line-height:1.7;padding-left:22px;margin:0 0 18px">
+          <li><strong>Módulo 0 · GitHub</strong>: crearemos juntos la cuenta, el repositorio del curso y subiremos un archivo de prueba.</li>
+          <li>Presentarnos y compartir nuestros puntos de partida como docentes.</li>
+          <li>Introducción al marco <strong>FRAME</strong>: el sistema de prompts que vertebra todo el curso.</li>
+          <li>Primera práctica en directo: construir un prompt desde cero, componente a componente.</li>
+          <li>Resolver las dudas que hayan surgido tras revisar los materiales del Módulo I.</li>
+        </ul>
+
+        {_videotutorias_calendar_html()}
+
+        <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:20px 0">
+          <p style="margin:0 0 6px;font-weight:700;color:#1A2535;font-size:14px">📎 Te adjunto en este correo</p>
+          <p style="margin:0;font-size:14px;color:#46476A;line-height:1.55">
+            El <strong>documento de consentimiento</strong> para la grabación de las sesiones (RGPD).
+            Por favor, léelo, fírmalo y devuélvemelo antes del lunes — es un trámite breve pero
+            necesario. También encontrarás este documento (y esta misma carta) en tu área privada,
+            sección <em>Documentos del curso</em>:
+          </p>
+          <p style="margin:12px 0 0">
+            <a href="{area_url}" style="color:#0F4C81;font-weight:600;text-decoration:underline;font-size:14px">
+              Abrir Documentos del curso →
+            </a>
+          </p>
+        </div>
+
+        <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:17px;margin:22px 0 8px">
+          Información técnica
+        </h3>
+        <ul style="color:#46476A;font-size:14px;line-height:1.7;padding-left:22px;margin:0 0 8px">
+          <li>Conecta con auriculares si puedes — mejora mucho la calidad del audio para todos.</li>
+          <li>Activa la cámara durante las sesiones; la interacción es parte del aprendizaje.</li>
+          <li>Si tienes algún problema técnico, escríbeme a <a href="mailto:benitezl@go.ugr.es" style="color:#0F4C81">benitezl@go.ugr.es</a>.</li>
+        </ul>
+
+        <hr style="border:none;border-top:1px solid #E0E2EA;margin:24px 0">
+        <p style="font-size:14px;color:#46476A;margin:0;line-height:1.55">
+          Nos vemos el lunes.<br>
+          Un abrazo,<br>
+          <strong style="color:#1A2535">Javier Benítez Láinez</strong><br>
+          <span style="color:#6B82A0;font-size:13px">La Clase Digital · Formación Docente ELE</span>
+        </p>
+        """
+    )
+
+
+async def _send_videotutoria1_email(email: str, first_name: str) -> None:
+    """Send the second welcome email (Zoom invite) with the consent PDF
+    attached. Failure is logged but not surfaced — the main welcome email
+    has already been sent by the time we get here, so we don't want to
+    block the enrollment flow."""
+    import base64
+    try:
+        consent_pdf = render_document_pdf("consentimiento-grabacion")
+        attachments = [{
+            "filename": "Consentimiento-Grabacion-Videotutorias.pdf",
+            "content_b64": base64.b64encode(consent_pdf).decode("ascii"),
+            "content_type": "application/pdf",
+        }]
+        area_url = f"{FRONTEND_ORIGIN}/mi-area/documentos"
+        html = _build_videotutoria1_email_html(first_name, area_url)
+        await send_email(
+            email,
+            "Invitación a la primera videotutoría · 4 de mayo, 16:00",
+            html,
+            attachments=attachments,
+        )
+    except Exception as exc:  # pragma: no cover
+        log.exception("Failed to send videotutoria 1 email to %s: %s", email, exc)
 
 
 def _first_name_for(user_doc: dict, email: str) -> str:
@@ -1552,6 +1848,8 @@ async def admin_create_manual_enrollment(
                 magic_link_url=magic_url,
             )
             await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+            # Second email: practical info for the first videotutoría + consent PDF.
+            await _send_videotutoria1_email(email, first_name)
         except Exception as e:
             log.error("Welcome email failed for manual enrollment of %s: %s", email, e)
 
@@ -1595,6 +1893,8 @@ async def admin_resend_welcome(enrollment_id: str, user: dict = Depends(current_
     )
     try:
         await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+        # Second email: practical info for the first videotutoría + consent PDF.
+        await _send_videotutoria1_email(email, first_name)
         return {"ok": True, "sent_to": email}
     except Exception as exc:
         log.exception("Resend welcome failed for %s: %s", email, exc)
