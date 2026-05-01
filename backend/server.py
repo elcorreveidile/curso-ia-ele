@@ -85,6 +85,7 @@ from seed_data import (
     seed_ebook,
     seed_resources,
 )
+from documents_lib import COURSE_DOCUMENTS, get_document, render_document_pdf
 
 
 # ─────────────────────────── App + router ──────────────────────
@@ -440,6 +441,8 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             """
         )
         await send_email(user["email"], f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+        # Second email: practical info for the first videotutoría + consent PDF.
+        await _send_videotutoria1_email(user["email"], first_name)
 
         # Notify admin of new enrollment
         admin_html = wrap_email(
@@ -1409,6 +1412,65 @@ async def download_ebook_pdf(user: dict = Depends(current_user)):
     )
 
 
+# ─────────────────────────── Course documents ─────────────────
+# Static course documents (welcome letter, RGPD recording consent, …).
+# Visible to enrolled students and admins. Each document is stored as a DOCX
+# under static_documents/ and rendered on-the-fly to a brand-consistent PDF
+# via documents_lib.render_document_pdf().
+
+@api.get("/documents")
+async def list_documents(user: dict = Depends(current_user)):
+    await _ensure_any_enrollment(user)
+    return {
+        "documents": [
+            {
+                "slug": d.slug,
+                "title": d.title,
+                "description": d.description,
+                "icon": d.icon,
+                "requires_signature": d.requires_signature,
+                "available_formats": ["pdf", "docx"],
+            }
+            for d in COURSE_DOCUMENTS
+        ]
+    }
+
+
+@api.get("/documents/{slug}/download")
+async def download_document(
+    slug: str,
+    format: str = "pdf",
+    user: dict = Depends(current_user),
+):
+    """Serve a course document as PDF (rendered on the fly) or as the
+    original DOCX. ``format`` defaults to PDF for clean cross-device viewing.
+    """
+    from fastapi.responses import FileResponse, Response
+    await _ensure_any_enrollment(user)
+    doc = get_document(slug)
+    if not doc:
+        raise HTTPException(404, "Documento no encontrado")
+    fmt = format.lower()
+    if fmt == "docx":
+        if not doc.docx_path.exists():
+            raise HTTPException(404, "Documento no disponible")
+        return FileResponse(
+            doc.docx_path,
+            media_type=(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ),
+            filename=doc.docx_filename,
+        )
+    if fmt != "pdf":
+        raise HTTPException(400, "Formato no soportado (usa pdf o docx)")
+    pdf_bytes = render_document_pdf(slug)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{doc.pdf_basename}"'},
+    )
+
+
 def _build_welcome_email_html(
     email: str,
     first_name: str,
@@ -1501,6 +1563,117 @@ def _build_welcome_email_html(
         </p>
         """
     )
+
+
+def _build_videotutoria1_email_html(first_name: str, area_url: str) -> str:
+    """Second welcome email: Zoom invite for videotutoría 1, sent right after
+    the main welcome email so the student gets all the practical info upfront.
+    The recording-consent PDF is attached to this email (see send helper)."""
+    return wrap_email(
+        f"""
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-family:Georgia,serif;font-size:42px;color:#F5A623;letter-spacing:-3px;line-height:1">[ | ]</div>
+          <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:6px">LA CLASE DIGITAL</div>
+        </div>
+
+        <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:24px;line-height:1.25;margin:0 0 12px">
+          {first_name}, esto es lo que necesitas para la primera sesión 🎥
+        </h2>
+        <p style="color:#46476A;font-size:15px;margin:0 0 12px;line-height:1.6">
+          Me alegra mucho que formes parte de la primera edición de
+          <em>«IA para la enseñanza de ELE»</em>. Somos un grupo pequeño y
+          selecto: un espacio donde podamos trabajar de verdad, compartir
+          dudas reales y construir materiales que uses directamente en clase.
+        </p>
+
+        <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:18px 22px;margin:24px 0;border-radius:4px">
+          <p style="margin:0 0 10px;font-weight:700;color:#1A2535;font-size:15px">📅 Datos de conexión · Videotutoría 1</p>
+          <table cellpadding="3" style="font-size:14px;color:#46476A;line-height:1.55">
+            <tr><td><strong>Fecha</strong></td><td>Lunes, 4 de mayo de 2026</td></tr>
+            <tr><td><strong>Hora</strong></td><td>16:00 h (hora peninsular española)</td></tr>
+            <tr><td><strong>Duración</strong></td><td>90 minutos</td></tr>
+            <tr><td><strong>Plataforma</strong></td><td>Zoom</td></tr>
+            <tr><td><strong>ID de reunión</strong></td><td>882 0755 1531</td></tr>
+          </table>
+          <p style="margin:14px 0 0;text-align:center">
+            <a href="https://us06web.zoom.us/j/88207551531?pwd=hXoWzDCi2wdN01dP4a5BGhkgQ6Xe30.1"
+               style="background:#0F4C81;color:#fff;text-decoration:none;
+               padding:12px 22px;border-radius:6px;font-weight:700;
+               display:inline-block;font-size:14px">
+              Entrar al Zoom →
+            </a>
+          </p>
+        </div>
+
+        <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:17px;margin:22px 0 8px">
+          Qué haremos en esta sesión
+        </h3>
+        <ul style="color:#46476A;font-size:14px;line-height:1.7;padding-left:22px;margin:0 0 18px">
+          <li><strong>Módulo 0 · GitHub</strong>: crearemos juntos la cuenta, el repositorio del curso y subiremos un archivo de prueba.</li>
+          <li>Presentarnos y compartir nuestros puntos de partida como docentes.</li>
+          <li>Introducción al marco <strong>FRAME</strong>: el sistema de prompts que vertebra todo el curso.</li>
+          <li>Primera práctica en directo: construir un prompt desde cero, componente a componente.</li>
+          <li>Resolver las dudas que hayan surgido tras revisar los materiales del Módulo I.</li>
+        </ul>
+
+        <div style="background:#F4F7FA;padding:16px 20px;border-radius:6px;margin:20px 0">
+          <p style="margin:0 0 6px;font-weight:700;color:#1A2535;font-size:14px">📎 Te adjunto en este correo</p>
+          <p style="margin:0;font-size:14px;color:#46476A;line-height:1.55">
+            El <strong>documento de consentimiento</strong> para la grabación de las sesiones (RGPD).
+            Por favor, léelo, fírmalo y devuélvemelo antes del lunes — es un trámite breve pero
+            necesario. También encontrarás este documento (y esta misma carta) en tu área privada,
+            sección <em>Documentos del curso</em>:
+          </p>
+          <p style="margin:12px 0 0">
+            <a href="{area_url}" style="color:#0F4C81;font-weight:600;text-decoration:underline;font-size:14px">
+              Abrir Documentos del curso →
+            </a>
+          </p>
+        </div>
+
+        <h3 style="font-family:Georgia,serif;color:#0F4C81;font-size:17px;margin:22px 0 8px">
+          Información técnica
+        </h3>
+        <ul style="color:#46476A;font-size:14px;line-height:1.7;padding-left:22px;margin:0 0 8px">
+          <li>Conecta con auriculares si puedes — mejora mucho la calidad del audio para todos.</li>
+          <li>Activa la cámara durante las sesiones; la interacción es parte del aprendizaje.</li>
+          <li>Si tienes algún problema técnico, escríbeme a <a href="mailto:benitezl@go.ugr.es" style="color:#0F4C81">benitezl@go.ugr.es</a>.</li>
+        </ul>
+
+        <hr style="border:none;border-top:1px solid #E0E2EA;margin:24px 0">
+        <p style="font-size:14px;color:#46476A;margin:0;line-height:1.55">
+          Nos vemos el lunes.<br>
+          Un abrazo,<br>
+          <strong style="color:#1A2535">Javier Benítez Láinez</strong><br>
+          <span style="color:#6B82A0;font-size:13px">La Clase Digital · Formación Docente ELE</span>
+        </p>
+        """
+    )
+
+
+async def _send_videotutoria1_email(email: str, first_name: str) -> None:
+    """Send the second welcome email (Zoom invite) with the consent PDF
+    attached. Failure is logged but not surfaced — the main welcome email
+    has already been sent by the time we get here, so we don't want to
+    block the enrollment flow."""
+    import base64
+    try:
+        consent_pdf = render_document_pdf("consentimiento-grabacion")
+        attachments = [{
+            "filename": "Consentimiento-Grabacion-Videotutorias.pdf",
+            "content_b64": base64.b64encode(consent_pdf).decode("ascii"),
+            "content_type": "application/pdf",
+        }]
+        area_url = f"{FRONTEND_ORIGIN}/mi-area/documentos"
+        html = _build_videotutoria1_email_html(first_name, area_url)
+        await send_email(
+            email,
+            "Invitación a la primera videotutoría · 4 de mayo, 16:00",
+            html,
+            attachments=attachments,
+        )
+    except Exception as exc:  # pragma: no cover
+        log.exception("Failed to send videotutoria 1 email to %s: %s", email, exc)
 
 
 def _first_name_for(user_doc: dict, email: str) -> str:
@@ -1601,6 +1774,8 @@ async def admin_create_manual_enrollment(
                 magic_link_url=magic_url,
             )
             await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+            # Second email: practical info for the first videotutoría + consent PDF.
+            await _send_videotutoria1_email(email, first_name)
         except Exception as e:
             log.error("Welcome email failed for manual enrollment of %s: %s", email, e)
 
@@ -1644,6 +1819,8 @@ async def admin_resend_welcome(enrollment_id: str, user: dict = Depends(current_
     )
     try:
         await send_email(email, f"¡Bienvenido/a al curso, {first_name}! 🚀", html)
+        # Second email: practical info for the first videotutoría + consent PDF.
+        await _send_videotutoria1_email(email, first_name)
         return {"ok": True, "sent_to": email}
     except Exception as exc:
         log.exception("Resend welcome failed for %s: %s", email, exc)
