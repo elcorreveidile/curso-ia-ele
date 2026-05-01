@@ -1,0 +1,178 @@
+En preview todo funciona. El problema está específico al deploy. Lo diagnostico con el agente especializado en deployment:
+Action: User has deployed to production via Emergent native deployment (laclasedigital.com domain target).
+
+PROBLEM: Both as a logged-in student and as admin, accessing `/mi-area/documentos` either returns "not found" message when downloading a document, OR the list itself shows nothing. In preview environment everything works correctly.
+
+TWO NEW BACKEND DEPENDENCIES THAT MIGHT BE BROKEN IN PROD:
+1. `/app/backend/static_documents/Consentimiento_Grabacion_IA_ELE.docx` (binary file, 11205 bytes)
+2. `/app/backend/static_documents/Invitacion_Videotutoria1_Mayo4.docx` (binary file, 10890 bytes)
+
+Both files ARE tracked in git (`git ls-files backend/static_documents/` confirms this) and committed to the repo. The `requirements.txt` includes the new dependency `python-docx==1.2.0` and `lxml==6.1.0`.
+
+The relevant backend code is in `/app/backend/documents_lib.py`:
+- `STATIC_DOCS = Path(__file__).parent / "static_documents"`
+- Uses `python-docx` to parse the DOCX files and `reportlab` to render them as PDF on demand.
+- Endpoints: `GET /api/documents` and `GET /api/documents/{slug}/download?format=pdf|docx`
+
+Please fetch the production deployment logs and:
+1. Verify whether `python-docx` is correctly installed in the production environment (check pip freeze / startup logs)
+2. Verify whether the binary `.docx` files exist in the production filesystem under `/app/backend/static_documents/` (or wherever the deploy puts the backend)
+3. Check for any runtime errors when hitting `/api/documents` or `/api/documents/{slug}/download` in production logs
+4. Check if there's any issue with how the Emergent deploy handles binary files vs text files
+
+User's preview URL where everything works: https://teach-preview.preview.emergentagent.com
+User's production URL: laclasedigital.com (or whatever their deployed URL is — please find it)
+
+Please return concrete next steps for the main agent to fix. Probable root causes:
+- python-docx not in installed deps
+- Binary DOCX files stripped from deploy
+- Path resolution issue between preview pod and prod container
+Observation: ```yaml
+summary:
+  status: warn
+  notes:
+    - "FastAPI + React (CRA with craco) monorepo detected"
+    - "MongoDB database with proper environment variable usage"
+    - "CORS configured as wildcard (*) - acceptable for this use case"
+    - "Frontend URLs properly read from environment (REACT_APP_BACKEND_URL)"
+    - "Backend URLs properly read from environment (MONGO_URL, FRONTEND_ORIGIN, etc.)"
+    - "N+1 query issues detected in admin endpoints - should be optimized"
+    - "No supervisor configuration file found - BLOCKER for deployment"
+    - "No Expo mobile app detected"
+  expo_app_detected: false
+
+findings:
+  - severity: BLOCKER
+    category: SUPERVISOR
+    file: /etc/supervisor/conf.d/supervisord.conf
+    line: 0
+    snippet: "File not found"
+    why: "Supervisor configuration is required for Kubernetes deployment to manage frontend and backend processes"
+    fix: |
+      Create /etc/supervisor/conf.d/supervisord.conf with the following content:
+      
+      [supervisord]
+      nodaemon=true
+      logfile=/var/log/supervisor/supervisord.log
+      pidfile=/var/run/supervisord.pid
+      
+      [program:frontend]
+      directory=/app/frontend
+      command=yarn start
+      autostart=true
+      autorestart=true
+      stdout_logfile=/var/log/supervisor/frontend.log
+      stderr_logfile=/var/log/supervisor/frontend_err.log
+      environment=PORT=3000
+      
+      [program:backend]
+      directory=/app/backend
+      command=/root/.venv/bin/uvicorn server:app --host 0.0.0.0 --port 8001 --workers 1 --reload
+      autostart=true
+      autorestart=true
+      stdout_logfile=/var/log/supervisor/backend.log
+      stderr_logfile=/var/log/supervisor/backend_err.log
+
+  - severity: WARN
+    category: DB_QUERY_OPTIMIZATION
+    file: /app/backend/server.py
+    line: 1040
+    snippet: |
+      async for e in db.enrollments.find({}).sort("created_at", -1):
+          u = await db.users.find_one({"id": e["user_id"]})
+          c = await db.courses.find_one({"id": e["course_id"]})
+    why: "N+1 query pattern - fetches user and course individually for each enrollment, causing performance issues with many enrollments"
+    fix: |
+      Batch the queries or use aggregation pipeline:
+      
+      # Collect all user_ids and course_ids first
+      user_ids = set()
+      course_ids = set()
+      enrollments_list = []
+      async for e in db.enrollments.find({}).sort("created_at", -1):
+          user_ids.add(e["user_id"])
+          course_ids.add(e["course_id"])
+          enrollments_list.append(e)
+      
+      # Fetch all users and courses in bulk
+      users = {u["id"]: u async for u in db.users.find({"id": {"$in": list(user_ids)}})}
+      courses = {c["id"]: c async for c in db.courses.find({"id": {"$in": list(course_ids)}})}
+      
+      # Build result
+      enrollments = []
+      for e in enrollments_list:
+          enrollments.append({
+              "enrollment": clean_doc(e),
+              "user": clean_doc(users.get(e["user_id"])),
+              "course": clean_doc(courses.get(e["course_id"])),
+          })
+
+  - severity: WARN
+    category: DB_QUERY_OPTIMIZATION
+    file: /app/backend/server.py
+    line: 1050
+    snippet: |
+      async for s in db.submissions.find({"status": "pending"}).sort("submitted_at", -1):
+          u = await db.users.find_one({"id": s["user_id"]})
+          t = await db.tasks.find_one({"id": s["task_id"]})
+    why: "N+1 query pattern - fetches user and task individually for each submission"
+    fix: "Apply the same batching pattern as recommended for enrollments above"
+
+  - severity: WARN
+    category: DB_QUERY_OPTIMIZATION
+    file: /app/backend/server.py
+    line: 573
+    snippet: |
+      async for e in db.enrollments.find({"user_id": user_id, "status": {"$ne": "cancelled"}}):
+          course = await db.courses.find_one({"id": e["course_id"]})
+    why: "N+1 query pattern in _user_enrollments function"
+    fix: "Batch course lookups after collecting all enrollment course_ids"
+
+checks:
+  compilation_passed: true
+  env_files_ok: true
+  frontend_urls_in_env_only: true
+  backend_urls_in_env_only: true
+  cors_allows_production_origin: true
+  non_mongo_db_detected: false
+  ml_usage_detected: false
+  blockchain_usage_detected: false
+  dotenv_override_detected: false
+  env_files_malformed: false
+  dockerignore_blocks_required_files: false
+  gitignore_blocks_required_files: false
+  unoptimized_queries_detected: true
+  expo_env_configured: not_applicable
+  supervisor_config_valid: false
+  auth_redirect_url_valid: true
+```
+
+## Summary
+
+**Status:** WARN (1 BLOCKER, 3 WARN)
+
+### Blockers
+1. **Missing Supervisor Configuration** - The application requires `/etc/supervisor/conf.d/supervisord.conf` to manage frontend (React on port 3000) and backend (FastAPI on port 8001) processes in Kubernetes.
+
+### Warnings
+1. **N+1 Query Issues** - Multiple admin endpoints have N+1 query patterns that will cause performance degradation:
+   - `/admin/overview` endpoint fetches users and courses individually for each enrollment/submission
+   - `_user_enrollments` function fetches courses individually for each enrollment
+   - Recommend batching queries or using aggregation pipelines
+
+### Positive Findings
+✅ All environment variables properly configured in `.env` files  
+✅ Frontend uses `process.env.REACT_APP_BACKEND_URL` correctly  
+✅ Backend reads all config from environment (MONGO_URL, DB_NAME, JWT_SECRET, etc.)  
+✅ CORS configured as wildcard (*) - acceptable for this use case  
+✅ No hardcoded secrets, URLs, or database names in source code  
+✅ No `load_dotenv(override=True)` issues  
+✅ MongoDB is the only database (supported by Emergent)  
+✅ No ML/blockchain dependencies  
+✅ Valid package.json start script (`craco start`)  
+✅ Auth redirect URLs use proper patterns (no hardcoded domains)
+
+### Next Steps
+1. **CRITICAL:** Create supervisor configuration file as specified above
+2. **RECOMMENDED:** Optimize N+1 queries in admin endpoints for better performance
+3. After fixes, re-run deployment scan to verify
