@@ -64,6 +64,22 @@ export default function CursoDetail() {
             >
               💬 Foro del curso
             </Link>
+            <Link
+              to="/libro"
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-ebook"
+            >
+              📘 Mi libro
+            </Link>
+            <Link
+              to="/mi-area/documentos"
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-documents"
+            >
+              📂 Documentos del curso
+            </Link>
           </div>
           <div className="dash-section">
             <h2 className="dash-title">Módulos</h2>

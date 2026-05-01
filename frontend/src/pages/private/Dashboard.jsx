@@ -53,14 +53,8 @@ export default function Dashboard() {
           ) : (
             <>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '.5rem', marginBottom: '.5rem', flexWrap: 'wrap' }}>
-                <Link to="/mi-area/documentos" className="btn btn--ghost" style={{ fontSize: '.85rem' }} data-testid="dashboard-documents-link">
-                  📂 Documentos
-                </Link>
-                <Link to="/libro" className="btn btn--ghost" style={{ fontSize: '.85rem' }} data-testid="dashboard-ebook-link">
-                  📘 Mi libro
-                </Link>
                 <Link to="/mi-area/perfil" className="btn btn--ghost" style={{ fontSize: '.85rem' }} data-testid="dashboard-profile-link">
-                  ⚙️ Mi perfil
+                  👤 Mi perfil
                 </Link>
               </div>
               <div className="dash-section">
