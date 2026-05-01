@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
+import LiveSessionsCard from '../../components/LiveSessionsCard';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 
@@ -63,6 +64,7 @@ export default function Dashboard() {
                   ⚙️ Mi perfil
                 </Link>
               </div>
+              <LiveSessionsCard />
               <div className="dash-section">
                 <h2 className="dash-title">Mis cursos</h2>
               {data.enrollments.map((e) => {
