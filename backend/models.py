@@ -66,6 +66,10 @@ class ThreadPostIn(BaseModel):
     parent_id: Optional[str] = None
 
 
+class ThreadPostUpdate(BaseModel):
+    body_md: str = Field(..., min_length=1, max_length=10000)
+
+
 class ContactIn(BaseModel):
     nombre: str = Field(..., min_length=1, max_length=120)
     email: EmailStr

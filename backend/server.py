@@ -71,6 +71,7 @@ from models import (
     QuizSubmitIn,
     SubmissionIn,
     ThreadPostIn,
+    ThreadPostUpdate,
     UserBroadcastIn,
     UserBulkDeleteIn,
     UserOut,
@@ -837,6 +838,54 @@ async def create_scoped_thread(
     })
     await _notify_new_forum_post(user, scope, scope_key, payload.body_md)
     return {"id": tid}
+
+
+# ─────────────────────────── Forum thread edit / delete ────────
+# Admins can edit or delete any post. Students can only edit or delete their
+# own posts. Replies that were attached to a deleted root thread cascade so
+# the thread doesn't leave dangling orphans.
+
+async def _get_thread_or_404(thread_id: str) -> dict:
+    thread = await db.threads.find_one({"id": thread_id})
+    if not thread:
+        raise HTTPException(404, "Mensaje no encontrado")
+    return thread
+
+
+def _can_edit_thread(user: dict, thread: dict) -> bool:
+    return user.get("role") == "admin" or thread.get("user_id") == user["id"]
+
+
+@api.patch("/forum/thread/{thread_id}")
+async def edit_thread(
+    thread_id: str, payload: ThreadPostUpdate, user: dict = Depends(current_user),
+):
+    thread = await _get_thread_or_404(thread_id)
+    if not _can_edit_thread(user, thread):
+        raise HTTPException(403, "No puedes editar este mensaje")
+    await db.threads.update_one(
+        {"id": thread_id},
+        {"$set": {
+            "body_md": payload.body_md,
+            "edited_at": now_utc(),
+            "edited_by_email": user["email"],
+        }},
+    )
+    return clean_doc(await db.threads.find_one({"id": thread_id}))
+
+
+@api.delete("/forum/thread/{thread_id}")
+async def delete_thread(thread_id: str, user: dict = Depends(current_user)):
+    thread = await _get_thread_or_404(thread_id)
+    if not _can_edit_thread(user, thread):
+        raise HTTPException(403, "No puedes borrar este mensaje")
+    await db.threads.delete_one({"id": thread_id})
+    # If we just deleted a root thread, cascade-delete its replies.
+    cascaded = 0
+    if not thread.get("parent_id"):
+        res = await db.threads.delete_many({"parent_id": thread_id})
+        cascaded = res.deleted_count
+    return {"deleted": True, "cascaded_replies": cascaded}
 
 
 # ─────────────────────────── Admin analytics ──────────────────
