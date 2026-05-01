@@ -22,17 +22,17 @@ const ZOOM_MEETING_ID = '882 0755 1531';
 const SESSIONS = [
   {
     label: 'Videotutoría 1 · Bienvenida + Módulo 0 (GitHub)',
-    iso: '2026-05-04T14:00:00Z', // 16:00 Madrid (UTC+2)
+    iso: '2026-05-04T14:00:00Z', // 16:00 Madrid (UTC+2 en mayo)
     duration_min: 90,
   },
   {
-    label: 'Videotutoría 2',
-    iso: null, // fecha por confirmar
+    label: 'Videotutoría 2 · Módulos 1-2',
+    iso: '2026-05-14T14:00:00Z',
     duration_min: 90,
   },
   {
-    label: 'Videotutoría 3',
-    iso: null,
+    label: 'Videotutoría 3 · Módulos 3-4',
+    iso: '2026-05-21T14:00:00Z',
     duration_min: 90,
   },
 ];
