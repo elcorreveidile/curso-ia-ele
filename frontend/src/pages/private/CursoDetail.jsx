@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
+import LiveSessionsCard from '../../components/LiveSessionsCard';
 import { api } from '../../lib/api';
 
 export default function CursoDetail() {
@@ -45,6 +46,7 @@ export default function CursoDetail() {
               />
             </div>
           )}
+          <LiveSessionsCard courseSlug={slug} />
           <div style={{ marginBottom: '1rem', display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
             <Link
               to={`/curso/${slug}/recursos`}
@@ -61,6 +63,22 @@ export default function CursoDetail() {
               data-testid="curso-link-forum"
             >
               💬 Foro del curso
+            </Link>
+            <Link
+              to="/libro"
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-ebook"
+            >
+              📘 Mi libro
+            </Link>
+            <Link
+              to="/mi-area/documentos"
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-documents"
+            >
+              📂 Documentos del curso
             </Link>
           </div>
           <div className="dash-section">

@@ -85,7 +85,12 @@ from seed_data import (
     seed_ebook,
     seed_resources,
 )
-from documents_lib import COURSE_DOCUMENTS, get_document, render_document_pdf
+from documents_lib import (
+    COURSE_DOCUMENTS,
+    get_document,
+    render_document_docx,
+    render_document_pdf,
+)
 
 
 # ─────────────────────────── App + router ──────────────────────
@@ -1443,24 +1448,27 @@ async def download_document(
     format: str = "pdf",
     user: dict = Depends(current_user),
 ):
-    """Serve a course document as PDF (rendered on the fly) or as the
-    original DOCX. ``format`` defaults to PDF for clean cross-device viewing.
-    """
-    from fastapi.responses import FileResponse, Response
+    """Serve a course document as PDF (default, brand-consistent rendering)
+    or as DOCX (for editing). Both are generated on the fly from source
+    content embedded in documents_lib — no disk binaries required."""
+    from fastapi.responses import Response
     await _ensure_any_enrollment(user)
     doc = get_document(slug)
     if not doc:
         raise HTTPException(404, "Documento no encontrado")
     fmt = format.lower()
     if fmt == "docx":
-        if not doc.docx_path.exists():
-            raise HTTPException(404, "Documento no disponible")
-        return FileResponse(
-            doc.docx_path,
+        try:
+            content = render_document_docx(slug)
+        except Exception as exc:
+            log.exception("DOCX render failed for %s: %s", slug, exc)
+            raise HTTPException(500, "No se pudo generar el archivo Word")
+        return Response(
+            content=content,
             media_type=(
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             ),
-            filename=doc.docx_filename,
+            headers={"Content-Disposition": f'attachment; filename="{doc.docx_basename}"'},
         )
     if fmt != "pdf":
         raise HTTPException(400, "Formato no soportado (usa pdf o docx)")

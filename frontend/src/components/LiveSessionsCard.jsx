@@ -1,41 +1,43 @@
 import React from 'react';
 
 /**
- * Live videotutoría card shown on the student dashboard.
+ * Live videotutoría card shown inside a course page (`/curso/:slug`).
  *
- * Pulls the Zoom join link, meeting ID and password from the session list and
- * surfaces the *next* upcoming session on top with a one-click "Entrar al
- * Zoom" button. Past sessions get a "Finalizada" pill. Future sessions
- * without a confirmed date show as "Fecha por confirmar".
+ * Each course defines its own Zoom room and session schedule under
+ * SESSIONS_BY_COURSE keyed by course slug. When you launch a new edition
+ * (or a new course entirely), add an entry there — the dashboard / course
+ * page picks it up automatically.
  *
- * The data is currently a hard-coded module-level constant (single Zoom
- * recurring meeting + 3 dates for this edition). When the admin needs to
- * change a date, edit the SESSIONS array — no DB migration required.
+ * The component renders the *next* upcoming session prominently with a
+ * one-click "Entrar al Zoom" button, plus the full calendar below. Past
+ * sessions show as "Finalizada", live ones as "🔴 En directo", future
+ * ones as the formatted date, and unscheduled ones as "Fecha por confirmar".
  */
 
-// ⚠️  Zoom recurring meeting for the IA-ELE 2026 edition.
-const ZOOM_JOIN_URL = 'https://us06web.zoom.us/j/88207551531?pwd=hXoWzDCi2wdN01dP4a5BGhkgQ6Xe30.1';
-const ZOOM_MEETING_ID = '882 0755 1531';
-
-// All confirmed sessions for the current edition. Each session uses the same
-// Zoom room above unless ``join_url`` overrides it.
-const SESSIONS = [
-  {
-    label: 'Videotutoría 1 · Bienvenida + Módulo 0 (GitHub)',
-    iso: '2026-05-04T14:00:00Z', // 16:00 Madrid (UTC+2 en mayo)
-    duration_min: 90,
+const SESSIONS_BY_COURSE = {
+  'ia-ele': {
+    label_short: 'Sala Zoom del curso',
+    zoom_url: 'https://us06web.zoom.us/j/88207551531?pwd=hXoWzDCi2wdN01dP4a5BGhkgQ6Xe30.1',
+    zoom_id: '882 0755 1531',
+    sessions: [
+      {
+        label: 'Videotutoría 1 · Bienvenida + Módulo 0 (GitHub)',
+        iso: '2026-05-04T14:00:00Z', // 16:00 Madrid (CEST = UTC+2)
+        duration_min: 90,
+      },
+      {
+        label: 'Videotutoría 2 · Módulos 1-2',
+        iso: '2026-05-14T14:00:00Z',
+        duration_min: 90,
+      },
+      {
+        label: 'Videotutoría 3 · Módulos 3-4',
+        iso: '2026-05-21T14:00:00Z',
+        duration_min: 90,
+      },
+    ],
   },
-  {
-    label: 'Videotutoría 2 · Módulos 1-2',
-    iso: '2026-05-14T14:00:00Z',
-    duration_min: 90,
-  },
-  {
-    label: 'Videotutoría 3 · Módulos 3-4',
-    iso: '2026-05-21T14:00:00Z',
-    duration_min: 90,
-  },
-];
+};
 
 const formatDate = (iso) => {
   if (!iso) return null;
@@ -51,13 +53,16 @@ const formatDate = (iso) => {
   });
 };
 
-export default function LiveSessionsCard() {
+export default function LiveSessionsCard({ courseSlug }) {
+  const config = SESSIONS_BY_COURSE[courseSlug];
+  if (!config) return null; // Other courses without sessions defined yet.
+
+  const { zoom_url, zoom_id, sessions } = config;
   const now = Date.now();
-  const sessionsWithStatus = SESSIONS.map((s) => {
+  const sessionsWithStatus = sessions.map((s) => {
     const ts = s.iso ? Date.parse(s.iso) : null;
     let status = 'tba';
     if (ts) {
-      // Treat the session as "live now" while it's running; "past" once it ended.
       const ends = ts + (s.duration_min || 60) * 60_000;
       if (now < ts) status = 'upcoming';
       else if (now < ends) status = 'live';
@@ -72,23 +77,39 @@ export default function LiveSessionsCard() {
 
   return (
     <div
-      className="dash-section"
-      style={{ marginBottom: '1.5rem' }}
-      data-testid="dashboard-live-sessions"
+      className="course-zoom-card"
+      style={{
+        background: 'var(--surface)',
+        borderRadius: 'var(--r-md)',
+        padding: '1.25rem 1.5rem',
+        boxShadow: 'var(--shadow-sm)',
+        borderLeft: '4px solid var(--blue)',
+        marginBottom: '1.5rem',
+      }}
+      data-testid="course-live-sessions"
     >
-      <h2 className="dash-title">🎥 Sala Zoom del curso</h2>
+      <h3
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: '1rem',
+          color: 'var(--ink)',
+          margin: '0 0 .9rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '.4rem',
+        }}
+      >
+        🎥 Sala Zoom del curso
+      </h3>
 
       <div
         style={{
-          background: 'var(--surface)',
-          borderRadius: 'var(--r-md)',
-          padding: '1.25rem 1.5rem',
-          boxShadow: 'var(--shadow-sm)',
-          borderLeft: '4px solid var(--blue)',
           display: 'grid',
           gridTemplateColumns: 'minmax(0,1fr) auto',
           gap: '1rem',
           alignItems: 'center',
+          paddingBottom: '1rem',
+          borderBottom: '1px solid var(--canvas-alt)',
         }}
       >
         <div>
@@ -112,7 +133,7 @@ export default function LiveSessionsCard() {
               margin: '.25rem 0 .35rem',
               lineHeight: 1.3,
             }}
-            data-testid="dashboard-next-session-label"
+            data-testid="course-next-session-label"
           >
             {next?.label || 'Sin sesiones programadas'}
           </p>
@@ -128,23 +149,22 @@ export default function LiveSessionsCard() {
               margin: '.5rem 0 0',
             }}
           >
-            ID de reunión: <strong>{ZOOM_MEETING_ID}</strong>
+            ID de reunión: <strong>{zoom_id}</strong>
           </p>
         </div>
         <a
-          href={ZOOM_JOIN_URL}
+          href={zoom_url}
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn--primary"
           style={{ whiteSpace: 'nowrap' }}
-          data-testid="dashboard-zoom-link"
+          data-testid="course-zoom-link"
         >
           Entrar al Zoom →
         </a>
       </div>
 
-      {/* Full session list */}
-      <div style={{ marginTop: '1rem' }}>
+      <div style={{ marginTop: '.85rem' }}>
         <p
           style={{
             fontSize: '.78rem',
@@ -166,7 +186,7 @@ export default function LiveSessionsCard() {
             color: 'var(--ink-soft)',
             lineHeight: 1.6,
           }}
-          data-testid="dashboard-sessions-list"
+          data-testid="course-sessions-list"
         >
           {sessionsWithStatus.map((s, i) => (
             <li
