@@ -30,6 +30,20 @@ import Certificate from './pages/public/Certificate';
 import Contacto from './pages/public/Contacto';
 import Cuestionario from './pages/public/Cuestionario';
 
+// Curso gratuito estudiantes
+import AprendeHome        from './pages/public/aprende/AprendeHome';
+import AprendePrograma    from './pages/public/aprende/AprendePrograma';
+import AprendeModulo      from './pages/public/aprende/AprendeModulo';
+import AprendeCursoHome   from './pages/public/aprende/AprendeCursoHome';
+
+// Sesiones
+import Sesiones            from './pages/public/sesiones/Sesiones';
+import ReservaIndividual   from './pages/public/sesiones/ReservaIndividual';
+import ReservaGrupal       from './pages/public/sesiones/ReservaGrupal';
+import SesionConfirmada    from './pages/public/sesiones/SesionConfirmada';
+import SesionCancelada     from './pages/public/sesiones/SesionCancelada';
+import AdminSessionsPage   from './pages/public/AdminSessionsPage';
+
 export default function App() {
   return (
     <AuthProvider>
@@ -56,6 +70,22 @@ export default function App() {
             <Route path="/certificado/:certId" element={<Certificate />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/cuestionario" element={<Cuestionario />} />
+
+            {/* Curso gratuito estudiantes */}
+            <Route path="/aprende" element={<AprendeHome />} />
+            <Route path="/aprende/curso" element={<AprendeCursoHome />} />
+            <Route path="/aprende/curso/programa" element={<AprendePrograma />} />
+            <Route path="/aprende/curso/modulo/:id" element={<AprendeModulo />} />
+
+            {/* Sesiones */}
+            <Route path="/sesiones" element={<Sesiones />} />
+            <Route path="/sesiones/individual" element={<ReservaIndividual />} />
+            <Route path="/sesiones/grupal/:id" element={<ReservaGrupal />} />
+            <Route path="/sesiones/confirmada" element={<SesionConfirmada />} />
+            <Route path="/sesiones/cancelada" element={<SesionCancelada />} />
+
+            {/* Admin Sesiones (temporal - sin autenticación) */}
+            <Route path="/admin-sesiones" element={<AdminSessionsPage />} />
 
             {/* Private */}
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />

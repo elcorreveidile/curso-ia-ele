@@ -1,4 +1,4 @@
--e 
+-e
 # Environment and credential files
 .env
 .env.*
@@ -7,3 +7,30 @@ credentials.json
 *.pem
 *.key
 .credentials
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+__pycache__/
+backend/__pycache__/
+
+# Build outputs
+dist/
+build/
+*.log
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

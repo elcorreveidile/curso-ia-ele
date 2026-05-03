@@ -363,6 +363,56 @@ body.has-founder-strip .home-hero { padding-top: 40px; }
 }
 .test-card__btn:hover { opacity: .88; transform: translateX(3px); }
 
+/* Grid para dos tarjetas de curso */
+.home-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+/* Variante para tarjeta de profesores (mantiene estilo original) */
+.test-card--profesores {
+  border-color: rgba(245,166,35,.3);
+}
+.test-card--profesores:hover {
+  border-color: rgba(245,166,35,.6);
+}
+
+/* Variante para tarjeta de estudiantes (nuevo estilo) */
+.test-card--estudiantes {
+  background: rgba(15,76,129,.15);
+  border-color: rgba(74,144,226,.4);
+}
+.test-card--estudiantes:hover {
+  background: rgba(15,76,129,.22);
+  border-color: rgba(74,144,226,.7);
+  box-shadow: 0 8px 32px rgba(74,144,226,.2);
+}
+
+.test-card__badge--estudiantes {
+  background: rgba(74,144,226,.3);
+  color: #7DB4FF;
+}
+
+.test-card__btn--estudiantes {
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  color: white;
+}
+.test-card__btn--estudiantes:hover {
+  opacity: .9;
+}
+
+/* Responsive: en móvil se apilan */
+@media (max-width: 768px) {
+  .home-courses-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .home-divider {
   margin-top: 2.5rem; display: flex; align-items: center; gap: 1rem;
 }

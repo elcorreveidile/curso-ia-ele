@@ -8,6 +8,7 @@ import { useAuth } from '../../lib/auth';
 export default function Verify() {
   const [params] = useSearchParams();
   const token = params.get('token');
+  const redirect = params.get('redirect') || localStorage.getItem('login_redirect') || '/dashboard';
   const [status, setStatus] = useState('verifying');
   const [error, setError] = useState('');
   const { setToken } = useAuth();
@@ -20,7 +21,9 @@ export default function Verify() {
         const r = await api.post('/auth/verify', { token });
         setToken(r.data.token);
         setStatus('ok');
-        setTimeout(() => navigate('/dashboard'), 800);
+        // Limpiar redirect guardado
+        localStorage.removeItem('login_redirect');
+        setTimeout(() => navigate(redirect), 800);
       } catch (err) {
         setStatus('error');
         setError(err.response?.data?.detail || 'Enlace no válido.');

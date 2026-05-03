@@ -3,6 +3,7 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
 import { api } from '../../lib/api';
+import AdminSessions from '../../components/admin/AdminSessions';
 
 export default function Admin() {
   const [data, setData] = useState(null);
@@ -198,6 +199,14 @@ export default function Admin() {
             </p>
             {/* Re-fetch modules through course content for display */}
             <ModulesControl />
+          </div>
+
+          <div className="dash-section">
+            <h2 className="dash-title">Sesiones</h2>
+            <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', marginBottom: '.75rem' }}>
+              Gestiona sesiones individuales y grupales del curso gratuito.
+            </p>
+            <AdminSessions />
           </div>
         </div>
       </div>

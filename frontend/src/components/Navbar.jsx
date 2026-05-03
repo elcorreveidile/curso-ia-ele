@@ -11,6 +11,7 @@ const publicLinks = [
   { to: '/precios', label: 'Precios' },
   { to: '/sobre-mi', label: 'Sobre mí' },
   { to: '/contacto', label: 'Contacto' },
+  { to: '/aprende', label: 'Curso gratuito' },
 ];
 
 export default function Navbar() {
@@ -52,17 +53,22 @@ export default function Navbar() {
         </NavLink>
       )}
       <div className={`inner-nav__links${open ? ' open' : ''}`}>
-        {publicLinks.map((l) => (
-          <NavLink
-            key={l.to}
-            to={l.to}
-            onClick={close}
-            className={({ isActive }) => (isActive ? 'active' : '')}
-            data-testid={`nav-${l.to.slice(1)}`}
-          >
-            {l.label}
-          </NavLink>
-        ))}
+        {publicLinks.map((l) => {
+          // Si es el enlace del curso gratuito y el usuario está autenticado,
+          // cambiar el destino a /aprende/curso
+          const to = l.to === '/aprende' && user ? '/aprende/curso' : l.to;
+          return (
+            <NavLink
+              key={l.to}
+              to={to}
+              onClick={close}
+              className={({ isActive }) => (isActive ? 'active' : '')}
+              data-testid={`nav-${l.to.slice(1)}`}
+            >
+              {l.label}
+            </NavLink>
+          );
+        })}
         {user ? (
           <>
             <NavLink to="/dashboard" onClick={close} data-testid="nav-dashboard">Mi área</NavLink>

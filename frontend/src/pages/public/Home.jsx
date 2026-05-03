@@ -23,16 +23,32 @@ export default function Home() {
             Curso de formación docente · Mayo 2026 · 20 horas · Precio fundador 149 €
           </p>
 
-          <div className="test-card" data-testid="home-cta-card">
-            <span className="test-card__badge">⭐ Precio fundador · 149 € · Solo 20 plazas</span>
-            <h2 className="test-card__title">Primera edición · mayo 2026</h2>
-            <p className="test-card__desc">
-              Formación práctica para integrar IA en tu práctica docente de ELE con criterio ético y
-              pedagógico. 4 módulos, 3 videotutorías en directo y feedback personalizado del formador.
-            </p>
-            <Link to="/precios" className="test-card__btn" data-testid="home-cta-precios">
-              Ver precios e inscribirme →
-            </Link>
+          <div className="home-courses-grid">
+            {/* Curso para profesores */}
+            <div className="test-card test-card--profesores" data-testid="home-cta-card">
+              <span className="test-card__badge test-card__badge--profesores">⭐ Precio fundador · 149 € · Solo 20 plazas</span>
+              <h2 className="test-card__title">Primera edición · mayo 2026</h2>
+              <p className="test-card__desc">
+                Formación práctica para integrar IA en tu práctica docente de ELE con criterio ético y
+                pedagógico. 4 módulos, 3 videotutorías en directo y feedback personalizado del formador.
+              </p>
+              <Link to="/precios" className="test-card__btn test-card__btn--profesores" data-testid="home-cta-precios">
+                Ver precios e inscribirme →
+              </Link>
+            </div>
+
+            {/* Curso gratuito para estudiantes */}
+            <div className="test-card test-card--estudiantes">
+              <span className="test-card__badge test-card__badge--estudiantes">🎓 Gratuito · Inscripción requerida · Para estudiantes</span>
+              <h2 className="test-card__title">IA y español: aprende más, aprende mejor</h2>
+              <p className="test-card__desc">
+                Descubre cómo usar la inteligencia artificial para mejorar tu aprendizaje de español.
+                6 módulos prácticos, alineados con MCER y PCIC. Totalmente gratuito.
+              </p>
+              <Link to="/login?redirect=/aprende/curso" className="test-card__btn test-card__btn--estudiantes">
+                Inscribirme gratis →
+              </Link>
+            </div>
           </div>
 
           <div className="home-divider">

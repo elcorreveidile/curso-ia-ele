@@ -27,6 +27,13 @@ export default function Footer() {
           </div>
         </div>
         <div>
+          <p className="footer-col__title">Para estudiantes</p>
+          <div className="footer-col__links">
+            <Link to="/aprende">IA y español · Curso gratuito (con inscripción)</Link>
+            <Link to="/sesiones">Sesiones individuales y grupales</Link>
+          </div>
+        </div>
+        <div>
           <p className="footer-col__title">Contacto</p>
           <p className="footer-contact">
             <strong>Javier Benítez Láinez</strong><br />

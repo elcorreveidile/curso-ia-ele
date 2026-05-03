@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { api } from '../../lib/api';
 
 export default function Login() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const redirect = params.get('redirect') || '/dashboard';
+  const isFreeCourse = redirect.includes('/aprende/curso');
+
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -13,6 +19,10 @@ export default function Login() {
     e.preventDefault();
     setLoading(true); setError('');
     try {
+      // Guardar redirect en localStorage para usarlo después de verify
+      if (redirect && redirect !== '/dashboard') {
+        localStorage.setItem('login_redirect', redirect);
+      }
       await api.post('/auth/request-link', { email });
       setSent(true);
     } catch (err) {
@@ -43,9 +53,13 @@ export default function Login() {
             </>
           ) : (
             <>
-              <h1 className="auth-title">Acceder a mi área</h1>
+              <h1 className="auth-title">
+                {isFreeCourse ? 'Inscripción al curso gratuito' : 'Acceder a mi área'}
+              </h1>
               <p className="auth-desc">
-                Introduce tu email de inscripción. Te enviaremos un enlace de acceso — sin contraseñas.
+                {isFreeCourse
+                  ? 'Introduce tu email para inscribirte en el curso gratuito "IA y español". Te enviaremos un enlace de acceso — sin contraseñas.'
+                  : 'Introduce tu email de inscripción. Te enviaremos un enlace de acceso — sin contraseñas.'}
               </p>
               <form onSubmit={submit}>
                 <input
@@ -67,6 +81,15 @@ export default function Login() {
                   {loading ? 'Enviando…' : 'Enviarme enlace de acceso'}
                 </button>
               </form>
+              {!isFreeCourse && (
+                <button
+                  className="btn btn--ghost"
+                  style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}
+                  onClick={() => navigate('/')}
+                >
+                  Volver al inicio
+                </button>
+              )}
             </>
           )}
         </div>
