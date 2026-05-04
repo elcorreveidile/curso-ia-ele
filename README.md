@@ -172,4 +172,4 @@ El marco **FRAME** de ingeniería de prompts para ELE es de elaboración propia.
 
 ---
 
-*Centro de Lenguas Modernas · Universidad de Granada · 2026*
+*Javier Benítez Láinez · 2026*
