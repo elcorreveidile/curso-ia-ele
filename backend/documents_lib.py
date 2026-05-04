@@ -92,7 +92,7 @@ _BIENVENIDA_PARAGRAPHS = (
      "presentación del curso, configuración del repositorio, primeras "
      "reflexiones éticas e introducción a la ingeniería de prompts."),
     ("bullet",
-     "**Sesión 2 · Jueves 14 de mayo · 16:00 h.** Módulos 1-2: revisión de "
+     "**Sesión 2 · Miércoles 13 de mayo · 16:00 h.** Módulos 1-2: revisión de "
      "mini asistentes, puesta en común de planes de clase y resolución de dudas."),
     ("bullet",
      "**Sesión 3 · Jueves 21 de mayo · 16:00 h.** Módulos 3-4: presentación "

@@ -1595,7 +1595,7 @@ def _videotutorias_calendar_html() -> str:
         },
         {
             "n": 2,
-            "date": "Jueves, 14 de mayo de 2026",
+            "date": "Miércoles, 13 de mayo de 2026",
             "topic": "Módulos 1-2",
             "desc": (
                 "Revisión de mini asistentes, puesta en común de planes de "
