@@ -65,6 +65,14 @@ export default function CursoDetail() {
               💬 Foro del curso
             </Link>
             <Link
+              to="/cuestionario"
+              className="btn btn--ghost"
+              style={{ fontSize: '.85rem' }}
+              data-testid="curso-link-quiz"
+            >
+              📝 Cuestionario de inicio
+            </Link>
+            <Link
               to="/libro"
               className="btn btn--ghost"
               style={{ fontSize: '.85rem' }}
