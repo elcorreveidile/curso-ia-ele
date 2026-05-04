@@ -954,6 +954,49 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
                 {"scope": "general", "scope_key": course["slug"]},
             ],
         })
+
+        # Per-module breakdown (so the admin can see exactly where the
+        # student is stuck or how far each one has gone).
+        modules_breakdown: list[dict] = []
+        async for m in db.modules.find({"course_id": course["id"]}).sort("order", 1):
+            module_lesson_ids = [le["id"] async for le in db.lessons.find(
+                {"module_id": m["id"]}, {"id": 1}
+            )]
+            module_task_ids = [t["id"] async for t in db.tasks.find(
+                {"module_id": m["id"]}, {"id": 1}
+            )]
+            mod_lessons_total = len(module_lesson_ids)
+            mod_lessons_viewed = await db.user_progress.count_documents({
+                "user_id": user_id,
+                "lesson_id": {"$in": module_lesson_ids},
+            }) if module_lesson_ids else 0
+            mod_tasks_total = len(module_task_ids)
+            mod_tasks_submitted = len(set([
+                s["task_id"] async for s in db.submissions.find({
+                    "user_id": user_id, "task_id": {"$in": module_task_ids},
+                }, {"task_id": 1})
+            ])) if module_task_ids else 0
+            mod_resources_total = await db.resources.count_documents({"module_id": m["id"]})
+            mod_module_resource_slugs = [r["slug"] async for r in db.resources.find(
+                {"module_id": m["id"]}, {"slug": 1}
+            )]
+            mod_resources_viewed = await db.user_progress.count_documents({
+                "user_id": user_id,
+                "resource_slug": {"$in": mod_module_resource_slugs},
+            }) if mod_module_resource_slugs else 0
+            modules_breakdown.append({
+                "id": m["id"],
+                "order": m.get("order"),
+                "title": m.get("title"),
+                "unlocked": bool(m.get("unlocked_at")),
+                "lessons_total": mod_lessons_total,
+                "lessons_viewed": mod_lessons_viewed,
+                "tasks_total": mod_tasks_total,
+                "tasks_submitted": mod_tasks_submitted,
+                "resources_total": mod_resources_total,
+                "resources_viewed": mod_resources_viewed,
+            })
+
         enrollments_out.append({
             "course_id": course["id"],
             "course_title": course["title"],
@@ -962,6 +1005,9 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
             "status": en.get("status"),
             "paid_at": iso(en.get("paid_at")),
             "was_founder": bool(en.get("was_founder")),
+            "amount_eur": en.get("amount_eur"),
+            "manual": bool(en.get("manual")),
+            "completed_at": iso(en.get("completed_at")),
             "total_resources": total_resources,
             "read_resources": read_resources,
             "read_resources_pct": round(100 * read_resources / total_resources) if total_resources else 0,
@@ -971,6 +1017,7 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
             "submissions_count": submissions_count,
             "submissions_graded": submissions_graded,
             "forum_posts": forum_posts,
+            "modules": modules_breakdown,
         })
 
     # Activity timeline (last 50 events)
@@ -1007,8 +1054,30 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
         total_minutes += max(1, int((prev - session_start).total_seconds() / 60))
 
     first_seen = all_events_times[0] if all_events_times else None
-    last_seen = all_events_times[-1] if all_events_times else None
+    last_event_at = all_events_times[-1] if all_events_times else None
     active_days = len({t.date().isoformat() for t in all_events_times})
+
+    # Last connection = the most recent of (any authenticated request via
+    # last_seen_at) and (any pedagogical event). This is the answer to "has
+    # this student opened the platform recently?" — it captures students who
+    # log in but don't yet click into a module.
+    user_last_seen = student.get("last_seen_at")
+    candidates = [t for t in (user_last_seen, last_event_at) if t]
+    last_connection = max(candidates) if candidates else None
+
+    # Submissions across all enrollments (richer breakdown for the modal).
+    submission_total = await db.submissions.count_documents({"user_id": user_id})
+    submission_graded = await db.submissions.count_documents(
+        {"user_id": user_id, "grade": {"$ne": None}}
+    )
+    submission_avg_grade = None
+    if submission_graded:
+        agg = db.submissions.aggregate([
+            {"$match": {"user_id": user_id, "grade": {"$ne": None}}},
+            {"$group": {"_id": None, "avg": {"$avg": "$grade"}}},
+        ])
+        async for row in agg:
+            submission_avg_grade = round(row["avg"], 2)
 
     return {
         "student": {
@@ -1017,16 +1086,25 @@ async def admin_student_analytics(user_id: str, admin: dict = Depends(current_ad
             "name": student.get("name"),
             "surname": student.get("surname"),
             "role": student.get("role"),
-            "created_at": iso(student.get("created_at")),
-            "last_nudge_at": iso(student.get("last_nudge_at")),
+            "github_url": student.get("github_url"),
             "marketing_consent": student.get("marketing_consent"),
+            "created_at": iso(student.get("created_at")),
+            "updated_at": iso(student.get("updated_at")),
+            "last_seen_at": iso(user_last_seen),
+            "last_nudge_at": iso(student.get("last_nudge_at")),
         },
         "enrollments": enrollments_out,
         "timeline": timeline,
+        "submissions_summary": {
+            "total": submission_total,
+            "graded": submission_graded,
+            "avg_grade": submission_avg_grade,
+        },
         "totals": {
             "total_events": len(all_events_times),
             "first_seen": iso(first_seen),
-            "last_seen": iso(last_seen),
+            "last_event_at": iso(last_event_at),
+            "last_connection": iso(last_connection),
             "active_days": active_days,
             "approx_total_minutes": total_minutes,
         },

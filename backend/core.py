@@ -257,6 +257,21 @@ async def current_user_optional(
     except JWTError:
         return None
     user = await db.users.find_one({"id": data["sub"]})
+    if user:
+        # Touch last_seen_at on every authenticated hit, throttled to one
+        # write every 5 minutes to keep this lightweight. This single field
+        # powers the "Última conexión" column in the admin analytics — it
+        # captures *every* navigation to any authenticated page (login,
+        # dashboard, course home, foros, documents…) regardless of whether
+        # the user opened a lesson or resource.
+        prev = user.get("last_seen_at")
+        now = now_utc()
+        if not prev or (now - prev).total_seconds() > 300:
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {"last_seen_at": now}},
+            )
+            user["last_seen_at"] = now
     return clean_doc(user)
 
 

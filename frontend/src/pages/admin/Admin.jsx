@@ -375,7 +375,7 @@ function StudentAnalyticsModal({ userId, onClose }) {
       <div
         style={{
           background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.75rem 2rem',
-          maxWidth: 760, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+          maxWidth: 920, width: '100%', maxHeight: '90vh', overflowY: 'auto',
           boxShadow: '0 20px 60px rgba(15,76,129,.25)',
         }}
       >
@@ -386,6 +386,19 @@ function StudentAnalyticsModal({ userId, onClose }) {
               <p style={{ margin: '.2rem 0 0', fontSize: '.85rem', color: 'var(--ink-muted)' }}>
                 {d.student.email}
                 {d.student.name && ` · ${d.student.name} ${d.student.surname || ''}`}
+              </p>
+            )}
+            {d?.student?.github_url && (
+              <p style={{ margin: '.15rem 0 0', fontSize: '.78rem' }}>
+                🐙 <a
+                  href={d.student.github_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: 'var(--blue)' }}
+                  data-testid="analytics-github-url"
+                >
+                  {d.student.github_url.replace(/^https?:\/\//, '')}
+                </a>
               </p>
             )}
           </div>
@@ -404,33 +417,101 @@ function StudentAnalyticsModal({ userId, onClose }) {
           <p>Cargando…</p>
         ) : (
           <>
+            {/* Identity & meta */}
             <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+              display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: '.65rem', marginBottom: '1rem',
+              padding: '.85rem 1rem', background: 'var(--white)',
+              borderRadius: 10, border: '1px solid var(--line)',
+            }}>
+              <MiniRow label="Registrado" value={fmtDate(d.student.created_at)} />
+              <MiniRow label="Última conexión" value={fmtDate(d.totals.last_connection)} testid="analytics-last-connection" />
+              <MiniRow label="Última actividad" value={fmtDate(d.totals.last_event_at)} hint="Vista de módulo o recurso" />
+              <MiniRow label="Primera actividad" value={fmtDate(d.totals.first_seen)} />
+              <MiniRow label="Días activos" value={d.totals.active_days} />
+              <MiniRow label="Tiempo aprox." value={fmtMin(d.totals.approx_total_minutes)} hint="Sesiones de ≤30 min" />
+              <MiniRow label="Eventos totales" value={d.totals.total_events} />
+              <MiniRow label="Consentimiento marketing" value={d.student.marketing_consent === true ? 'Sí' : (d.student.marketing_consent === false ? 'No' : '—')} />
+              <MiniRow label="Último nudge" value={fmtDate(d.student.last_nudge_at)} />
+            </div>
+
+            {/* Submissions summary across all enrollments */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
               gap: '.75rem', marginBottom: '1.25rem',
             }}>
-              <StatBox label="Primera actividad" value={fmtDate(d.totals.first_seen)} />
-              <StatBox label="Última actividad" value={fmtDate(d.totals.last_seen)} />
-              <StatBox label="Días activos" value={d.totals.active_days} />
-              <StatBox label="Tiempo aprox." value={fmtMin(d.totals.approx_total_minutes)} hint="Basado en sesiones de ≤30 min" />
+              <StatBox label="Entregas totales" value={d.submissions_summary.total} />
+              <StatBox label="Corregidas" value={d.submissions_summary.graded} />
+              <StatBox
+                label="Nota media"
+                value={d.submissions_summary.avg_grade != null ? d.submissions_summary.avg_grade : '—'}
+                hint="Solo entregas corregidas"
+              />
             </div>
+
+            {/* Per-enrollment breakdown */}
             {d.enrollments.length === 0 ? (
               <p style={{ color: 'var(--ink-muted)' }}>Sin inscripciones.</p>
             ) : d.enrollments.map((e) => (
               <div key={e.course_id} style={{ marginBottom: '1.25rem', padding: '1rem 1.1rem', background: 'var(--white)', borderRadius: 10, border: '1px solid var(--line)' }}>
-                <h4 style={{ margin: '0 0 .75rem', fontFamily: 'var(--font-display)' }}>{e.course_title}</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '.5rem' }}>
+                  <h4 style={{ margin: '0', fontFamily: 'var(--font-display)' }}>{e.course_title}</h4>
+                  <span style={{ fontSize: '.78rem', color: 'var(--ink-muted)' }}>
+                    {e.status === 'completed' ? '✅ Completado' : e.status === 'active' ? 'Activo' : e.status}
+                    {e.was_founder && ' · ⭐ Fundador/a'}
+                    {e.manual && ' · 🛠 Manual'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '.78rem', color: 'var(--ink-muted)', margin: '.2rem 0 .75rem' }}>
+                  Inscrito el {fmtDate(e.paid_at)}
+                  {e.amount_eur != null && ` · ${e.amount_eur} €`}
+                  {e.completed_at && ` · Completado el ${fmtDate(e.completed_at)}`}
+                </p>
                 <ProgressRow label="📚 Materiales leídos" value={e.read_resources} total={e.total_resources} pct={e.read_resources_pct} />
                 <ProgressRow label="🎓 Lecciones vistas" value={e.viewed_lessons} total={e.total_lessons} pct={e.viewed_lessons_pct} />
                 <div style={{ display: 'flex', gap: '1.25rem', fontSize: '.85rem', marginTop: '.5rem', color: 'var(--ink-soft)', flexWrap: 'wrap' }}>
                   <span>✍️ Entregas: <strong>{e.submissions_count}</strong> ({e.submissions_graded} corregidas)</span>
                   <span>💬 Foro: <strong>{e.forum_posts}</strong> mensaje(s)</span>
-                  {e.was_founder && <span>⭐ Fundador/a</span>}
                 </div>
+
+                {e.modules?.length > 0 && (
+                  <details style={{ marginTop: '.85rem' }}>
+                    <summary style={{ cursor: 'pointer', fontSize: '.85rem', fontWeight: 600, color: 'var(--ink-soft)' }}>
+                      Desglose por módulo ({e.modules.length})
+                    </summary>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '.5rem', fontSize: '.78rem' }}>
+                      <thead>
+                        <tr style={{ textAlign: 'left', color: 'var(--ink-muted)' }}>
+                          <th style={{ padding: '.3rem .25rem' }}>Módulo</th>
+                          <th style={{ padding: '.3rem .25rem' }}>Estado</th>
+                          <th style={{ padding: '.3rem .25rem' }}>Lecciones</th>
+                          <th style={{ padding: '.3rem .25rem' }}>Recursos</th>
+                          <th style={{ padding: '.3rem .25rem' }}>Tareas</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {e.modules.map((m) => (
+                          <tr key={m.id} style={{ borderTop: '1px solid var(--line)' }}>
+                            <td style={{ padding: '.3rem .25rem' }}><strong>M{m.order}</strong> · {m.title}</td>
+                            <td style={{ padding: '.3rem .25rem' }}>
+                              {m.unlocked ? '🔓' : '🔒'}
+                            </td>
+                            <td style={{ padding: '.3rem .25rem' }}>{m.lessons_viewed}/{m.lessons_total}</td>
+                            <td style={{ padding: '.3rem .25rem' }}>{m.resources_viewed}/{m.resources_total}</td>
+                            <td style={{ padding: '.3rem .25rem' }}>{m.tasks_submitted}/{m.tasks_total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </details>
+                )}
               </div>
             ))}
+
             {d.timeline.length > 0 && (
               <details style={{ marginTop: '1rem' }}>
                 <summary style={{ cursor: 'pointer', fontWeight: 600 }}>
-                  🕒 Últimos {d.timeline.length} eventos
+                  🕒 Últimos {d.timeline.length} eventos pedagógicos
                 </summary>
                 <ul style={{ fontSize: '.82rem', color: 'var(--ink-soft)', margin: '.5rem 0 0', paddingLeft: '1.2rem' }}>
                   {d.timeline.map((ev, i) => (
@@ -449,8 +530,7 @@ function StudentAnalyticsModal({ userId, onClose }) {
   );
 }
 
-function StatBox({ label, value, hint }) {
-  return (
+function StatBox({ label, value, hint }) {  return (
     <div style={{ padding: '.75rem .9rem', background: 'var(--white)', borderRadius: 10, border: '1px solid var(--line)' }}>
       <div style={{ fontSize: '.72rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'var(--ink-muted)' }}>
         {label}
@@ -463,8 +543,31 @@ function StatBox({ label, value, hint }) {
   );
 }
 
-function ProgressRow({ label, value, total, pct }) {
+function MiniRow({ label, value, hint, testid }) {
   return (
+    <div data-testid={testid}>
+      <div style={{
+        fontSize: '.7rem', textTransform: 'uppercase', letterSpacing: '.06em',
+        color: 'var(--ink-muted)',
+      }}>
+        {label}
+      </div>
+      <div
+        style={{ fontSize: '.88rem', color: 'var(--ink)', fontWeight: 600, marginTop: '.1rem' }}
+        title={hint || undefined}
+      >
+        {value || '—'}
+      </div>
+      {hint && (
+        <div style={{ fontSize: '.68rem', color: 'var(--ink-muted)', marginTop: '.1rem' }}>
+          {hint}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProgressRow({ label, value, total, pct }) {  return (
     <div style={{ marginBottom: '.55rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.82rem', marginBottom: '.2rem' }}>
         <span>{label}</span>
