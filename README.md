@@ -163,7 +163,7 @@ El símbolo **`[|]`** es la marca personal del autor: representa el cursor de te
 ## Licencia y autoría
 
 Desarrollado por **Javier Benítez Láinez**
-Docente de ELE · Doctor en Computer Science · Formador de Formadores (Instituto Cervantes)
+Docente de ELE · Diploma Digitalización Aplicada al Sector Productivo · Formador de Formadores (Instituto Cervantes)
 📧 benitezl@go.ugr.es · 🌐 laclasedigital.com
 
 Los materiales didácticos del curso son de elaboración propia.
