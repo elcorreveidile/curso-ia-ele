@@ -257,6 +257,33 @@ async def current_user_optional(
     except JWTError:
         return None
     user = await db.users.find_one({"id": data["sub"]})
+    if user:
+        # Touch last_seen_at on every authenticated hit, throttled to one
+        # write every 5 minutes. This single field powers the "Última
+        # conexión" column in the admin analytics — it captures *every*
+        # navigation to any authenticated page (login, dashboard, course
+        # home, foros, documents…) regardless of whether the user opened
+        # a lesson or resource.
+        #
+        # Wrapped in try/except so this best-effort housekeeping can NEVER
+        # break the auth flow: motor returns naive datetimes by default,
+        # and a tz-aware vs tz-naive comparison would otherwise raise.
+        try:
+            prev = user.get("last_seen_at")
+            now = now_utc()
+            should_write = True
+            if isinstance(prev, datetime):
+                if prev.tzinfo is None:
+                    prev = prev.replace(tzinfo=timezone.utc)
+                should_write = (now - prev).total_seconds() > 300
+            if should_write:
+                await db.users.update_one(
+                    {"id": user["id"]},
+                    {"$set": {"last_seen_at": now}},
+                )
+                user["last_seen_at"] = now
+        except Exception as exc:  # pragma: no cover
+            log.warning("last_seen_at touch skipped: %s", exc)
     return clean_doc(user)
 
 
