@@ -1,5 +1,5 @@
 # GUION — Segunda videotutoría
-## IA para la enseñanza de ELE · Miércoles 14 de mayo · 16:00–17:30 h
+## IA para la enseñanza de ELE · Miércoles 13 de mayo · 16:00–17:30 h
 ## 7 participantes · Docentes de ELE · Grabación activa · Zoom
 
 ---
