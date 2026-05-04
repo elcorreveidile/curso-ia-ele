@@ -2132,7 +2132,11 @@ async def get_certificate(cert_id: str):
     course = await db.courses.find_one({"id": cert["course_id"]})
     return {
         "certificate": clean_doc(cert),
-        "user": {"email": user.get("email"), "name": user.get("name")} if user else None,
+        "user": {
+            "email": user.get("email"),
+            "name": user.get("name"),
+            "surname": user.get("surname"),
+        } if user else None,
         "course": {"title": course.get("title"), "slug": course.get("slug"), "hours": course.get("hours", cert.get("hours", 20))} if course else None,
     }
 

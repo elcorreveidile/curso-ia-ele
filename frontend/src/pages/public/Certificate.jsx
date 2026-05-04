@@ -137,6 +137,12 @@ export default function Certificate() {
     });
   }, [certId]);
 
+  // Combine first name + surname(s) for the certificate.
+  // Falls back gracefully if either is missing so old certificates still render.
+  const fullName = data?.user
+    ? [data.user.name, data.user.surname].filter(Boolean).join(' ').trim()
+    : '';
+
   return (
     <>
       <Navbar />
@@ -156,7 +162,7 @@ export default function Certificate() {
                 <div>
                   <p className="section__tag">Certificado verificable</p>
                   <h1 className="section__title" style={{ fontSize: '1.8rem' }}>
-                    {data.user.name || data.user.email}
+                    {fullName || data.user.email}
                   </h1>
                   <p style={{ color: 'var(--ink-muted)', marginBottom: '.5rem' }}>
                     {data.course.title} · {data.certificate.hours} horas · Emitido el{' '}
@@ -169,7 +175,7 @@ export default function Certificate() {
                 <PDFDownloadLink
                   document={
                     <CertificateDoc
-                      name={data.user.name}
+                      name={fullName}
                       email={data.user.email}
                       course={data.course.title}
                       hours={data.certificate.hours}
@@ -188,7 +194,7 @@ export default function Certificate() {
               <div className="cert-viewer" data-testid="cert-viewer">
                 <PDFViewer width="100%" height="600" style={{ border: 'none', borderRadius: 'var(--r-md)' }}>
                   <CertificateDoc
-                    name={data.user.name}
+                    name={fullName}
                     email={data.user.email}
                     course={data.course.title}
                     hours={data.certificate.hours}
