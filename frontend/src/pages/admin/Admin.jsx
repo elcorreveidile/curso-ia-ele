@@ -1716,9 +1716,27 @@ function PollResultsModal({ poll, onClose }) {
               <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Detalle por persona ({data.voters.length})</summary>
               <ul style={{ fontSize: '.85rem', paddingLeft: '1.2rem', marginTop: '.5rem' }}>
                 {data.voters.map((v) => (
-                  <li key={v.user_id}>
+                  <li key={v.user_id} style={{ marginBottom: '.3rem', lineHeight: 1.5 }}>
                     <strong>{v.user_email}</strong>:{' '}
                     {v.option_ids.map((oid) => optById(oid)?.label || oid).join(', ')}
+                    {' '}
+                    <button
+                      type="button"
+                      className="linkish"
+                      style={{ color: 'var(--clm-red)', fontSize: '.78rem', marginLeft: '.4rem' }}
+                      data-testid={`admin-poll-delete-vote-${v.user_id}`}
+                      onClick={async () => {
+                        if (!window.confirm(`¿Eliminar el voto de ${v.user_email}? Esta acción no se puede deshacer.`)) return;
+                        try {
+                          await api.delete(`/admin/polls/${poll.id}/votes/${v.user_id}`);
+                          load();
+                        } catch (ex) {
+                          alert(ex.response?.data?.detail || 'No se pudo eliminar el voto');
+                        }
+                      }}
+                    >
+                      🗑 Eliminar voto
+                    </button>
                   </li>
                 ))}
               </ul>
