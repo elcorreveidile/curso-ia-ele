@@ -335,11 +335,11 @@ def register_poll_routes(api: APIRouter) -> None:
         sent, failed = 0, 0
         # Render the option list once (same HTML for everyone).
         options_html = "".join(
-            f'<li style="margin:6px 0;color:#1A2535;font-size:14px"><strong>{i+1}.</strong> {opt["label"]}</li>'
+            f'<li style="margin:10px 0;color:#1A2535;font-size:16px;line-height:1.5"><strong>{i+1}.</strong> {opt["label"]}</li>'
             for i, opt in enumerate(poll.get("options", []))
         )
         intro_html = "".join(
-            f"<p style=\"margin:0 0 12px;color:#46476A;font-size:15px;line-height:1.6\">{line}</p>"
+            f"<p style=\"margin:0 0 14px;color:#46476A;font-size:16px;line-height:1.6\">{line}</p>"
             for line in intro.split("\n\n") if line.strip()
         ) or ""
 
@@ -354,29 +354,29 @@ def register_poll_routes(api: APIRouter) -> None:
                       <div style="font-family:Georgia,serif;font-size:38px;color:#F5A623;letter-spacing:-3px">[ | ]</div>
                       <div style="color:#F5A623;font-size:11px;font-weight:700;letter-spacing:3px">LA CLASE DIGITAL</div>
                     </div>
-                    <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:22px;margin:0 0 14px">
+                    <h2 style="font-family:Georgia,serif;color:#0F4C81;font-size:24px;line-height:1.25;margin:0 0 16px">
                       Hola, {first} 👋
                     </h2>
                     {intro_html}
-                    <p style="font-weight:700;color:#1A2535;font-size:15px;margin:18px 0 6px">
+                    <p style="font-weight:700;color:#1A2535;font-size:17px;line-height:1.4;margin:20px 0 8px">
                       {poll['question']}
                     </p>
-                    <ul style="padding-left:22px;margin:0 0 18px">{options_html}</ul>
-                    <p style="text-align:center;margin:24px 0">
-                      <a href="{poll_url}" style="background:#0F4C81;color:#fff;text-decoration:none;
-                         padding:13px 26px;border-radius:6px;font-weight:700;display:inline-block;font-size:14px">
+                    <ul style="padding-left:22px;margin:0 0 20px">{options_html}</ul>
+                    <p style="text-align:center;margin:26px 0">
+                      <a href="{poll_url}" class="elc-btn" style="background:#0F4C81;color:#fff;text-decoration:none;
+                         padding:14px 28px;border-radius:6px;font-weight:700;display:inline-block;font-size:16px">
                         Responder la encuesta →
                       </a>
                     </p>
-                    <p style="font-size:13px;color:#6B82A0;text-align:center;margin:0 0 8px">
+                    <p style="font-size:14px;color:#6B82A0;text-align:center;line-height:1.6;margin:0 0 8px">
                       Puedes elegir {"varias opciones" if poll.get("multi_choice") else "una sola opción"}.
                       Tu voto entra automáticamente y puedes cambiarlo siempre que quieras antes de que cierre la encuesta.
                     </p>
-                    <hr style="border:none;border-top:1px solid #E0E2EA;margin:24px 0">
-                    <p style="font-size:14px;color:#46476A;margin:0">
+                    <hr style="border:none;border-top:1px solid #E0E2EA;margin:26px 0">
+                    <p style="font-size:15px;color:#46476A;line-height:1.6;margin:0">
                       Un abrazo,<br>
                       <strong style="color:#1A2535">Javier Benítez Láinez</strong><br>
-                      <span style="color:#6B82A0;font-size:13px">La Clase Digital</span>
+                      <span style="color:#6B82A0;font-size:14px">La Clase Digital</span>
                     </p>
                     """
                 )

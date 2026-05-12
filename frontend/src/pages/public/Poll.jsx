@@ -85,6 +85,7 @@ export default function Poll() {
       <Navbar />
       <PageHero tag="Encuesta" title={poll?.question || 'Encuesta'} desc="Tu opinión cuenta. Marca la opción (o las opciones) que te vienen bien y pulsa enviar." />
       <div className="inner-page" data-testid="poll-page">
+        <div className="inner-content" style={{ paddingTop: '2.5rem', paddingBottom: '3rem' }}>
         {bootstrapping && <p style={{ color: 'var(--ink-muted)' }}>Conectando…</p>}
         {!bootstrapping && err && (
           <p style={{ color: 'var(--clm-red)' }} data-testid="poll-error">{err}</p>
@@ -96,14 +97,14 @@ export default function Poll() {
           </p>
         )}
         {poll && user && (
-          <div style={{ maxWidth: 720 }}>
+          <div style={{ maxWidth: 720, margin: '0 auto' }}>
             {poll.intro_md && (
               <div
                 style={{
-                  background: 'var(--surface)', padding: '1rem 1.25rem',
+                  background: 'var(--surface)', padding: '1.1rem 1.25rem',
                   borderRadius: 'var(--r-md)', marginBottom: '1.25rem',
                   boxShadow: 'var(--shadow-sm)', whiteSpace: 'pre-wrap',
-                  fontSize: '.95rem', color: 'var(--ink-soft)', lineHeight: 1.6,
+                  fontSize: '1rem', color: 'var(--ink-soft)', lineHeight: 1.6,
                 }}
                 data-testid="poll-intro"
               >
@@ -114,7 +115,7 @@ export default function Poll() {
               <p
                 style={{
                   background: 'var(--clm-red-light, #FFE9EB)', color: 'var(--clm-red)',
-                  padding: '.55rem .9rem', borderRadius: 6, fontWeight: 600,
+                  padding: '.7rem 1rem', borderRadius: 6, fontWeight: 600, fontSize: '.95rem',
                 }}
                 data-testid="poll-closed"
               >
@@ -125,8 +126,8 @@ export default function Poll() {
               <div
                 style={{
                   background: 'var(--blue-light, #D6E8F7)', color: 'var(--blue)',
-                  padding: '.9rem 1rem', borderRadius: 8, marginBottom: '1.25rem',
-                  fontWeight: 600,
+                  padding: '1rem 1.1rem', borderRadius: 8, marginBottom: '1.25rem',
+                  fontWeight: 600, fontSize: '.98rem', lineHeight: 1.5,
                 }}
                 data-testid="poll-saved"
               >
@@ -134,7 +135,7 @@ export default function Poll() {
                 página y modificarlo mientras la encuesta esté abierta.
               </div>
             )}
-            <p style={{ color: 'var(--ink-muted)', fontSize: '.82rem', marginBottom: '.5rem' }}>
+            <p style={{ color: 'var(--ink-muted)', fontSize: '.9rem', marginBottom: '.6rem' }}>
               {poll.multi_choice
                 ? 'Puedes marcar todas las opciones que te vengan bien.'
                 : 'Selecciona una sola opción.'}
@@ -143,11 +144,11 @@ export default function Poll() {
               {poll.options.map((opt) => {
                 const isSelected = selected.includes(opt.id);
                 return (
-                  <li key={opt.id} style={{ marginBottom: '.5rem' }}>
+                  <li key={opt.id} style={{ marginBottom: '.6rem' }}>
                     <label
                       style={{
-                        display: 'flex', alignItems: 'center', gap: '.85rem',
-                        padding: '.85rem 1rem',
+                        display: 'flex', alignItems: 'center', gap: '.9rem',
+                        padding: '1rem 1.1rem',
                         background: isSelected ? 'var(--blue-light, #D6E8F7)' : 'var(--surface)',
                         borderRadius: 10,
                         border: isSelected ? '2px solid var(--blue)' : '2px solid transparent',
@@ -165,9 +166,9 @@ export default function Poll() {
                         checked={isSelected}
                         onChange={() => toggle(opt.id)}
                         disabled={!poll.is_open || busy}
-                        style={{ width: 18, height: 18 }}
+                        style={{ width: 20, height: 20, flexShrink: 0 }}
                       />
-                      <span style={{ flex: 1, fontSize: '.95rem', color: 'var(--ink)' }}>
+                      <span style={{ flex: 1, fontSize: '1.02rem', color: 'var(--ink)', lineHeight: 1.4 }}>
                         {opt.label}
                       </span>
                     </label>
@@ -180,18 +181,19 @@ export default function Poll() {
               onClick={submit}
               disabled={!selected.length || busy || !poll.is_open}
               className="btn btn--primary"
-              style={{ marginTop: '1rem' }}
+              style={{ marginTop: '1.25rem', padding: '.95rem 1.7rem', fontSize: '1rem' }}
               data-testid="poll-submit"
             >
               {busy ? 'Guardando…' : (poll.my_vote?.length ? 'Actualizar mi voto' : 'Enviar mi voto')}
             </button>
             {poll.voted_at && !done && (
-              <p style={{ fontSize: '.82rem', color: 'var(--ink-muted)', marginTop: '.65rem' }}>
+              <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', marginTop: '.75rem' }}>
                 Último voto registrado: {new Date(poll.voted_at).toLocaleString('es-ES')}
               </p>
             )}
           </div>
         )}
+        </div>
       </div>
       <Footer />
     </>

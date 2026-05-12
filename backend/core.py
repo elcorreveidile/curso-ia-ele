@@ -185,12 +185,39 @@ EMAIL_FOOTER = (
 
 
 def wrap_email(inner: str) -> str:
+    """Wrap an inner HTML fragment in a mobile-friendly email shell.
+
+    The ``<meta viewport>`` + explicit base ``font-size`` are critical so
+    iOS Mail and Gmail mobile do NOT zoom the message out to fit the 560px
+    container — which is what was making poll emails "look very small" on
+    phones. The media query bumps body text to 16px on narrow screens and
+    forces the CTA button to span full width for a comfortable tap target.
+    """
     return (
-        '<div style="font-family:system-ui,-apple-system,sans-serif;max-width:560px;'
-        'margin:0 auto;padding:24px;color:#1A2535">'
+        '<!DOCTYPE html><html lang="es"><head>'
+        '<meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        '<meta name="x-apple-disable-message-reformatting">'
+        '<style>'
+        'body{margin:0;padding:0;background:#F4F7FA;'
+        '-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}'
+        '@media only screen and (max-width:600px){'
+        '.elc-wrap{padding:18px 16px !important;max-width:100% !important}'
+        '.elc-wrap p,.elc-wrap li,.elc-wrap td{font-size:16px !important;line-height:1.6 !important}'
+        '.elc-wrap h1{font-size:24px !important;line-height:1.25 !important}'
+        '.elc-wrap h2{font-size:22px !important;line-height:1.3 !important}'
+        '.elc-wrap h3{font-size:18px !important;line-height:1.3 !important}'
+        '.elc-wrap a.elc-btn{display:block !important;padding:16px 22px !important;'
+        'font-size:17px !important;text-align:center !important}'
+        '}'
+        '</style>'
+        '</head><body>'
+        '<div class="elc-wrap" style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'
+        '\'Segoe UI\',sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#1A2535;'
+        'font-size:16px;line-height:1.6;background:#FFFFFF">'
         + inner
         + EMAIL_FOOTER
-        + "</div>"
+        + "</div></body></html>"
     )
 
 
