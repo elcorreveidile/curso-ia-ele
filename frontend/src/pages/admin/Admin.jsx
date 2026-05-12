@@ -1648,22 +1648,64 @@ function PollResultsModal({ poll, onClose }) {
           <h3 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>Resultados: {poll.question}</h3>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 0, fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
         </div>
-        {!data ? <p>Cargando…</p> : (
+        {!data ? <p>Cargando…</p> : (() => {
+          const totalResponses = Object.values(data.option_counts).reduce((a, b) => a + b, 0);
+          const isMulti = !!poll.multi_choice;
+          return (
           <>
             <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', margin: '0 0 .85rem' }}>
               {data.total_voters} {data.total_voters === 1 ? 'persona ha votado' : 'personas han votado'}
               {data.missing_voters?.length > 0 && ` · ${data.missing_voters.length} aún sin votar`}
+              {isMulti && data.total_voters > 0 && ` · ${totalResponses} respuestas en total`}
             </p>
+            {isMulti && data.total_voters > 0 && (
+              <p
+                style={{
+                  fontSize: '.78rem', color: 'var(--ink-muted)',
+                  background: 'var(--blue-light, #D6E8F7)', padding: '.5rem .75rem',
+                  borderRadius: 6, marginBottom: '.85rem', lineHeight: 1.45,
+                }}
+                data-testid="poll-multi-note"
+              >
+                ℹ️ Pregunta multirrespuesta: cada persona pudo marcar varias opciones,
+                por eso la columna "% personas" no suma 100 %. La columna "% respuestas"
+                sí suma 100 % sobre el total de marcas ({totalResponses}).
+              </p>
+            )}
             <table style={{ width: '100%', fontSize: '.9rem', borderCollapse: 'collapse', marginBottom: '1.25rem' }}>
+              {isMulti && (
+                <thead>
+                  <tr style={{ textAlign: 'left', color: 'var(--ink-muted)', fontSize: '.72rem', textTransform: 'uppercase', letterSpacing: '.06em' }}>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600 }}>Opción</th>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600, textAlign: 'right', width: 90 }}>Personas</th>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600, textAlign: 'right', width: 90 }}>% personas</th>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600, textAlign: 'right', width: 90 }}>% respuestas</th>
+                  </tr>
+                </thead>
+              )}
               <tbody>
                 {Object.entries(data.option_counts).map(([oid, count]) => {
                   const opt = optById(oid);
-                  const pct = data.total_voters ? Math.round((count / data.total_voters) * 100) : 0;
+                  const pctPeople = data.total_voters ? Math.round((count / data.total_voters) * 100) : 0;
+                  const pctResponses = totalResponses ? Math.round((count / totalResponses) * 100) : 0;
+                  if (isMulti) {
+                    return (
+                      <tr key={oid} style={{ borderBottom: '1px solid var(--canvas-alt)' }}>
+                        <td style={{ padding: '.45rem .25rem' }}>{opt?.label || oid}</td>
+                        <td style={{ padding: '.45rem .25rem', textAlign: 'right' }}>
+                          <strong>{count}</strong>
+                          <span style={{ color: 'var(--ink-muted)' }}> / {data.total_voters}</span>
+                        </td>
+                        <td style={{ padding: '.45rem .25rem', textAlign: 'right', color: 'var(--ink-soft)' }}>{pctPeople}%</td>
+                        <td style={{ padding: '.45rem .25rem', textAlign: 'right', color: 'var(--blue)' }}>{pctResponses}%</td>
+                      </tr>
+                    );
+                  }
                   return (
-                    <tr key={oid} style={{ borderBottom: '1px solid var(--line)' }}>
+                    <tr key={oid} style={{ borderBottom: '1px solid var(--canvas-alt)' }}>
                       <td style={{ padding: '.45rem .25rem' }}>{opt?.label || oid}</td>
                       <td style={{ padding: '.45rem .25rem', textAlign: 'right', width: 100 }}>
-                        <strong>{count}</strong> <span style={{ color: 'var(--ink-muted)' }}>({pct}%)</span>
+                        <strong>{count}</strong> <span style={{ color: 'var(--ink-muted)' }}>({pctPeople}%)</span>
                       </td>
                     </tr>
                   );
@@ -1708,7 +1750,8 @@ function PollResultsModal({ poll, onClose }) {
               </details>
             )}
           </>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
