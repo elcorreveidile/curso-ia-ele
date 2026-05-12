@@ -1549,6 +1549,7 @@ function PollResultsModal({ poll, onClose }) {
 function RecordingsManager() {
   const [items, setItems] = useState([]);
   const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState(null);
 
   const load = useCallback(() => {
     api.get('/admin/recordings').then((r) => setItems(r.data.recordings || []));
@@ -1594,7 +1595,10 @@ function RecordingsManager() {
                 <td style={{ padding: '.5rem .25rem' }}>
                   <code style={{ fontSize: '.78rem' }}>{r.youtube_id}</code>
                 </td>
-                <td style={{ padding: '.5rem .25rem' }}>
+                <td style={{ padding: '.5rem .25rem', display: 'flex', gap: '.45rem', flexWrap: 'wrap' }}>
+                  <button type="button" className="linkish" onClick={() => setEditing(r)} data-testid={`admin-edit-recording-${r.id}`}>
+                    Editar
+                  </button>
                   <button type="button" className="linkish" onClick={() => remove(r.id)} style={{ color: 'var(--clm-red)' }}>
                     Borrar
                   </button>
@@ -1605,17 +1609,19 @@ function RecordingsManager() {
         </table>
       )}
       {creating && <RecordingCreator onClose={() => { setCreating(false); load(); }} />}
+      {editing && <RecordingCreator existing={editing} onClose={() => { setEditing(null); load(); }} />}
     </div>
   );
 }
 
-function RecordingCreator({ onClose }) {
-  const [courseSlug, setCourseSlug] = useState('ia-ele');
-  const [sessionN, setSessionN] = useState(1);
-  const [title, setTitle] = useState('');
-  const [youtube, setYoutube] = useState('');
-  const [recordedAt, setRecordedAt] = useState('');
-  const [description, setDescription] = useState('');
+function RecordingCreator({ existing, onClose }) {
+  const isEdit = !!existing;
+  const [courseSlug, setCourseSlug] = useState(existing?.course_slug || 'ia-ele');
+  const [sessionN, setSessionN] = useState(existing?.session_n ?? 1);
+  const [title, setTitle] = useState(existing?.title || '');
+  const [youtube, setYoutube] = useState(existing?.youtube_id || '');
+  const [recordedAt, setRecordedAt] = useState(existing?.recorded_at || '');
+  const [description, setDescription] = useState(existing?.description_md || '');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
@@ -1627,14 +1633,25 @@ function RecordingCreator({ onClose }) {
     }
     setBusy(true); setErr('');
     try {
-      await api.post('/admin/recordings', {
-        course_slug: courseSlug,
-        session_n: Number(sessionN),
-        title,
-        youtube_id: youtube,
-        recorded_at: recordedAt || null,
-        description_md: description || null,
-      });
+      if (isEdit) {
+        // Course slug is immutable on PATCH; recreate if you really need to change it.
+        await api.patch(`/admin/recordings/${existing.id}`, {
+          session_n: Number(sessionN),
+          title,
+          youtube_id: youtube,
+          recorded_at: recordedAt || null,
+          description_md: description || null,
+        });
+      } else {
+        await api.post('/admin/recordings', {
+          course_slug: courseSlug,
+          session_n: Number(sessionN),
+          title,
+          youtube_id: youtube,
+          recorded_at: recordedAt || null,
+          description_md: description || null,
+        });
+      }
       onClose();
     } catch (ex) {
       setErr(ex.response?.data?.detail || 'Error');
@@ -1654,10 +1671,18 @@ function RecordingCreator({ onClose }) {
         style={{ background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.5rem 1.75rem', maxWidth: 560, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}
         data-testid="admin-recording-form"
       >
-        <h3 style={{ fontFamily: 'var(--font-display)', margin: '0 0 1rem' }}>Añadir grabación</h3>
+        <h3 style={{ fontFamily: 'var(--font-display)', margin: '0 0 1rem' }}>
+          {isEdit ? 'Editar grabación' : 'Añadir grabación'}
+        </h3>
         <div className="form-group">
           <label>Curso</label>
-          <input className="form-input" value={courseSlug} onChange={(e) => setCourseSlug(e.target.value)} />
+          <input
+            className="form-input"
+            value={courseSlug}
+            onChange={(e) => setCourseSlug(e.target.value)}
+            disabled={isEdit}
+            title={isEdit ? 'Para cambiar el curso, borra y vuelve a crear la grabación.' : undefined}
+          />
         </div>
         <div className="form-group">
           <label>Número de sesión</label>
@@ -1683,7 +1708,7 @@ function RecordingCreator({ onClose }) {
         <div style={{ display: 'flex', gap: '.6rem', justifyContent: 'flex-end' }}>
           <button type="button" className="btn btn--ghost" onClick={onClose} disabled={busy}>Cancelar</button>
           <button type="submit" className="btn btn--primary" disabled={busy} data-testid="rec-submit">
-            {busy ? 'Guardando…' : 'Publicar grabación'}
+            {busy ? 'Guardando…' : (isEdit ? 'Guardar cambios' : 'Publicar grabación')}
           </button>
         </div>
       </form>
