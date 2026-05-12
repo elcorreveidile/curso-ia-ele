@@ -1513,8 +1513,10 @@ function PollSendModal({ poll, onClose }) {
     }
     setSending(true); setErr('');
     try {
-      const sendAll = selected.size === recipients.length;
-      const body = sendAll ? {} : { user_ids: Array.from(selected) };
+      // Always send the explicit list of user IDs — never trust the
+      // "send to all when count matches" shortcut, which can mis-fire if
+      // the recipients list is stale or got re-fetched.
+      const body = { user_ids: Array.from(selected) };
       const r = await api.post(`/admin/polls/${poll.id}/send-email`, body);
       setDone(r.data);
     } catch (ex) {
@@ -1687,6 +1689,22 @@ function PollResultsModal({ poll, onClose }) {
                 <ul style={{ fontSize: '.85rem', paddingLeft: '1.2rem', marginTop: '.5rem' }}>
                   {data.missing_voters.map((u) => (<li key={u.id}>{u.email}</li>))}
                 </ul>
+              </details>
+            )}
+            {data.last_sent_at && (
+              <details style={{ marginTop: '.75rem' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--blue)' }}>
+                  📧 Último envío: {data.last_sent_count || 0} email(s) · {new Date(data.last_sent_at).toLocaleString('es-ES')}
+                </summary>
+                {data.last_sent_emails?.length > 0 ? (
+                  <ul style={{ fontSize: '.85rem', paddingLeft: '1.2rem', marginTop: '.5rem' }} data-testid="poll-last-sent-list">
+                    {data.last_sent_emails.map((e) => (<li key={e}>{e}</li>))}
+                  </ul>
+                ) : (
+                  <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', margin: '.5rem 0' }}>
+                    No hay registro detallado de destinatarios (envío anterior al sistema de auditoría).
+                  </p>
+                )}
               </details>
             )}
           </>

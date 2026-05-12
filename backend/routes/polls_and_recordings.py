@@ -244,12 +244,28 @@ def register_poll_routes(api: APIRouter) -> None:
                     if u and u.get("role") != "admin":
                         missing.append(u)
 
+        # Resolve last-sent recipients into emails so the admin can verify
+        # exactly who received the last email blast.
+        last_sent_emails: list[str] = []
+        last_sent_to = poll.get("last_sent_to") or []
+        if last_sent_to:
+            async for u in db.users.find(
+                {"id": {"$in": last_sent_to}},
+                {"_id": 0, "email": 1},
+            ):
+                if u.get("email"):
+                    last_sent_emails.append(u["email"])
+            last_sent_emails.sort()
+
         return {
             "poll": _public_poll(poll),
             "option_counts": option_counts,
             "voters": voters,
             "missing_voters": missing,
             "total_voters": len(voters),
+            "last_sent_at": _iso(poll.get("last_sent_at")),
+            "last_sent_count": poll.get("last_sent_count", 0),
+            "last_sent_emails": last_sent_emails,
         }
 
     @api.get("/admin/polls/{poll_id}/recipients")
@@ -372,9 +388,19 @@ def register_poll_routes(api: APIRouter) -> None:
 
         await db.polls.update_one(
             {"id": poll_id},
-            {"$set": {"last_sent_at": now_utc(), "last_sent_count": sent}},
+            {"$set": {
+                "last_sent_at": now_utc(),
+                "last_sent_count": sent,
+                "last_sent_to": [u["id"] for u in recipients],
+                "last_sent_failed": failed,
+            }},
         )
-        return {"sent": sent, "failed": failed, "total": len(recipients)}
+        return {
+            "sent": sent,
+            "failed": failed,
+            "total": len(recipients),
+            "recipient_emails": [u["email"] for u in recipients],
+        }
 
     # ─────────── Session recordings — student ───────────
 
