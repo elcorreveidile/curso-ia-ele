@@ -34,6 +34,30 @@ al startup del curso `ia-ele` con 4 módulos, 8 lecciones y 4 tareas.
 - Identidad: logo IA·ELE, símbolo `[|]` en footer, franja roja superior.
 - Todo bajo `laclasedigital.com` (single domain).
 
+## Implementado en iteración 9 (2026-02 fork · mobile responsiveness)
+- ✅ **Fix móvil de Encuestas (P0)**: una estudiante reportó que la
+  encuesta "se veía muy pequeña" en el móvil. Causa raíz doble:
+  - **Email**: `wrap_email()` en `core.py` no emitía `<!DOCTYPE>` ni
+    `<meta viewport>`, por lo que Gmail / iOS Mail aplicaban zoom out
+    al contenedor de 560 px. Reescrito como documento HTML completo
+    con viewport, `font-size:16px` base y media query `@max-width:600px`
+    que sube párrafos/listas a 16 px y convierte el CTA en botón de
+    ancho completo (tap target cómodo).
+  - **Página `Poll.jsx`**: el contenido vivía dentro de `.inner-page`,
+    que solo añade `padding-top` para la nav fija — no tenía padding
+    horizontal, por lo que en pantallas estrechas el texto y las
+    opciones pegaban contra el borde. Envuelto el contenido en
+    `.inner-content` (padding adaptativo 1.25 rem en móvil) + max-width
+    720 px centrado. Subidos los tamaños de fuente de las opciones
+    de 0.95 rem → 1.02 rem, padding de 0.85 → 1.0 rem y checkboxes
+    de 18 → 20 px para mejorar accesibilidad.
+  - Cuerpo del email de la encuesta: opciones 14 → 16 px, intro 15 → 16 px,
+    pregunta 15 → 17 px, botón con clase `elc-btn` para activar la
+    regla responsive del shell.
+- Testing: smoke screenshots en viewport 390×844 (móvil) y 1280×800
+  (desktop). Generación de HTML del email verificada con `wrap_email`.
+
+
 ## Implementado en iteración 8 (2026-02 fork, sprint 4 · bugfix producción)
 - ✅ **PDF del libro en producción** (BUG FIX CRÍTICO): WeasyPrint no
   funcionaba en el deploy nativo porque necesita libs del sistema

@@ -4,6 +4,7 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import PageHero from '../../components/PageHero';
 import LiveSessionsCard from '../../components/LiveSessionsCard';
+import SessionRecordings from '../../components/SessionRecordings';
 import { api } from '../../lib/api';
 
 export default function CursoDetail() {
@@ -47,6 +48,7 @@ export default function CursoDetail() {
             </div>
           )}
           <LiveSessionsCard courseSlug={slug} />
+          <SessionRecordings courseSlug={slug} />
           <div style={{ marginBottom: '1rem', display: 'flex', gap: '.5rem', flexWrap: 'wrap' }}>
             <Link
               to={`/curso/${slug}/recursos`}

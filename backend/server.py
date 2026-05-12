@@ -67,8 +67,13 @@ from models import (
     FeedbackIn,
     LessonViewIn,
     LoginRequest,
+    PollCreate,
+    PollEmailIn,
+    PollVoteIn,
     ProfileUpdate,
     QuizSubmitIn,
+    SessionRecordingIn,
+    SessionRecordingUpdate,
     SubmissionIn,
     ThreadPostIn,
     ThreadPostUpdate,
@@ -2428,6 +2433,8 @@ async def admin_export_enrollments(user: dict = Depends(current_admin)):
 from routes.admin_users import register as _register_admin_users  # noqa: E402
 
 _register_admin_users(api)
+from routes.polls_and_recordings import register_poll_routes  # noqa: E402
+register_poll_routes(api)
 # ─────────────────────── Scheduler endpoints ────────────
 from scheduler import run_inactivity_nudge, run_module_auto_unlock, start_inactivity_scheduler  # noqa: E402
 

@@ -322,6 +322,16 @@ export default function Admin() {
           </div>
 
           <div className="dash-section">
+            <h2 className="dash-title">Encuestas</h2>
+            <PollsManager />
+          </div>
+
+          <div className="dash-section">
+            <h2 className="dash-title">Grabaciones de las sesiones</h2>
+            <RecordingsManager />
+          </div>
+
+          <div className="dash-section">
             <h2 className="dash-title">Materiales del curso</h2>
             <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', marginBottom: '.75rem' }}>
               Si añades o modificas archivos <code>.md</code> en <code>/app/legacy/materiales/</code>,
@@ -1260,3 +1270,618 @@ function BroadcastModal({ selectedIds, onClose, onSent }) {
     </div>
   );
 }
+
+
+// ─────────────────────────── Polls manager ──────────────────────────
+function PollsManager() {
+  const [polls, setPolls] = useState([]);
+  const [creating, setCreating] = useState(false);
+  const [resultsFor, setResultsFor] = useState(null);
+  const [sendFor, setSendFor] = useState(null); // poll being emailed
+  const [err, setErr] = useState('');
+
+  const load = useCallback(() => {
+    api.get('/admin/polls')
+      .then((r) => setPolls(r.data.polls || []))
+      .catch((ex) => setErr(ex.response?.data?.detail || 'Error'));
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const closePoll = async (id, isOpen) => {
+    const path = isOpen ? 'close' : 'reopen';
+    if (!window.confirm(isOpen ? '¿Cerrar la encuesta? Ya no se podrán registrar más votos.' : '¿Reabrir la encuesta?')) return;
+    try {
+      await api.post(`/admin/polls/${id}/${path}`);
+      load();
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error');
+    }
+  };
+  const removePoll = async (id) => {
+    if (!window.confirm('¿Borrar la encuesta y todos sus votos? Esta acción no se puede deshacer.')) return;
+    try {
+      await api.delete(`/admin/polls/${id}`);
+      load();
+    } catch (ex) {
+      alert(ex.response?.data?.detail || 'Error');
+    }
+  };
+
+  return (
+    <div data-testid="admin-polls">
+      {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
+      <button
+        type="button"
+        className="btn btn--primary"
+        onClick={() => setCreating(true)}
+        style={{ marginBottom: '1rem' }}
+        data-testid="admin-create-poll"
+      >
+        + Crear encuesta
+      </button>
+      {polls.length === 0 ? (
+        <p style={{ color: 'var(--ink-muted)' }}>Aún no has creado ninguna encuesta.</p>
+      ) : (
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.88rem' }}>
+          <thead>
+            <tr style={{ textAlign: 'left', color: 'var(--ink-muted)', borderBottom: '1px solid var(--line)' }}>
+              <th style={{ padding: '.45rem .25rem' }}>Pregunta</th>
+              <th style={{ padding: '.45rem .25rem' }}>Curso</th>
+              <th style={{ padding: '.45rem .25rem' }}>Estado</th>
+              <th style={{ padding: '.45rem .25rem' }}>Votos</th>
+              <th style={{ padding: '.45rem .25rem' }}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {polls.map((p) => (
+              <tr key={p.id} style={{ borderBottom: '1px solid var(--line)' }} data-testid={`admin-poll-row-${p.id}`}>
+                <td style={{ padding: '.5rem .25rem' }}>{p.question}</td>
+                <td style={{ padding: '.5rem .25rem', color: 'var(--ink-muted)' }}>{p.course_slug || '—'}</td>
+                <td style={{ padding: '.5rem .25rem' }}>
+                  {p.is_open ? <span style={{ color: 'var(--blue)', fontWeight: 600 }}>Abierta</span> :
+                    <span style={{ color: 'var(--ink-muted)' }}>Cerrada</span>}
+                </td>
+                <td style={{ padding: '.5rem .25rem' }}>{p.vote_count}</td>
+                <td style={{ padding: '.5rem .25rem', display: 'flex', gap: '.45rem', flexWrap: 'wrap' }}>
+                  <button type="button" className="linkish" onClick={() => setResultsFor(p)} data-testid={`admin-poll-results-${p.id}`}>
+                    Resultados
+                  </button>
+                  {p.course_slug && p.is_open && (
+                    <button type="button" className="linkish" onClick={() => setSendFor(p)} data-testid={`admin-poll-send-${p.id}`}>
+                      Enviar email
+                    </button>
+                  )}
+                  <button type="button" className="linkish" onClick={() => closePoll(p.id, p.is_open)}>
+                    {p.is_open ? 'Cerrar' : 'Reabrir'}
+                  </button>
+                  <button type="button" className="linkish" onClick={() => removePoll(p.id)} style={{ color: 'var(--clm-red)' }}>
+                    Borrar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {creating && (
+        <PollCreator onClose={(newPoll) => {
+          setCreating(false);
+          load();
+          // After creation, jump straight into the recipient picker.
+          if (newPoll) setSendFor(newPoll);
+        }} />
+      )}
+      {sendFor && <PollSendModal poll={sendFor} onClose={() => { setSendFor(null); load(); }} />}
+      {resultsFor && <PollResultsModal poll={resultsFor} onClose={() => { setResultsFor(null); load(); }} />}
+    </div>
+  );
+}
+
+function PollCreator({ onClose }) {
+  const [question, setQuestion] = useState('');
+  const [intro, setIntro] = useState('');
+  const [opts, setOpts] = useState(['', '']);
+  const [multi, setMulti] = useState(true);
+  const [courseSlug, setCourseSlug] = useState('ia-ele');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const cleaned = opts.map((o) => o.trim()).filter(Boolean);
+    if (!question.trim() || cleaned.length < 2) {
+      setErr('Pon una pregunta y al menos 2 opciones.');
+      return;
+    }
+    setBusy(true); setErr('');
+    try {
+      const r = await api.post('/admin/polls', {
+        question, intro_md: intro || null,
+        options: cleaned.map((o) => ({ label: o })),
+        multi_choice: multi,
+        course_slug: courseSlug || null,
+      });
+      // Pass the new poll back to the parent so it can open the recipient picker.
+      onClose(r.data);
+    } catch (ex) {
+      setErr(ex.response?.data?.detail || 'Error');
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(15,23,42,.55)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 1000,
+      }}
+      role="dialog"
+    >
+      <form
+        onSubmit={submit}
+        style={{
+          background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.5rem 1.75rem',
+          maxWidth: 640, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+        }}
+        data-testid="admin-poll-creator"
+      >
+        <h3 style={{ fontFamily: 'var(--font-display)', margin: '0 0 1rem' }}>Crear encuesta</h3>
+        <div className="form-group">
+          <label>Pregunta</label>
+          <input className="form-input" value={question} onChange={(e) => setQuestion(e.target.value)} maxLength={300} data-testid="poll-create-question" />
+        </div>
+        <div className="form-group">
+          <label>Texto introductorio (opcional)</label>
+          <textarea className="form-input" rows={5} value={intro} onChange={(e) => setIntro(e.target.value)} maxLength={4000} placeholder="Mensaje que verán al abrir la encuesta y que se incluye en el email." />
+        </div>
+        <div className="form-group">
+          <label>Opciones</label>
+          {opts.map((o, i) => (
+            <input
+              key={i}
+              className="form-input"
+              value={o}
+              onChange={(e) => setOpts((prev) => prev.map((x, j) => j === i ? e.target.value : x))}
+              placeholder={`Opción ${i + 1}`}
+              style={{ marginBottom: '.5rem' }}
+              data-testid={`poll-create-option-${i}`}
+            />
+          ))}
+          {opts.length < 8 && (
+            <button type="button" className="linkish" onClick={() => setOpts((prev) => [...prev, ''])}>+ Añadir opción</button>
+          )}
+        </div>
+        <div className="form-group" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '.4rem' }}>
+            <input type="checkbox" checked={multi} onChange={(e) => setMulti(e.target.checked)} />
+            <span>Permitir varias respuestas por persona</span>
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '.4rem' }}>
+            <span>Curso</span>
+            <input className="form-input" value={courseSlug} onChange={(e) => setCourseSlug(e.target.value)} style={{ width: 120 }} />
+          </label>
+        </div>
+        {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
+        <div style={{ display: 'flex', gap: '.6rem', justifyContent: 'flex-end' }}>
+          <button type="button" className="btn btn--ghost" onClick={() => onClose(null)} disabled={busy}>Cancelar</button>
+          <button type="submit" className="btn btn--primary" disabled={busy} data-testid="poll-create-submit">
+            {busy ? 'Creando…' : 'Crear y elegir destinatarios →'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+// ─────────────────────── Poll send modal (recipient picker) ─────────
+function PollSendModal({ poll, onClose }) {
+  const [recipients, setRecipients] = useState([]);
+  const [selected, setSelected] = useState(new Set());
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState('');
+  const [done, setDone] = useState(null);
+
+  useEffect(() => {
+    api.get(`/admin/polls/${poll.id}/recipients`)
+      .then((r) => {
+        const list = r.data.recipients || [];
+        setRecipients(list);
+        // Default: everyone selected (most common case).
+        setSelected(new Set(list.map((u) => u.id)));
+        setLoading(false);
+      })
+      .catch((ex) => { setErr(ex.response?.data?.detail || 'Error'); setLoading(false); });
+  }, [poll.id]);
+
+  const toggle = (uid) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(uid)) next.delete(uid); else next.add(uid);
+      return next;
+    });
+  };
+  const selectAll = () => setSelected(new Set(recipients.map((u) => u.id)));
+  const clearAll = () => setSelected(new Set());
+
+  const send = async () => {
+    if (selected.size === 0) {
+      if (!window.confirm('No has marcado a nadie. ¿Cancelar el envío?')) return;
+      onClose();
+      return;
+    }
+    setSending(true); setErr('');
+    try {
+      // Always send the explicit list of user IDs — never trust the
+      // "send to all when count matches" shortcut, which can mis-fire if
+      // the recipients list is stale or got re-fetched.
+      const body = { user_ids: Array.from(selected) };
+      const r = await api.post(`/admin/polls/${poll.id}/send-email`, body);
+      setDone(r.data);
+    } catch (ex) {
+      setErr(ex.response?.data?.detail || 'Error al enviar');
+    }
+    setSending(false);
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(15,23,42,.55)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 1000,
+      }}
+      role="dialog"
+    >
+      <div
+        style={{
+          background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.5rem 1.75rem',
+          maxWidth: 640, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+        }}
+        data-testid="admin-poll-send-modal"
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.85rem' }}>
+          <div>
+            <h3 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>Enviar email · {poll.question}</h3>
+            <p style={{ margin: '.2rem 0 0', fontSize: '.85rem', color: 'var(--ink-muted)' }}>
+              Curso: <strong>{poll.course_slug}</strong>
+            </p>
+          </div>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 0, fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
+        </div>
+        {loading && <p>Cargando lista de alumnos…</p>}
+        {err && <p style={{ color: 'var(--clm-red)' }} data-testid="poll-send-error">{err}</p>}
+        {done ? (
+          <div style={{ background: 'var(--blue-light, #D6E8F7)', padding: '.85rem 1rem', borderRadius: 8 }} data-testid="poll-send-done">
+            ✅ Email enviado a <strong>{done.sent}</strong> de {done.total} destinatarios{done.failed ? `, ${done.failed} fallaron` : ''}.
+            <div style={{ marginTop: '.85rem' }}>
+              <button type="button" className="btn btn--primary" onClick={onClose}>Cerrar</button>
+            </div>
+          </div>
+        ) : !loading && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.5rem' }}>
+              <p style={{ margin: 0, fontSize: '.88rem', color: 'var(--ink-soft)' }}>
+                <strong>{selected.size}</strong> de {recipients.length} seleccionados
+              </p>
+              <div style={{ display: 'flex', gap: '.6rem' }}>
+                <button type="button" className="linkish" onClick={selectAll}>Todos</button>
+                <button type="button" className="linkish" onClick={clearAll}>Ninguno</button>
+              </div>
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem', maxHeight: 360, overflowY: 'auto', border: '1px solid var(--line)', borderRadius: 8 }}>
+              {recipients.map((u) => {
+                const checked = selected.has(u.id);
+                return (
+                  <li key={u.id} style={{ borderBottom: '1px solid var(--line)' }}>
+                    <label
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '.7rem',
+                        padding: '.55rem .8rem', cursor: 'pointer',
+                        background: checked ? 'var(--blue-light, #E8F0F8)' : 'transparent',
+                      }}
+                      data-testid={`poll-send-recipient-${u.id}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggle(u.id)}
+                        style={{ width: 16, height: 16 }}
+                      />
+                      <span style={{ flex: 1, fontSize: '.88rem' }}>
+                        <strong>{u.email}</strong>
+                        {(u.name || u.surname) && (
+                          <span style={{ color: 'var(--ink-muted)', marginLeft: '.5rem' }}>
+                            · {[u.name, u.surname].filter(Boolean).join(' ')}
+                          </span>
+                        )}
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+            <div style={{ display: 'flex', gap: '.6rem', justifyContent: 'flex-end' }}>
+              <button type="button" className="btn btn--ghost" onClick={onClose} disabled={sending}>Cancelar</button>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={send}
+                disabled={sending || selected.size === 0}
+                data-testid="poll-send-confirm"
+              >
+                {sending ? 'Enviando…' : `Enviar a ${selected.size} ${selected.size === 1 ? 'alumno' : 'alumnos'}`}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PollResultsModal({ poll, onClose }) {
+  const [data, setData] = useState(null);
+  const load = useCallback(() => {
+    api.get(`/admin/polls/${poll.id}/results`).then((r) => setData(r.data));
+  }, [poll.id]);
+  useEffect(() => { load(); }, [load]);
+
+  const optById = (id) => poll.options.find((o) => o.id === id);
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(15,23,42,.55)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 1000,
+      }}
+      role="dialog"
+    >
+      <div
+        style={{
+          background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.5rem 1.75rem',
+          maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+        }}
+        data-testid="admin-poll-results-modal"
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.85rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>Resultados: {poll.question}</h3>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 0, fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
+        </div>
+        {!data ? <p>Cargando…</p> : (
+          <>
+            <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', margin: '0 0 .85rem' }}>
+              {data.total_voters} {data.total_voters === 1 ? 'persona ha votado' : 'personas han votado'}
+              {data.missing_voters?.length > 0 && ` · ${data.missing_voters.length} aún sin votar`}
+            </p>
+            <table style={{ width: '100%', fontSize: '.9rem', borderCollapse: 'collapse', marginBottom: '1.25rem' }}>
+              <tbody>
+                {Object.entries(data.option_counts).map(([oid, count]) => {
+                  const opt = optById(oid);
+                  const pct = data.total_voters ? Math.round((count / data.total_voters) * 100) : 0;
+                  return (
+                    <tr key={oid} style={{ borderBottom: '1px solid var(--line)' }}>
+                      <td style={{ padding: '.45rem .25rem' }}>{opt?.label || oid}</td>
+                      <td style={{ padding: '.45rem .25rem', textAlign: 'right', width: 100 }}>
+                        <strong>{count}</strong> <span style={{ color: 'var(--ink-muted)' }}>({pct}%)</span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <details>
+              <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Detalle por persona ({data.voters.length})</summary>
+              <ul style={{ fontSize: '.85rem', paddingLeft: '1.2rem', marginTop: '.5rem' }}>
+                {data.voters.map((v) => (
+                  <li key={v.user_id}>
+                    <strong>{v.user_email}</strong>:{' '}
+                    {v.option_ids.map((oid) => optById(oid)?.label || oid).join(', ')}
+                  </li>
+                ))}
+              </ul>
+            </details>
+            {data.missing_voters?.length > 0 && (
+              <details style={{ marginTop: '.75rem' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--clm-red)' }}>
+                  Aún no han votado ({data.missing_voters.length})
+                </summary>
+                <ul style={{ fontSize: '.85rem', paddingLeft: '1.2rem', marginTop: '.5rem' }}>
+                  {data.missing_voters.map((u) => (<li key={u.id}>{u.email}</li>))}
+                </ul>
+              </details>
+            )}
+            {data.last_sent_at && (
+              <details style={{ marginTop: '.75rem' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--blue)' }}>
+                  📧 Último envío: {data.last_sent_count || 0} email(s) · {new Date(data.last_sent_at).toLocaleString('es-ES')}
+                </summary>
+                {data.last_sent_emails?.length > 0 ? (
+                  <ul style={{ fontSize: '.85rem', paddingLeft: '1.2rem', marginTop: '.5rem' }} data-testid="poll-last-sent-list">
+                    {data.last_sent_emails.map((e) => (<li key={e}>{e}</li>))}
+                  </ul>
+                ) : (
+                  <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', margin: '.5rem 0' }}>
+                    No hay registro detallado de destinatarios (envío anterior al sistema de auditoría).
+                  </p>
+                )}
+              </details>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────── Session recordings manager ─────────────────
+function RecordingsManager() {
+  const [items, setItems] = useState([]);
+  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState(null);
+
+  const load = useCallback(() => {
+    api.get('/admin/recordings').then((r) => setItems(r.data.recordings || []));
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const remove = async (id) => {
+    if (!window.confirm('¿Borrar esta grabación?')) return;
+    await api.delete(`/admin/recordings/${id}`);
+    load();
+  };
+
+  return (
+    <div data-testid="admin-recordings">
+      <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', marginBottom: '.75rem' }}>
+        Sube las grabaciones a YouTube como <strong>"No listado"</strong> y pega el enlace o
+        el ID aquí. Aparecerán automáticamente en la página del curso para los alumnos inscritos.
+      </p>
+      <button type="button" className="btn btn--primary" onClick={() => setCreating(true)} style={{ marginBottom: '.85rem' }} data-testid="admin-add-recording">
+        + Añadir grabación
+      </button>
+      {items.length === 0 ? (
+        <p style={{ color: 'var(--ink-muted)' }}>Aún no hay grabaciones publicadas.</p>
+      ) : (
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.88rem' }}>
+          <thead>
+            <tr style={{ textAlign: 'left', color: 'var(--ink-muted)', borderBottom: '1px solid var(--line)' }}>
+              <th style={{ padding: '.45rem .25rem' }}>Sesión</th>
+              <th style={{ padding: '.45rem .25rem' }}>Título</th>
+              <th style={{ padding: '.45rem .25rem' }}>Curso</th>
+              <th style={{ padding: '.45rem .25rem' }}>Fecha</th>
+              <th style={{ padding: '.45rem .25rem' }}>YouTube ID</th>
+              <th style={{ padding: '.45rem .25rem' }}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((r) => (
+              <tr key={r.id} style={{ borderBottom: '1px solid var(--line)' }} data-testid={`admin-recording-row-${r.id}`}>
+                <td style={{ padding: '.5rem .25rem' }}>{r.session_n}</td>
+                <td style={{ padding: '.5rem .25rem' }}>{r.title}</td>
+                <td style={{ padding: '.5rem .25rem', color: 'var(--ink-muted)' }}>{r.course_slug}</td>
+                <td style={{ padding: '.5rem .25rem', color: 'var(--ink-muted)' }}>{r.recorded_at || '—'}</td>
+                <td style={{ padding: '.5rem .25rem' }}>
+                  <code style={{ fontSize: '.78rem' }}>{r.youtube_id}</code>
+                </td>
+                <td style={{ padding: '.5rem .25rem', display: 'flex', gap: '.45rem', flexWrap: 'wrap' }}>
+                  <button type="button" className="linkish" onClick={() => setEditing(r)} data-testid={`admin-edit-recording-${r.id}`}>
+                    Editar
+                  </button>
+                  <button type="button" className="linkish" onClick={() => remove(r.id)} style={{ color: 'var(--clm-red)' }}>
+                    Borrar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {creating && <RecordingCreator onClose={() => { setCreating(false); load(); }} />}
+      {editing && <RecordingCreator existing={editing} onClose={() => { setEditing(null); load(); }} />}
+    </div>
+  );
+}
+
+function RecordingCreator({ existing, onClose }) {
+  const isEdit = !!existing;
+  const [courseSlug, setCourseSlug] = useState(existing?.course_slug || 'ia-ele');
+  const [sessionN, setSessionN] = useState(existing?.session_n ?? 1);
+  const [title, setTitle] = useState(existing?.title || '');
+  const [youtube, setYoutube] = useState(existing?.youtube_id || '');
+  const [recordedAt, setRecordedAt] = useState(existing?.recorded_at || '');
+  const [description, setDescription] = useState(existing?.description_md || '');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!youtube.trim() || !title.trim()) {
+      setErr('Indica al menos título y URL/ID de YouTube.');
+      return;
+    }
+    setBusy(true); setErr('');
+    try {
+      if (isEdit) {
+        // Course slug is immutable on PATCH; recreate if you really need to change it.
+        await api.patch(`/admin/recordings/${existing.id}`, {
+          session_n: Number(sessionN),
+          title,
+          youtube_id: youtube,
+          recorded_at: recordedAt || null,
+          description_md: description || null,
+        });
+      } else {
+        await api.post('/admin/recordings', {
+          course_slug: courseSlug,
+          session_n: Number(sessionN),
+          title,
+          youtube_id: youtube,
+          recorded_at: recordedAt || null,
+          description_md: description || null,
+        });
+      }
+      onClose();
+    } catch (ex) {
+      setErr(ex.response?.data?.detail || 'Error');
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(15,23,42,.55)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 1000,
+      }}
+      role="dialog"
+    >
+      <form onSubmit={submit}
+        style={{ background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.5rem 1.75rem', maxWidth: 560, width: '100%', maxHeight: '90vh', overflowY: 'auto' }}
+        data-testid="admin-recording-form"
+      >
+        <h3 style={{ fontFamily: 'var(--font-display)', margin: '0 0 1rem' }}>
+          {isEdit ? 'Editar grabación' : 'Añadir grabación'}
+        </h3>
+        <div className="form-group">
+          <label>Curso</label>
+          <input
+            className="form-input"
+            value={courseSlug}
+            onChange={(e) => setCourseSlug(e.target.value)}
+            disabled={isEdit}
+            title={isEdit ? 'Para cambiar el curso, borra y vuelve a crear la grabación.' : undefined}
+          />
+        </div>
+        <div className="form-group">
+          <label>Número de sesión</label>
+          <input type="number" min={1} max={99} className="form-input" value={sessionN} onChange={(e) => setSessionN(e.target.value)} style={{ width: 100 }} />
+        </div>
+        <div className="form-group">
+          <label>Título</label>
+          <input className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Bienvenida y Módulo 0 (GitHub)" data-testid="rec-title" />
+        </div>
+        <div className="form-group">
+          <label>URL o ID de YouTube</label>
+          <input className="form-input" value={youtube} onChange={(e) => setYoutube(e.target.value)} placeholder="https://youtu.be/abc123XYZ o solo abc123XYZ" data-testid="rec-youtube" />
+        </div>
+        <div className="form-group">
+          <label>Fecha de grabación (opcional)</label>
+          <input type="date" className="form-input" value={recordedAt} onChange={(e) => setRecordedAt(e.target.value)} style={{ width: 220 }} />
+        </div>
+        <div className="form-group">
+          <label>Descripción / temas tratados (opcional)</label>
+          <textarea className="form-input" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={4000} />
+        </div>
+        {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
+        <div style={{ display: 'flex', gap: '.6rem', justifyContent: 'flex-end' }}>
+          <button type="button" className="btn btn--ghost" onClick={onClose} disabled={busy}>Cancelar</button>
+          <button type="submit" className="btn btn--primary" disabled={busy} data-testid="rec-submit">
+            {busy ? 'Guardando…' : (isEdit ? 'Guardar cambios' : 'Publicar grabación')}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
