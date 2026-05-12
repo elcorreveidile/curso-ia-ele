@@ -34,6 +34,7 @@ import Resource from './pages/private/Resource';
 import CourseResources from './pages/private/CourseResources';
 import Profile from './pages/private/Profile';
 import Documents from './pages/private/Documents';
+import Poll from './pages/public/Poll';
 import Ebook from './pages/private/Ebook';
 import EbookChapter from './pages/private/EbookChapter';
 
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="/certificado/:certId" element={<Certificate />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/cuestionario" element={<Cuestionario />} />
+            <Route path="/encuesta/:pollId" element={<Poll />} />
 
             {/* Private */}
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />

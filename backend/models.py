@@ -124,3 +124,44 @@ class UserBroadcastIn(BaseModel):
 
 class UserBulkDeleteIn(BaseModel):
     user_ids: list[str]
+
+
+# ─────────────────────────── Polls / encuestas ───────────────────────────
+class PollOptionIn(BaseModel):
+    label: str = Field(min_length=1, max_length=200)
+
+
+class PollCreate(BaseModel):
+    question: str = Field(min_length=4, max_length=300)
+    options: list[PollOptionIn] = Field(min_length=2, max_length=8)
+    multi_choice: bool = False
+    course_slug: Optional[str] = None  # restricts visibility to enrolled students
+    intro_md: Optional[str] = Field(default=None, max_length=4000)
+    closes_at: Optional[str] = None  # ISO-8601 datetime
+
+
+class PollVoteIn(BaseModel):
+    option_ids: list[str] = Field(min_length=1, max_length=8)
+
+
+class PollEmailIn(BaseModel):
+    subject: Optional[str] = Field(default=None, max_length=200)
+    intro_md: Optional[str] = Field(default=None, max_length=4000)
+
+
+# ─────────────────────── Session recordings ──────────────────────────────
+class SessionRecordingIn(BaseModel):
+    course_slug: str = Field(min_length=1, max_length=80)
+    session_n: int = Field(ge=1, le=99)
+    title: str = Field(min_length=1, max_length=200)
+    youtube_id: str = Field(min_length=4, max_length=40)
+    recorded_at: Optional[str] = None  # ISO date (yyyy-mm-dd or full ISO)
+    description_md: Optional[str] = Field(default=None, max_length=4000)
+
+
+class SessionRecordingUpdate(BaseModel):
+    title: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    youtube_id: Optional[str] = Field(default=None, min_length=4, max_length=40)
+    recorded_at: Optional[str] = None
+    description_md: Optional[str] = Field(default=None, max_length=4000)
+    session_n: Optional[int] = Field(default=None, ge=1, le=99)
