@@ -1277,6 +1277,7 @@ function PollsManager() {
   const [polls, setPolls] = useState([]);
   const [creating, setCreating] = useState(false);
   const [resultsFor, setResultsFor] = useState(null);
+  const [sendFor, setSendFor] = useState(null); // poll being emailed
   const [err, setErr] = useState('');
 
   const load = useCallback(() => {
@@ -1346,6 +1347,11 @@ function PollsManager() {
                   <button type="button" className="linkish" onClick={() => setResultsFor(p)} data-testid={`admin-poll-results-${p.id}`}>
                     Resultados
                   </button>
+                  {p.course_slug && p.is_open && (
+                    <button type="button" className="linkish" onClick={() => setSendFor(p)} data-testid={`admin-poll-send-${p.id}`}>
+                      Enviar email
+                    </button>
+                  )}
                   <button type="button" className="linkish" onClick={() => closePoll(p.id, p.is_open)}>
                     {p.is_open ? 'Cerrar' : 'Reabrir'}
                   </button>
@@ -1358,7 +1364,15 @@ function PollsManager() {
           </tbody>
         </table>
       )}
-      {creating && <PollCreator onClose={() => { setCreating(false); load(); }} />}
+      {creating && (
+        <PollCreator onClose={(newPoll) => {
+          setCreating(false);
+          load();
+          // After creation, jump straight into the recipient picker.
+          if (newPoll) setSendFor(newPoll);
+        }} />
+      )}
+      {sendFor && <PollSendModal poll={sendFor} onClose={() => { setSendFor(null); load(); }} />}
       {resultsFor && <PollResultsModal poll={resultsFor} onClose={() => { setResultsFor(null); load(); }} />}
     </div>
   );
@@ -1388,15 +1402,8 @@ function PollCreator({ onClose }) {
         multi_choice: multi,
         course_slug: courseSlug || null,
       });
-      if (window.confirm(`Encuesta creada. ¿Enviar el email a todos los alumnos inscritos en "${courseSlug}" ahora mismo?`)) {
-        try {
-          const sent = await api.post(`/admin/polls/${r.data.id}/send-email`, {});
-          alert(`Email enviado a ${sent.data.sent} de ${sent.data.total} alumnos.`);
-        } catch (ex) {
-          alert('La encuesta se creó, pero hubo un fallo al enviar el email: ' + (ex.response?.data?.detail || ex.message));
-        }
-      }
-      onClose();
+      // Pass the new poll back to the parent so it can open the recipient picker.
+      onClose(r.data);
     } catch (ex) {
       setErr(ex.response?.data?.detail || 'Error');
     }
@@ -1457,12 +1464,156 @@ function PollCreator({ onClose }) {
         </div>
         {err && <p style={{ color: 'var(--clm-red)' }}>{err}</p>}
         <div style={{ display: 'flex', gap: '.6rem', justifyContent: 'flex-end' }}>
-          <button type="button" className="btn btn--ghost" onClick={onClose} disabled={busy}>Cancelar</button>
+          <button type="button" className="btn btn--ghost" onClick={() => onClose(null)} disabled={busy}>Cancelar</button>
           <button type="submit" className="btn btn--primary" disabled={busy} data-testid="poll-create-submit">
-            {busy ? 'Creando…' : 'Crear y enviar'}
+            {busy ? 'Creando…' : 'Crear y elegir destinatarios →'}
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+// ─────────────────────── Poll send modal (recipient picker) ─────────
+function PollSendModal({ poll, onClose }) {
+  const [recipients, setRecipients] = useState([]);
+  const [selected, setSelected] = useState(new Set());
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState('');
+  const [done, setDone] = useState(null);
+
+  useEffect(() => {
+    api.get(`/admin/polls/${poll.id}/recipients`)
+      .then((r) => {
+        const list = r.data.recipients || [];
+        setRecipients(list);
+        // Default: everyone selected (most common case).
+        setSelected(new Set(list.map((u) => u.id)));
+        setLoading(false);
+      })
+      .catch((ex) => { setErr(ex.response?.data?.detail || 'Error'); setLoading(false); });
+  }, [poll.id]);
+
+  const toggle = (uid) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(uid)) next.delete(uid); else next.add(uid);
+      return next;
+    });
+  };
+  const selectAll = () => setSelected(new Set(recipients.map((u) => u.id)));
+  const clearAll = () => setSelected(new Set());
+
+  const send = async () => {
+    if (selected.size === 0) {
+      if (!window.confirm('No has marcado a nadie. ¿Cancelar el envío?')) return;
+      onClose();
+      return;
+    }
+    setSending(true); setErr('');
+    try {
+      const sendAll = selected.size === recipients.length;
+      const body = sendAll ? {} : { user_ids: Array.from(selected) };
+      const r = await api.post(`/admin/polls/${poll.id}/send-email`, body);
+      setDone(r.data);
+    } catch (ex) {
+      setErr(ex.response?.data?.detail || 'Error al enviar');
+    }
+    setSending(false);
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(15,23,42,.55)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 1000,
+      }}
+      role="dialog"
+    >
+      <div
+        style={{
+          background: 'var(--canvas, #FFFCF4)', borderRadius: 14, padding: '1.5rem 1.75rem',
+          maxWidth: 640, width: '100%', maxHeight: '90vh', overflowY: 'auto',
+        }}
+        data-testid="admin-poll-send-modal"
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '.85rem' }}>
+          <div>
+            <h3 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>Enviar email · {poll.question}</h3>
+            <p style={{ margin: '.2rem 0 0', fontSize: '.85rem', color: 'var(--ink-muted)' }}>
+              Curso: <strong>{poll.course_slug}</strong>
+            </p>
+          </div>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 0, fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
+        </div>
+        {loading && <p>Cargando lista de alumnos…</p>}
+        {err && <p style={{ color: 'var(--clm-red)' }} data-testid="poll-send-error">{err}</p>}
+        {done ? (
+          <div style={{ background: 'var(--blue-light, #D6E8F7)', padding: '.85rem 1rem', borderRadius: 8 }} data-testid="poll-send-done">
+            ✅ Email enviado a <strong>{done.sent}</strong> de {done.total} destinatarios{done.failed ? `, ${done.failed} fallaron` : ''}.
+            <div style={{ marginTop: '.85rem' }}>
+              <button type="button" className="btn btn--primary" onClick={onClose}>Cerrar</button>
+            </div>
+          </div>
+        ) : !loading && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.5rem' }}>
+              <p style={{ margin: 0, fontSize: '.88rem', color: 'var(--ink-soft)' }}>
+                <strong>{selected.size}</strong> de {recipients.length} seleccionados
+              </p>
+              <div style={{ display: 'flex', gap: '.6rem' }}>
+                <button type="button" className="linkish" onClick={selectAll}>Todos</button>
+                <button type="button" className="linkish" onClick={clearAll}>Ninguno</button>
+              </div>
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1rem', maxHeight: 360, overflowY: 'auto', border: '1px solid var(--line)', borderRadius: 8 }}>
+              {recipients.map((u) => {
+                const checked = selected.has(u.id);
+                return (
+                  <li key={u.id} style={{ borderBottom: '1px solid var(--line)' }}>
+                    <label
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '.7rem',
+                        padding: '.55rem .8rem', cursor: 'pointer',
+                        background: checked ? 'var(--blue-light, #E8F0F8)' : 'transparent',
+                      }}
+                      data-testid={`poll-send-recipient-${u.id}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggle(u.id)}
+                        style={{ width: 16, height: 16 }}
+                      />
+                      <span style={{ flex: 1, fontSize: '.88rem' }}>
+                        <strong>{u.email}</strong>
+                        {(u.name || u.surname) && (
+                          <span style={{ color: 'var(--ink-muted)', marginLeft: '.5rem' }}>
+                            · {[u.name, u.surname].filter(Boolean).join(' ')}
+                          </span>
+                        )}
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+            <div style={{ display: 'flex', gap: '.6rem', justifyContent: 'flex-end' }}>
+              <button type="button" className="btn btn--ghost" onClick={onClose} disabled={sending}>Cancelar</button>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={send}
+                disabled={sending || selected.size === 0}
+                data-testid="poll-send-confirm"
+              >
+                {sending ? 'Enviando…' : `Enviar a ${selected.size} ${selected.size === 1 ? 'alumno' : 'alumnos'}`}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

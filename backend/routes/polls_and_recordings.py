@@ -252,6 +252,35 @@ def register_poll_routes(api: APIRouter) -> None:
             "total_voters": len(voters),
         }
 
+    @api.get("/admin/polls/{poll_id}/recipients")
+    async def admin_poll_recipients(poll_id: str, _admin: dict = Depends(current_admin)):
+        """Return the list of students that would receive the poll email
+        if it were sent right now. Sorted by email so the picker UI is stable."""
+        poll = await db.polls.find_one({"id": poll_id})
+        if not poll:
+            raise HTTPException(404, "Encuesta no encontrada")
+        if not poll.get("course_slug"):
+            raise HTTPException(400, "Solo encuestas asociadas a un curso tienen destinatarios")
+        course = await db.courses.find_one({"slug": poll["course_slug"]})
+        if not course:
+            raise HTTPException(404, "Curso no encontrado")
+        out: list[dict] = []
+        async for en in db.enrollments.find({
+            "course_id": course["id"],
+            "status": {"$in": ["active", "completed"]},
+        }):
+            u = await db.users.find_one({"id": en["user_id"]})
+            if not u or u.get("role") == "admin":
+                continue
+            out.append({
+                "id": u["id"],
+                "email": u["email"],
+                "name": u.get("name"),
+                "surname": u.get("surname"),
+            })
+        out.sort(key=lambda x: (x.get("email") or "").lower())
+        return {"recipients": out}
+
     @api.post("/admin/polls/{poll_id}/send-email")
     async def admin_send_poll_email(
         poll_id: str,
@@ -270,8 +299,9 @@ def register_poll_routes(api: APIRouter) -> None:
         intro = (payload.intro_md or poll.get("intro_md") or "").strip()
         subject = payload.subject or f"Encuesta: {poll['question']}"
 
-        # Build the list of recipients (enrolled students, not admins).
-        recipients: list[dict] = []
+        # Build the list of recipients (enrolled students, not admins). If the
+        # admin passed an explicit ``user_ids`` whitelist we honour it.
+        enrolled: list[dict] = []
         async for en in db.enrollments.find({
             "course_id": course["id"],
             "status": {"$in": ["active", "completed"]},
@@ -279,7 +309,12 @@ def register_poll_routes(api: APIRouter) -> None:
             u = await db.users.find_one({"id": en["user_id"]})
             if not u or u.get("role") == "admin":
                 continue
-            recipients.append(u)
+            enrolled.append(u)
+        if payload.user_ids is not None:
+            allow = set(payload.user_ids)
+            recipients = [u for u in enrolled if u["id"] in allow]
+        else:
+            recipients = enrolled
 
         sent, failed = 0, 0
         # Render the option list once (same HTML for everyone).

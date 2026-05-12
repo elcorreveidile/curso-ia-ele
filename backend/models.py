@@ -147,6 +147,7 @@ class PollVoteIn(BaseModel):
 class PollEmailIn(BaseModel):
     subject: Optional[str] = Field(default=None, max_length=200)
     intro_md: Optional[str] = Field(default=None, max_length=4000)
+    user_ids: Optional[list[str]] = None  # if None → all enrolled students
 
 
 # ─────────────────────── Session recordings ──────────────────────────────
