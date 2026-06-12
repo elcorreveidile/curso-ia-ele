@@ -77,10 +77,10 @@ _BIENVENIDA_PARAGRAPHS = (
      "directamente en clase."),
     ("body",
      "A continuación encontrarás toda la información para conectarte a la "
-     "primera videotutoría del lunes 4 de mayo."),
+     "primera videotutoría del miércoles 16 de septiembre."),
     ("h2", "Datos de conexión · Videotutoría 1"),
-    ("bullet", "**Fecha:** Lunes, 4 de mayo de 2026"),
-    ("bullet", "**Hora:** 16:00 h (hora peninsular española, GMT+2)"),
+    ("bullet", "**Fecha:** Miércoles, 16 de septiembre de 2026"),
+    ("bullet", "**Hora:** 17:00 h (hora peninsular española, GMT+2)"),
     ("bullet", "**Duración:** 90 minutos"),
     ("bullet", "**Plataforma:** Zoom"),
     ("bullet",
@@ -88,14 +88,14 @@ _BIENVENIDA_PARAGRAPHS = (
     ("bullet", "**ID de reunión:** 882 0755 1531"),
     ("h2", "Calendario de las 3 videotutorías"),
     ("bullet",
-     "**Sesión 1 · Lunes 4 de mayo · 16:00 h.** Bienvenida y Módulo 0 (GitHub): "
+     "**Sesión 1 · Miércoles 16 de septiembre · 17:00 h.** Bienvenida y Módulo 0 (GitHub): "
      "presentación del curso, configuración del repositorio, primeras "
      "reflexiones éticas e introducción a la ingeniería de prompts."),
     ("bullet",
-     "**Sesión 2 · Miércoles 13 de mayo · 16:00 h.** Módulos 1-2: revisión de "
+     "**Sesión 2 · Miércoles 23 de septiembre · 17:00 h.** Módulos 1-2: revisión de "
      "mini asistentes, puesta en común de planes de clase y resolución de dudas."),
     ("bullet",
-     "**Sesión 3 · Jueves 21 de mayo · 16:00 h.** Módulos 3-4: presentación "
+     "**Sesión 3 · Miércoles 30 de septiembre · 17:00 h.** Módulos 3-4: presentación "
      "de kits de recursos multimodales y cierre del curso."),
     ("body",
      "Las tres sesiones se hacen en la misma sala de Zoom y duran 90 minutos. "
@@ -214,7 +214,7 @@ COURSE_DOCUMENTS: list[CourseDocument] = [
         title="Bienvenida · Videotutoría 1",
         description=(
             "Carta de bienvenida con los datos de conexión a la primera "
-            "videotutoría (Zoom · 4 mayo, 16:00) y la agenda completa de las "
+            "videotutoría (Zoom · 16 sept, 17:00) y la agenda completa de las "
             "tres sesiones del curso."
         ),
         icon="👋",

@@ -24,7 +24,7 @@ COURSE_IA_ELE = {
     "founder_seats_taken": 0,
     "active": True,
     "hours": 20,
-    "start_date": "2026-05-04",
+    "start_date": "2026-09-16",
 }
 
 
@@ -547,15 +547,19 @@ async def migrate_lesson_content() -> None:
     if updated:
         log.info("Lesson content migration: %d lesson(s) refreshed", updated)
 
-    # Course description: the 1st edition (May 2026) ended and we're now
-    # advertising the 2nd edition (September 2026). Refresh the stored
-    # description so existing prod DBs (where seed_database() is a no-op
-    # for the already-present course) pick up the new copy.
+    # Course description + start_date: the 1st edition (May 2026) ended and
+    # we're now advertising the 2nd edition (16 Sep 2026). Refresh stored
+    # values so existing prod DBs (where seed_database() is a no-op for the
+    # already-present course) pick up the new copy.
     expected_desc = COURSE_IA_ELE["description"]
-    course_doc = await db.courses.find_one({"slug": "ia-ele"}, {"description": 1})
-    if course_doc and course_doc.get("description") != expected_desc:
-        await db.courses.update_one(
-            {"slug": "ia-ele"},
-            {"$set": {"description": expected_desc}},
-        )
-        log.info("Course description refreshed for ia-ele")
+    expected_start = COURSE_IA_ELE["start_date"]
+    course_doc = await db.courses.find_one({"slug": "ia-ele"}, {"description": 1, "start_date": 1})
+    if course_doc:
+        updates = {}
+        if course_doc.get("description") != expected_desc:
+            updates["description"] = expected_desc
+        if course_doc.get("start_date") != expected_start:
+            updates["start_date"] = expected_start
+        if updates:
+            await db.courses.update_one({"slug": "ia-ele"}, {"$set": updates})
+            log.info("Course refreshed for ia-ele: %s", list(updates.keys()))

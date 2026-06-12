@@ -300,7 +300,7 @@ Esta opción requiere un paso extra al principio, pero es más rápida para las 
 
 ## 6️⃣ PRIMERA SESIÓN SÍNCRONA: VAMOS A HACERLO JUNTOS/AS
 
-**Durante nuestra primera sesión en directo (lunes 4 de mayo, 16:00-17:30), haremos exactamente esto:**
+**Durante nuestra primera sesión en directo (miércoles 16 de septiembre, 17:00-18:30), haremos exactamente esto:**
 
 📅 **Agenda de la primera sesión:**
 
@@ -313,7 +313,7 @@ Esta opción requiere un paso extra al principio, pero es más rápida para las 
 4. **Presentación del Módulo 1 (30 min)** - Ética en la IA
 5. **Cierre y próximos pasos (20 min)** - Tarea para la semana
 
-> **💡 ANTES DE LA SESIÓN (lunes 4 de mayo, 16:00h):**
+> **💡 ANTES DE LA SESIÓN (miércoles 16 de septiembre, 17:00h):**
 > - Revisa que tienes acceso a un ordenador con internet
 > - Ten tu correo electrónico a mano
 > - Piensa un nombre de usuario para GitHub
@@ -388,7 +388,7 @@ Esta opción requiere un paso extra al principio, pero es más rápida para las 
 
 ## 9️⃣ CHECKLIST ANTES DE LA PRIMERA SESIÓN
 
-Antes de nuestra primera sesión síncrona (lunes 4 de mayo, 16:00h), verifica que:
+Antes de nuestra primera sesión síncrona (miércoles 16 de septiembre, 17:00h), verifica que:
 
 **Técnicamente:**
 - [ ] Tienes acceso a un ordenador con internet estable
@@ -398,7 +398,7 @@ Antes de nuestra primera sesión síncrona (lunes 4 de mayo, 16:00h), verifica q
 - [ ] (Opcional) Ya has creado tu cuenta en GitHub
 
 **Organizativamente:**
-- [ ] Has bloqueado tiempo para la sesión (lunes 4 de mayo, 16:00-17:30h)
+- [ ] Has bloqueado tiempo para la sesión (miércoles 16 de septiembre, 17:00-18:30h)
 - [ ] Tienes esta guía abierta o impresa para consultar
 - [ ] Sabes cómo acceder al enlace de la sesión (en la plataforma del curso)
 
@@ -477,15 +477,15 @@ Si has llegado hasta aquí, tienes toda la información que necesitas.
 
 ¡Mucha suerte con GitHub! Recuerda: **no necesitas ser técnica/o para usarlo**. Si puedes usar Facebook o Instagram, puedes usar GitHub.
 
-**Nos vemos el lunes 4 de mayo a las 16:00h en la primera sesión síncrona. ¡Allá vamos!** 🚀
+**Nos vemos el miércoles 16 de septiembre a las 17:00h en la primera sesión síncrona. ¡Allá vamos!** 🚀
 
 ---
 
 **Javier Benítez Láinez**
 **Centro de Lenguas Modernas - Universidad de Granada**
-**Mayo 2026**
+**Septiembre 2026**
 
 ---
 
 **Guía creada para el curso "IA para la enseñanza de ELE" - CLM UGR 2026**
-**Versión:** 1.0 | **Fecha:** Mayo 2026
+**Versión:** 1.0 | **Fecha:** Septiembre 2026

@@ -1668,7 +1668,7 @@ def _videotutorias_calendar_html() -> str:
     sessions = [
         {
             "n": 1,
-            "date": "Lunes, 4 de mayo de 2026",
+            "date": "Miércoles, 16 de septiembre de 2026",
             "topic": "Bienvenida y Módulo 0 (GitHub)",
             "desc": (
                 "Presentación del curso, configuración del repositorio de "
@@ -1678,7 +1678,7 @@ def _videotutorias_calendar_html() -> str:
         },
         {
             "n": 2,
-            "date": "Miércoles, 13 de mayo de 2026",
+            "date": "Miércoles, 23 de septiembre de 2026",
             "topic": "Módulos 1-2",
             "desc": (
                 "Revisión de mini asistentes, puesta en común de planes de "
@@ -1687,7 +1687,7 @@ def _videotutorias_calendar_html() -> str:
         },
         {
             "n": 3,
-            "date": "Jueves, 21 de mayo de 2026",
+            "date": "Miércoles, 30 de septiembre de 2026",
             "topic": "Módulos 3-4",
             "desc": (
                 "Presentación de kits de recursos multimodales y cierre del "
@@ -1703,7 +1703,7 @@ def _videotutorias_calendar_html() -> str:
                         text-align:center;line-height:26px;font-weight:700;font-size:13px">{s['n']}</div>
           </td>
           <td style="padding:10px 12px 10px 0;border-bottom:1px solid #E8EEF5;font-size:14px;color:#46476A;line-height:1.55">
-            <div style="font-weight:700;color:#1A2535">{s['date']} · 16:00 h</div>
+            <div style="font-weight:700;color:#1A2535">{s['date']} · 17:00 h</div>
             <div style="font-size:13px;color:#0F4C81;font-weight:600;margin-top:2px">{s['topic']}</div>
             <div style="font-size:13px;color:#6B82A0;margin-top:3px">{s['desc']}</div>
           </td>
@@ -1720,7 +1720,7 @@ def _videotutorias_calendar_html() -> str:
         {rows}
       </table>
       <p style="margin:10px 4px 12px;font-size:12px;color:#6B82A0;line-height:1.5">
-        Todas las sesiones son a las <strong>16:00 h hora peninsular española</strong> (GMT+2)
+        Todas las sesiones son a las <strong>17:00 h hora peninsular española</strong> (GMT+2)
         y duran 90 minutos. La sala de Zoom es la misma para las tres — encontrarás el
         enlace y el ID de reunión en tu área privada.
       </p>
@@ -1752,8 +1752,8 @@ def _build_videotutoria1_email_html(first_name: str, area_url: str) -> str:
         <div style="background:#FEF6DC;border-left:4px solid #F5A623;padding:18px 22px;margin:24px 0;border-radius:4px">
           <p style="margin:0 0 10px;font-weight:700;color:#1A2535;font-size:15px">📅 Datos de conexión · Videotutoría 1</p>
           <table cellpadding="3" style="font-size:14px;color:#46476A;line-height:1.55">
-            <tr><td><strong>Fecha</strong></td><td>Lunes, 4 de mayo de 2026</td></tr>
-            <tr><td><strong>Hora</strong></td><td>16:00 h (hora peninsular española)</td></tr>
+            <tr><td><strong>Fecha</strong></td><td>Miércoles, 16 de septiembre de 2026</td></tr>
+            <tr><td><strong>Hora</strong></td><td>17:00 h (hora peninsular española)</td></tr>
             <tr><td><strong>Duración</strong></td><td>90 minutos</td></tr>
             <tr><td><strong>Plataforma</strong></td><td>Zoom</td></tr>
             <tr><td><strong>ID de reunión</strong></td><td>882 0755 1531</td></tr>
@@ -1833,7 +1833,7 @@ async def _send_videotutoria1_email(email: str, first_name: str) -> None:
         html = _build_videotutoria1_email_html(first_name, area_url)
         await send_email(
             email,
-            "Invitación a la primera videotutoría · 4 de mayo, 16:00",
+            "Invitación a la primera videotutoría · 16 de septiembre, 17:00",
             html,
             attachments=attachments,
         )
