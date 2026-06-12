@@ -53,6 +53,14 @@ if CLOUDINARY_CLOUD_NAME:
 
 stripe_sdk.api_key = STRIPE_API_KEY
 
+# ─────────────────────────── Editions / cohorts ────────────────
+# Each enrollment carries an ``edition`` integer that identifies the cohort.
+# When a new edition starts we bump this so the welcome flow, polls and
+# broadcasts naturally scope to the current cohort and don't spam
+# alumni of previous editions. The 1st edition (May 2026) ended in May 2026;
+# this constant captures the active edition right now.
+CURRENT_EDITION = 2
+
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("laclasedigital")
 

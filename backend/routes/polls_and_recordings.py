@@ -18,6 +18,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 
 from core import (
+    CURRENT_EDITION,
     FRONTEND_ORIGIN,
     create_welcome_magic_token,
     current_admin,
@@ -249,6 +250,7 @@ def register_poll_routes(api: APIRouter) -> None:
                 voted_ids = {v["user_id"] for v in voters}
                 async for en in db.enrollments.find({
                     "course_id": course["id"],
+                    "edition": CURRENT_EDITION,
                     "status": {"$in": ["active", "completed"]},
                 }):
                     uid = en["user_id"]
@@ -297,6 +299,7 @@ def register_poll_routes(api: APIRouter) -> None:
         out: list[dict] = []
         async for en in db.enrollments.find({
             "course_id": course["id"],
+            "edition": CURRENT_EDITION,
             "status": {"$in": ["active", "completed"]},
         }):
             u = await db.users.find_one({"id": en["user_id"]})
@@ -334,6 +337,7 @@ def register_poll_routes(api: APIRouter) -> None:
         enrolled: list[dict] = []
         async for en in db.enrollments.find({
             "course_id": course["id"],
+            "edition": CURRENT_EDITION,
             "status": {"$in": ["active", "completed"]},
         }):
             u = await db.users.find_one({"id": en["user_id"]})

@@ -563,3 +563,16 @@ async def migrate_lesson_content() -> None:
         if updates:
             await db.courses.update_one({"slug": "ia-ele"}, {"$set": updates})
             log.info("Course refreshed for ia-ele: %s", list(updates.keys()))
+
+    # Edition / cohort migration: pre-existing enrollments have no `edition`
+    # field. Backfill them as edition=1 so all 2nd-edition recipient filters
+    # (polls, broadcasts, ...) cleanly exclude alumni of the 1st edition.
+    edition_backfill = await db.enrollments.update_many(
+        {"edition": {"$exists": False}},
+        {"$set": {"edition": 1}},
+    )
+    if edition_backfill.modified_count:
+        log.info(
+            "Edition migration: marked %d enrollment(s) as edition=1",
+            edition_backfill.modified_count,
+        )

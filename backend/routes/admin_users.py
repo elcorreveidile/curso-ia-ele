@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from jose import jwt
 
 from core import (
+    CURRENT_EDITION,
     FRONTEND_ORIGIN,
     JWT_SECRET,
     clean_doc,
@@ -233,7 +234,14 @@ def register(api: APIRouter) -> None:
                 skipped_optout += 1
                 continue
             if payload.target in ("enrolled", "not_enrolled"):
-                count = await db.enrollments.count_documents({"user_id": u["id"]})
+                # "enrolled" means "currently in the active edition", so we
+                # filter out alumni from previous editions to honor the rule
+                # that 2nd-edition communications do NOT reach 1st-edition
+                # students.
+                count = await db.enrollments.count_documents({
+                    "user_id": u["id"],
+                    "edition": CURRENT_EDITION,
+                })
                 if payload.target == "enrolled" and count == 0:
                     skipped_audience += 1
                     continue

@@ -32,6 +32,7 @@ from fastapi import UploadFile, File
 from core import (
     ADMIN_EMAIL,
     CLOUDINARY_CLOUD_NAME,
+    CURRENT_EDITION,
     EMAIL_FOOTER,
     FRONTEND_ORIGIN,
     JWT_SECRET,
@@ -341,6 +342,7 @@ async def _ensure_enrollment_from_session(session_id: str) -> Optional[dict]:
             "id": enrollment_id,
             "user_id": user["id"],
             "course_id": course["id"],
+            "edition": CURRENT_EDITION,
             "paid_at": now_utc(),
             "stripe_payment_id": session_id,
             "amount_paid_eur": tx["amount_cents"],
@@ -1901,6 +1903,7 @@ async def admin_create_manual_enrollment(
         "id": new_id(),
         "user_id": u["id"],
         "course_id": course["id"],
+        "edition": CURRENT_EDITION,
         "created_at": now_utc(),
     }
     enrollment_doc.update({
