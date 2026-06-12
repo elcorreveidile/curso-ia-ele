@@ -8,7 +8,7 @@ export default function FounderBanner() {
   const [closed, setClosed] = useState(false);
 
   useEffect(() => {
-    try { setClosed(sessionStorage.getItem('lcd_banner_closed') === '1'); } catch {}
+    try { setClosed(sessionStorage.getItem('lcd_banner_closed') === '1'); } catch { /* noop: sessionStorage unavailable (private mode) */ }
   }, []);
 
   const hidePaths = ['/inscripcion/', '/dashboard', '/curso/', '/admin', '/certificado/', '/auth/verify', '/login'];
@@ -29,7 +29,7 @@ export default function FounderBanner() {
 
   const close = () => {
     setClosed(true);
-    try { sessionStorage.setItem('lcd_banner_closed', '1'); } catch {}
+    try { sessionStorage.setItem('lcd_banner_closed', '1'); } catch { /* noop: sessionStorage unavailable (private mode) */ }
   };
 
   return (

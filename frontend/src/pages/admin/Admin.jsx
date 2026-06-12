@@ -524,8 +524,8 @@ function StudentAnalyticsModal({ userId, onClose }) {
                   🕒 Últimos {d.timeline.length} eventos pedagógicos
                 </summary>
                 <ul style={{ fontSize: '.82rem', color: 'var(--ink-soft)', margin: '.5rem 0 0', paddingLeft: '1.2rem' }}>
-                  {d.timeline.map((ev, i) => (
-                    <li key={i}>
+                  {d.timeline.map((ev) => (
+                    <li key={`${ev.viewed_at}-${ev.kind}-${ev.ref_id}`}>
                       {fmtDate(ev.viewed_at)} · <strong>{ev.kind}</strong>
                       {ev.action && ` (${ev.action})`} · {ev.ref_id}
                     </li>
@@ -1381,7 +1381,11 @@ function PollsManager() {
 function PollCreator({ onClose }) {
   const [question, setQuestion] = useState('');
   const [intro, setIntro] = useState('');
-  const [opts, setOpts] = useState(['', '']);
+  // Each option carries a stable client-side id so React keeps input focus
+  // and value associated with the right row if/when options are added or
+  // removed (no `index` keys, which would shift on splice).
+  const newOpt = () => ({ id: Math.random().toString(36).slice(2), value: '' });
+  const [opts, setOpts] = useState(() => [newOpt(), newOpt()]);
   const [multi, setMulti] = useState(true);
   const [courseSlug, setCourseSlug] = useState('ia-ele');
   const [busy, setBusy] = useState(false);
@@ -1389,7 +1393,7 @@ function PollCreator({ onClose }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    const cleaned = opts.map((o) => o.trim()).filter(Boolean);
+    const cleaned = opts.map((o) => o.value.trim()).filter(Boolean);
     if (!question.trim() || cleaned.length < 2) {
       setErr('Pon una pregunta y al menos 2 opciones.');
       return;
@@ -1439,17 +1443,20 @@ function PollCreator({ onClose }) {
           <label>Opciones</label>
           {opts.map((o, i) => (
             <input
-              key={i}
+              key={o.id}
               className="form-input"
-              value={o}
-              onChange={(e) => setOpts((prev) => prev.map((x, j) => j === i ? e.target.value : x))}
+              value={o.value}
+              onChange={(e) => {
+                const v = e.target.value;
+                setOpts((prev) => prev.map((x) => x.id === o.id ? { ...x, value: v } : x));
+              }}
               placeholder={`Opción ${i + 1}`}
               style={{ marginBottom: '.5rem' }}
               data-testid={`poll-create-option-${i}`}
             />
           ))}
           {opts.length < 8 && (
-            <button type="button" className="linkish" onClick={() => setOpts((prev) => [...prev, ''])}>+ Añadir opción</button>
+            <button type="button" className="linkish" onClick={() => setOpts((prev) => [...prev, newOpt()])}>+ Añadir opción</button>
           )}
         </div>
         <div className="form-group" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>

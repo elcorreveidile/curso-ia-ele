@@ -190,7 +190,7 @@ export default function LiveSessionsCard({ courseSlug }) {
         >
           {sessionsWithStatus.map((s, i) => (
             <li
-              key={i}
+              key={s.label}
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',

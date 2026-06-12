@@ -10,7 +10,7 @@ export function CourseProvider({ children }) {
     try {
       const r = await api.get('/courses/ia-ele');
       setCourse(r.data);
-    } catch {}
+    } catch { /* noop: course endpoint failed, leaving course null is OK */ }
   }, []);
 
   useEffect(() => {
