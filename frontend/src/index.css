@@ -1626,6 +1626,35 @@ footer {
 .footer-bottom a { color: rgba(245,166,35,.75); }
 .footer-bottom a:hover { color: var(--clm-red); }
 
+/* "Por 2 duros" credit — playful, subtle, slightly ambered */
+.footer-credit {
+  font-size: .75rem;
+  color: rgba(255,255,255,.5);
+  display: inline-flex; align-items: center; gap: .35rem;
+}
+.footer-credit a {
+  color: rgba(245,166,35,.75) !important;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: .25rem;
+  transition: color .2s;
+}
+.footer-credit a:hover { color: var(--clm-red) !important; }
+.footer-credit__coin {
+  display: inline-block;
+  font-family: Georgia, serif;
+  font-size: .95em;
+  color: var(--clm-red);
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.footer-credit a:hover .footer-credit__coin {
+  transform: rotate(360deg) scale(1.15);
+}
+@media (max-width: 700px) {
+  .footer-bottom { gap: .35rem; }
+  .footer-credit { order: 3; }
+}
+
 /* Reveal animations */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
 .reveal.visible { opacity: 1; transform: none; }

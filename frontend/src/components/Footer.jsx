@@ -50,6 +50,17 @@ export default function Footer() {
       </div>
       <div className="footer-bottom">
         <span>© 2026 Javier Benítez Láinez · Formación Docente ELE</span>
+        <span className="footer-credit" data-testid="footer-credit">
+          Hecho con cariño por{' '}
+          <a
+            href="https://www.por2duros.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="footer-credit-link"
+          >
+            Por 2 duros <span className="footer-credit__coin" aria-hidden="true">₧</span>
+          </a>
+        </span>
         <a href="https://laclasedigital.com" target="_blank" rel="noopener noreferrer">
           laclasedigital.com
         </a>
