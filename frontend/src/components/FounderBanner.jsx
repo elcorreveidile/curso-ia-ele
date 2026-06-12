@@ -37,7 +37,8 @@ export default function FounderBanner() {
       <div className="founder-strip__inner">
         <span className="founder-strip__dot" />
         <span className="founder-strip__text">
-          <strong>{left}/{course.founder_seats}</strong> plazas fundador · precio{' '}
+          <strong>{left}/{course.founder_seats}</strong> plazas con descuento para la 2ª edición ·{' '}
+          <strong>septiembre 2026</strong> · precio{' '}
           <strong>{(course.price_founder_eur / 100).toFixed(0)} €</strong> hasta agotar (después{' '}
           {(course.price_eur / 100).toFixed(0)} €)
         </span>

@@ -1746,6 +1746,59 @@ footer {
   font-size: .88rem; color: var(--ink-soft); line-height: 1.55;
 }
 
+/* Claude course announcement card on Home */
+.claude-card {
+  display: block;
+  text-decoration: none;
+  margin: 1.75rem auto 0;
+  max-width: 560px; width: 100%;
+  background: linear-gradient(135deg, rgba(245,166,35,.10) 0%, rgba(15,76,129,.20) 100%);
+  border: 1.5px solid rgba(245,166,35,.35);
+  border-radius: var(--r-xl);
+  padding: 1.75rem 2rem;
+  text-align: left;
+  color: var(--white);
+  transition: transform .2s, border-color .2s, box-shadow .2s, background .2s;
+}
+.claude-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--clm-red);
+  background: linear-gradient(135deg, rgba(245,166,35,.18) 0%, rgba(15,76,129,.30) 100%);
+  box-shadow: 0 12px 36px rgba(245,166,35,.18);
+}
+.claude-card__badge {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .72rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .14em;
+  padding: .3rem .8rem; border-radius: 100px;
+  background: var(--clm-red); color: var(--ink);
+  margin-bottom: 1rem;
+}
+.claude-card__title {
+  font-family: var(--font-display);
+  font-size: 1.4rem; font-weight: 800;
+  color: var(--white); line-height: 1.2; margin: 0 0 .65rem;
+}
+.claude-card__title .claude-card__sub {
+  display: block; margin-top: .35rem;
+  font-size: .85rem; font-weight: 500;
+  color: rgba(245,166,35,.85); letter-spacing: .04em;
+}
+.claude-card__desc {
+  font-size: .92rem; color: rgba(255,255,255,.78);
+  line-height: 1.6; margin-bottom: 1.1rem;
+}
+.claude-card__cta {
+  display: inline-flex; align-items: center; gap: .5rem;
+  color: var(--clm-red); font-weight: 700; font-size: .95rem;
+  transition: gap .15s, color .15s;
+}
+.claude-card:hover .claude-card__cta { gap: .85rem; color: #FFBF47; }
+@media (max-width: 640px) {
+  .claude-card { padding: 1.4rem 1.25rem; }
+  .claude-card__title { font-size: 1.2rem; }
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .inner-nav { padding: 0 1.25rem; height: 60px; }

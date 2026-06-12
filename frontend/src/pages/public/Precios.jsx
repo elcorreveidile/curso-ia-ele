@@ -27,25 +27,25 @@ export default function Precios() {
         <PageHero
           tag="Inscripción"
           title="Precio e inscripción"
-          desc={`Primera edición · Mayo 2026 · Precio fundador para los primeros ${course?.founder_seats || 20} inscritos.`}
+          desc={`✅ 1ª edición finalizada · 2ª edición · Septiembre 2026 · Plazas con descuento aún disponibles.`}
         />
         <div className="inner-content">
           <div className="founder-banner" data-testid="founder-banner">
             <div>
-              <p className="founder-banner__tag">🚀 Primera edición · Mayo 2026</p>
+              <p className="founder-banner__tag">🚀 Segunda edición · Septiembre 2026</p>
               <h2 className="founder-banner__title">
-                Sé parte de la<br /><em>primera edición</em>
+                Las plazas con descuento<br />que sobraron de la <em>1ª edición</em>
               </h2>
               <p className="founder-banner__text">
-                Buscamos 20 docentes que quieran ser los primeros en integrar la IA en su práctica de
-                ELE. A cambio: el precio más bajo que existirá para este curso, acceso directo al
-                formador y la posibilidad de influir en los contenidos de las próximas ediciones.
+                La 1ª edición se cerró con todo el grupo certificado. Mantenemos las plazas
+                fundador no cubiertas para esta 2ª edición: mismo precio (149 €), mismo formato
+                y acceso directo al formador. Cuando se agoten, el precio pasa al estándar.
               </p>
               <div className="founder-perks">
                 <span className="founder-perk">Precio exclusivo {founderPrice} €</span>
-                <span className="founder-perk">Solo {course?.founder_seats || 20} plazas</span>
+                <span className="founder-perk">Plazas limitadas</span>
                 <span className="founder-perk">Acceso directo al formador</span>
-                <span className="founder-perk">A partir de la 2ª edición: {standardPrice} €</span>
+                <span className="founder-perk">Tras agotar fundador: {standardPrice} €</span>
               </div>
             </div>
             <div className="founder-counter" data-testid="founder-counter">
@@ -56,8 +56,8 @@ export default function Precios() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '4rem' }} className="price-grid">
             <div className="price-card reveal" data-testid="price-card-individual">
-              <p className="price-card__label">⭐ Precio fundador · Primera edición</p>
-              <p className="price-card__original">Precio a partir de la 2ª edición: {standardPrice} €</p>
+              <p className="price-card__label">⭐ Plazas con descuento · 2ª edición · Septiembre 2026</p>
+              <p className="price-card__original">Precio estándar tras agotar fundador: {standardPrice} €</p>
               <div className="price-card__amount">
                 {founderActive ? founderPrice : standardPrice}
                 <span style={{ fontSize: '1.5rem', fontWeight: 400, color: 'var(--ink-muted)' }}> €</span>

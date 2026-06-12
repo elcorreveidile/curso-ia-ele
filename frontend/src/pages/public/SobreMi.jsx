@@ -128,8 +128,8 @@ export default function SobreMi() {
               <div className="cta-box">
                 <h3 className="cta-box__title">¿Empezamos juntos?</h3>
                 <p className="cta-box__text">
-                  Primera edición · Mayo 2026 · 20 plazas al precio fundador de 149 €. A partir de la
-                  segunda edición el precio será 250 €.
+                  ✅ 1ª edición finalizada · 2ª edición · Septiembre 2026 · Plazas con descuento de
+                  149 € aún disponibles. Una vez agotadas, el precio será 250 €.
                 </p>
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <Link to="/precios" className="btn btn--primary" data-testid="sobre-cta-precios">

@@ -11,11 +11,22 @@ export default function Footer() {
           </div>
           <p className="footer-brand__desc">
             Formación docente en Inteligencia Artificial para la enseñanza de
-            Español como Lengua Extranjera.<br />Curso de mayo 2026.
+            Español como Lengua Extranjera.<br />2ª edición · Septiembre 2026.
           </p>
         </div>
         <div>
-          <p className="footer-col__title">El curso</p>
+          <p className="footer-col__title">Otros cursos</p>
+          <div className="footer-col__links">
+            <a
+              href="https://claude.laclasedigital.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="footer-claude-course"
+            >
+              ✨ Claude para la enseñanza
+            </a>
+          </div>
+          <p className="footer-col__title" style={{ marginTop: '1.25rem' }}>El curso</p>
           <div className="footer-col__links">
             <Link to="/descripcion">Descripción y objetivos</Link>
             <Link to="/programa">Programa por módulos</Link>

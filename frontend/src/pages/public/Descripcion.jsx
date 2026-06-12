@@ -12,7 +12,7 @@ export default function Descripcion() {
         <PageHero
           tag="Sobre el curso"
           title="IA para la enseñanza de ELE"
-          desc="Planificación de clases y creación de materiales didácticos con Inteligencia Artificial · Mayo 2026"
+          desc="Planificación de clases y creación de materiales didácticos con Inteligencia Artificial · 2ª edición · Septiembre 2026"
         />
         <div className="inner-content">
           <div className="desc-grid">
