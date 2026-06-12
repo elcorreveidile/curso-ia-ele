@@ -148,7 +148,7 @@ export default function Precios() {
             </h2>
             <div style={{ maxWidth: 720 }}>
               {[
-                { q: '¿Cuándo empieza el curso?', a: `La **2ª edición** comienza el **miércoles 16 de septiembre de 2026**. Las videotutorías son los miércoles **16, 23 y 30 de septiembre** a las **16:00 h** (hora peninsular española, GMT+2).` },
+                { q: '¿Cuándo empieza el curso?', a: `La **2ª edición** comienza el **miércoles 16 de septiembre de 2026**. Las videotutorías son los miércoles **16, 23 y 30 de septiembre** a las **17:00 h** (hora peninsular española, GMT+2).` },
                 { q: `¿El precio de ${founderPrice} € estará disponible siempre?`, a: `No. Es el **precio con descuento** que sobró de las plazas fundador de la 1ª edición. Una vez agotadas, el precio pasa a **${standardPrice} €**.` },
                 { q: '¿Necesito conocimientos previos de IA?', a: 'No. El curso está diseñado para docentes sin experiencia previa con herramientas de IA.' },
                 { q: '¿Cómo se realiza el pago?', a: 'El pago se procesa con Stripe al pulsar "Inscribirme ahora". Tras el pago recibirás un enlace de acceso por email.' },

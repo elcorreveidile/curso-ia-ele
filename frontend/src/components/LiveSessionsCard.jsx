@@ -22,17 +22,17 @@ const SESSIONS_BY_COURSE = {
     sessions: [
       {
         label: 'Videotutoría 1 · Bienvenida + Módulo 0 (GitHub)',
-        iso: '2026-05-04T14:00:00Z', // 16:00 Madrid (CEST = UTC+2)
+        iso: '2026-09-16T15:00:00Z', // 17:00 Madrid (CEST = UTC+2)
         duration_min: 90,
       },
       {
         label: 'Videotutoría 2 · Módulos 1-2',
-        iso: '2026-05-13T14:00:00Z',
+        iso: '2026-09-23T15:00:00Z',
         duration_min: 90,
       },
       {
         label: 'Videotutoría 3 · Módulos 3-4',
-        iso: '2026-05-21T14:00:00Z',
+        iso: '2026-09-30T15:00:00Z',
         duration_min: 90,
       },
     ],
