@@ -1133,6 +1133,7 @@ function UsersControl() {
 }
 
 function BroadcastModal({ selectedIds, onClose, onSent }) {
+  const [audience, setAudience] = useState('current_edition');
   const [target, setTarget] = useState(selectedIds.length > 0 ? 'selected' : 'not_enrolled');
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
@@ -1149,7 +1150,7 @@ function BroadcastModal({ selectedIds, onClose, onSent }) {
     }
     setBusy(true);
     try {
-      const payload = { subject: subject.trim(), body_md: body.trim(), target };
+      const payload = { subject: subject.trim(), body_md: body.trim(), target, audience };
       if (target === 'selected') payload.user_ids = selectedIds;
       const r = await api.post('/admin/users/broadcast', payload);
       setResult(r.data);
@@ -1206,6 +1207,44 @@ function BroadcastModal({ selectedIds, onClose, onSent }) {
         ) : (
           <form onSubmit={send}>
             <div className="form-group">
+              <label>Audiencia</label>
+              <div
+                style={{ display: 'flex', gap: '.4rem', flexWrap: 'wrap' }}
+                role="radiogroup"
+                data-testid="admin-broadcast-audience"
+              >
+                {[
+                  { v: 'current_edition', label: '2ª edición', hint: 'Actual + leads sin alumni' },
+                  { v: 'alumni', label: '1ª edición (alumni)', hint: 'Solo alumnos de la 1ª edición' },
+                  { v: 'everyone', label: 'Todos', hint: 'Incluye alumni' },
+                ].map((opt) => {
+                  const active = audience === opt.v;
+                  return (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => setAudience(opt.v)}
+                      data-testid={`admin-broadcast-audience-${opt.v}`}
+                      style={{
+                        flex: '1 1 0', padding: '.55rem .7rem', borderRadius: 8,
+                        border: active ? '2px solid var(--blue)' : '1.5px solid var(--canvas-alt)',
+                        background: active ? 'var(--blue-light, #D6E8F7)' : 'var(--surface)',
+                        color: active ? 'var(--blue)' : 'var(--ink)',
+                        fontWeight: 600, fontSize: '.86rem', cursor: 'pointer',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        gap: '.15rem', transition: 'all .15s',
+                      }}
+                    >
+                      {opt.label}
+                      <span style={{ fontSize: '.68rem', fontWeight: 400, color: active ? 'var(--blue)' : 'var(--ink-muted)' }}>
+                        {opt.hint}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="form-group">
               <label>Destinatarios</label>
               <select
                 className="form-input"
@@ -1216,12 +1255,13 @@ function BroadcastModal({ selectedIds, onClose, onSent }) {
                 {selectedIds.length > 0 && (
                   <option value="selected">Seleccionados ({selectedIds.length})</option>
                 )}
-                <option value="all">Todos los usuarios</option>
-                <option value="not_enrolled">Solo NO matriculados (leads)</option>
-                <option value="enrolled">Solo matriculados</option>
+                <option value="all">Todos (de la audiencia)</option>
+                <option value="not_enrolled">No matriculados en la 2ª edición (leads)</option>
+                <option value="enrolled">Matriculados en la 2ª edición</option>
               </select>
               <small style={{ color: 'var(--ink-muted)', fontSize: '.78rem' }}>
-                Se excluyen administradores y usuarios dados de baja del marketing automáticamente.
+                Se excluyen administradores y usuarios dados de baja del marketing.
+                {audience === 'current_edition' && ' Los alumnos de la 1ª edición se excluyen automáticamente.'}
               </small>
             </div>
             <div className="form-group">
@@ -1483,6 +1523,7 @@ function PollCreator({ onClose }) {
 
 // ─────────────────────── Poll send modal (recipient picker) ─────────
 function PollSendModal({ poll, onClose }) {
+  const [audience, setAudience] = useState('current_edition');
   const [recipients, setRecipients] = useState([]);
   const [selected, setSelected] = useState(new Set());
   const [loading, setLoading] = useState(true);
@@ -1491,7 +1532,8 @@ function PollSendModal({ poll, onClose }) {
   const [done, setDone] = useState(null);
 
   useEffect(() => {
-    api.get(`/admin/polls/${poll.id}/recipients`)
+    setLoading(true);
+    api.get(`/admin/polls/${poll.id}/recipients`, { params: { audience } })
       .then((r) => {
         const list = r.data.recipients || [];
         setRecipients(list);
@@ -1500,7 +1542,7 @@ function PollSendModal({ poll, onClose }) {
         setLoading(false);
       })
       .catch((ex) => { setErr(ex.response?.data?.detail || 'Error'); setLoading(false); });
-  }, [poll.id]);
+  }, [poll.id, audience]);
 
   const toggle = (uid) => {
     setSelected((prev) => {
@@ -1567,6 +1609,40 @@ function PollSendModal({ poll, onClose }) {
           </div>
         ) : !loading && (
           <>
+            <div className="form-group" style={{ marginBottom: '.75rem' }}>
+              <label style={{ fontSize: '.8rem', color: 'var(--ink-muted)' }}>Audiencia</label>
+              <div
+                style={{ display: 'flex', gap: '.4rem', flexWrap: 'wrap' }}
+                role="radiogroup"
+                data-testid="poll-send-audience"
+              >
+                {[
+                  { v: 'current_edition', label: '2ª edición' },
+                  { v: 'alumni', label: '1ª edición (alumni)' },
+                  { v: 'everyone', label: 'Todos' },
+                ].map((opt) => {
+                  const active = audience === opt.v;
+                  return (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => setAudience(opt.v)}
+                      data-testid={`poll-send-audience-${opt.v}`}
+                      style={{
+                        flex: '1 1 0', padding: '.45rem .6rem', borderRadius: 8,
+                        border: active ? '2px solid var(--blue)' : '1.5px solid var(--canvas-alt)',
+                        background: active ? 'var(--blue-light, #D6E8F7)' : 'var(--surface)',
+                        color: active ? 'var(--blue)' : 'var(--ink)',
+                        fontWeight: 600, fontSize: '.82rem', cursor: 'pointer',
+                        transition: 'all .15s',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.5rem' }}>
               <p style={{ margin: 0, fontSize: '.88rem', color: 'var(--ink-soft)' }}>
                 <strong>{selected.size}</strong> de {recipients.length} seleccionados

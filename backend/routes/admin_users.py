@@ -198,9 +198,15 @@ def register(api: APIRouter) -> None:
     async def admin_broadcast_email(payload: UserBroadcastIn, user: dict = Depends(current_admin)):
         """Send a marketing email to a user audience.
 
-        target=all|enrolled|not_enrolled|selected. Skips admins and users with
-        marketing_consent=False (RGPD-friendly). Each email carries a unique
-        unsubscribe link signed with JWT_SECRET.
+        ``audience`` (default ``current_edition``) scopes the eligible pool BEFORE
+        applying ``target``:
+          - ``current_edition``: everyone EXCEPT alumni-only of past editions.
+          - ``alumni``: only users whose enrollments are 100% from past editions.
+          - ``everyone``: no audience filter.
+
+        ``target`` then refines: ``all``/``enrolled``/``not_enrolled``/``selected``.
+        Admins and users with ``marketing_consent=False`` are always excluded.
+        Each email carries a unique unsubscribe link.
         """
         subject = payload.subject.strip()
         body = payload.body_md.strip()
@@ -208,6 +214,21 @@ def register(api: APIRouter) -> None:
             raise HTTPException(400, "Asunto y mensaje son obligatorios")
         if len(subject) > 200:
             raise HTTPException(400, "Asunto demasiado largo (máx 200 caracteres)")
+
+        # Build the "alumni" set (users with past-edition enrollments only —
+        # NO enrollment in the current edition). This lets us cleanly enforce
+        # the rule that 2nd-edition communications never reach 1st-edition
+        # students unless explicitly targeted.
+        current_user_ids: set[str] = set()
+        any_edition_user_ids: set[str] = set()
+        async for en in db.enrollments.find({}, {"_id": 0, "user_id": 1, "edition": 1}):
+            uid = en.get("user_id")
+            if not uid:
+                continue
+            any_edition_user_ids.add(uid)
+            if en.get("edition") == CURRENT_EDITION:
+                current_user_ids.add(uid)
+        alumni_only_ids = any_edition_user_ids - current_user_ids
 
         if payload.target == "selected":
             if not payload.user_ids:
@@ -233,19 +254,21 @@ def register(api: APIRouter) -> None:
             if u.get("marketing_consent") is False:
                 skipped_optout += 1
                 continue
+            uid = u["id"]
+            # Audience scoping
+            if payload.audience == "current_edition" and uid in alumni_only_ids:
+                skipped_audience += 1
+                continue
+            if payload.audience == "alumni" and uid not in alumni_only_ids:
+                skipped_audience += 1
+                continue
+            # Target sub-filter (counts only against the active edition)
             if payload.target in ("enrolled", "not_enrolled"):
-                # "enrolled" means "currently in the active edition", so we
-                # filter out alumni from previous editions to honor the rule
-                # that 2nd-edition communications do NOT reach 1st-edition
-                # students.
-                count = await db.enrollments.count_documents({
-                    "user_id": u["id"],
-                    "edition": CURRENT_EDITION,
-                })
-                if payload.target == "enrolled" and count == 0:
+                is_current_enrolled = uid in current_user_ids
+                if payload.target == "enrolled" and not is_current_enrolled:
                     skipped_audience += 1
                     continue
-                if payload.target == "not_enrolled" and count > 0:
+                if payload.target == "not_enrolled" and is_current_enrolled:
                     skipped_audience += 1
                     continue
             unsub_url = f"{base_url}/api/unsubscribe?token={_make_unsubscribe_token(email)}"

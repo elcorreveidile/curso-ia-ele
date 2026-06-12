@@ -119,6 +119,7 @@ class UserBroadcastIn(BaseModel):
     subject: str
     body_md: str
     target: Literal["all", "enrolled", "not_enrolled", "selected"] = "all"
+    audience: Literal["current_edition", "alumni", "everyone"] = "current_edition"
     user_ids: Optional[list[str]] = None
 
 

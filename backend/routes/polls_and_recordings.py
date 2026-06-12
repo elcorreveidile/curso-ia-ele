@@ -285,9 +285,17 @@ def register_poll_routes(api: APIRouter) -> None:
         }
 
     @api.get("/admin/polls/{poll_id}/recipients")
-    async def admin_poll_recipients(poll_id: str, _admin: dict = Depends(current_admin)):
+    async def admin_poll_recipients(
+        poll_id: str,
+        audience: str = "current_edition",
+        _admin: dict = Depends(current_admin),
+    ):
         """Return the list of students that would receive the poll email
-        if it were sent right now. Sorted by email so the picker UI is stable."""
+        if it were sent right now. ``audience`` controls the cohort:
+          - ``current_edition`` (default): only 2nd-edition enrollees.
+          - ``alumni``: only past-edition enrollees with no current enrollment.
+          - ``everyone``: any enrollment in any edition.
+        """
         poll = await db.polls.find_one({"id": poll_id})
         if not poll:
             raise HTTPException(404, "Encuesta no encontrada")
@@ -296,14 +304,32 @@ def register_poll_routes(api: APIRouter) -> None:
         course = await db.courses.find_one({"slug": poll["course_slug"]})
         if not course:
             raise HTTPException(404, "Curso no encontrado")
+
+        # Resolve cohort sets once.
+        current_ids: set[str] = set()
+        any_ids: set[str] = set()
+        async for en in db.enrollments.find(
+            {"course_id": course["id"], "status": {"$in": ["active", "completed"]}},
+            {"_id": 0, "user_id": 1, "edition": 1},
+        ):
+            uid = en.get("user_id")
+            if not uid:
+                continue
+            any_ids.add(uid)
+            if en.get("edition") == CURRENT_EDITION:
+                current_ids.add(uid)
+        alumni_only = any_ids - current_ids
+
+        if audience == "alumni":
+            target_ids = alumni_only
+        elif audience == "everyone":
+            target_ids = any_ids
+        else:  # current_edition (default)
+            target_ids = current_ids
+
         out: list[dict] = []
-        async for en in db.enrollments.find({
-            "course_id": course["id"],
-            "edition": CURRENT_EDITION,
-            "status": {"$in": ["active", "completed"]},
-        }):
-            u = await db.users.find_one({"id": en["user_id"]})
-            if not u or u.get("role") == "admin":
+        async for u in db.users.find({"id": {"$in": list(target_ids)}}):
+            if u.get("role") == "admin":
                 continue
             out.append({
                 "id": u["id"],
@@ -312,7 +338,7 @@ def register_poll_routes(api: APIRouter) -> None:
                 "surname": u.get("surname"),
             })
         out.sort(key=lambda x: (x.get("email") or "").lower())
-        return {"recipients": out}
+        return {"recipients": out, "audience": audience}
 
     @api.post("/admin/polls/{poll_id}/send-email")
     async def admin_send_poll_email(
