@@ -11,12 +11,6 @@ export default function Home() {
       <Navbar />
       <div className="home-hero">
         <div className="home-body">
-          <img
-            src="/logo_iaele.svg"
-            alt="IA·ELE"
-            className="home-logo-img reveal"
-            data-testid="home-logo"
-          />
           <p className="home-eyebrow reveal reveal--delay-1">Formación Docente ELE · laclasedigital.com</p>
           <h1 className="home-title reveal reveal--delay-1">
             <em>Inteligencia Artificial</em><br />para la enseñanza de ELE
