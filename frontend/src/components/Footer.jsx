@@ -57,6 +57,7 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             data-testid="footer-credit-link"
+            data-umami-event="footer-por2duros-click"
           >
             Por 2 duros <span className="footer-credit__coin" aria-hidden="true">₧</span>
           </a>
