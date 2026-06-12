@@ -13,7 +13,7 @@ COURSE_IA_ELE = {
     "slug": "ia-ele",
     "title": "IA para la enseñanza de ELE",
     "description": (
-        "Curso de formación docente · Mayo 2026 · 20 horas · 4 módulos · "
+        "Curso de formación docente · 2ª edición · Septiembre 2026 · 20 horas · 4 módulos · "
         "3 videotutorías en directo. Aprende a integrar herramientas de IA "
         "en tu práctica docente de ELE con criterio ético y pedagógico."
     ),
@@ -546,3 +546,16 @@ async def migrate_lesson_content() -> None:
             updated += 1
     if updated:
         log.info("Lesson content migration: %d lesson(s) refreshed", updated)
+
+    # Course description: the 1st edition (May 2026) ended and we're now
+    # advertising the 2nd edition (September 2026). Refresh the stored
+    # description so existing prod DBs (where seed_database() is a no-op
+    # for the already-present course) pick up the new copy.
+    expected_desc = COURSE_IA_ELE["description"]
+    course_doc = await db.courses.find_one({"slug": "ia-ele"}, {"description": 1})
+    if course_doc and course_doc.get("description") != expected_desc:
+        await db.courses.update_one(
+            {"slug": "ia-ele"},
+            {"$set": {"description": expected_desc}},
+        )
+        log.info("Course description refreshed for ia-ele")

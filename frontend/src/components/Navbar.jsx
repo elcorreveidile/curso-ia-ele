@@ -45,11 +45,11 @@ export default function Navbar() {
           className="nav-seats-chip"
           onClick={close}
           data-testid="nav-seats-chip"
-          title={`Precio fundador ${(course.price_founder_eur / 100).toFixed(0)} €`}
+          title={`Precio fundador ${(course.price_founder_eur / 100).toFixed(0)} € · 2ª edición septiembre 2026`}
         >
           <span className="nav-seats-chip__dot" />
           <span className="nav-seats-chip__num">{seatsLeft}</span>
-          <span className="nav-seats-chip__label">/ {course.founder_seats} plazas fundador</span>
+          <span className="nav-seats-chip__label">/ {course.founder_seats} plazas septiembre 2026</span>
         </NavLink>
       )}
       <div className={`inner-nav__links${open ? ' open' : ''}`}>

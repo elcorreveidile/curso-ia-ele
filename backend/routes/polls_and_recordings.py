@@ -209,6 +209,20 @@ def register_poll_routes(api: APIRouter) -> None:
             raise HTTPException(404, "Encuesta no encontrada")
         return {"ok": True}
 
+    @api.delete("/admin/polls/{poll_id}/votes/{user_id}")
+    async def admin_delete_poll_vote(
+        poll_id: str, user_id: str, _admin: dict = Depends(current_admin),
+    ):
+        """Remove a single user's vote from a poll. Useful when the admin's
+        own test vote (or any vote that shouldn't count) sneaked in."""
+        poll = await db.polls.find_one({"id": poll_id}, {"_id": 0, "id": 1})
+        if not poll:
+            raise HTTPException(404, "Encuesta no encontrada")
+        res = await db.poll_votes.delete_one({"poll_id": poll_id, "user_id": user_id})
+        if not res.deleted_count:
+            raise HTTPException(404, "Voto no encontrado")
+        return {"ok": True}
+
     @api.get("/admin/polls/{poll_id}/results")
     async def admin_poll_results(poll_id: str, _admin: dict = Depends(current_admin)):
         poll = await db.polls.find_one({"id": poll_id})

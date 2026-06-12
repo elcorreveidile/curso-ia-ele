@@ -524,8 +524,8 @@ function StudentAnalyticsModal({ userId, onClose }) {
                   🕒 Últimos {d.timeline.length} eventos pedagógicos
                 </summary>
                 <ul style={{ fontSize: '.82rem', color: 'var(--ink-soft)', margin: '.5rem 0 0', paddingLeft: '1.2rem' }}>
-                  {d.timeline.map((ev, i) => (
-                    <li key={i}>
+                  {d.timeline.map((ev) => (
+                    <li key={`${ev.viewed_at}-${ev.kind}-${ev.ref_id}`}>
                       {fmtDate(ev.viewed_at)} · <strong>{ev.kind}</strong>
                       {ev.action && ` (${ev.action})`} · {ev.ref_id}
                     </li>
@@ -1381,7 +1381,11 @@ function PollsManager() {
 function PollCreator({ onClose }) {
   const [question, setQuestion] = useState('');
   const [intro, setIntro] = useState('');
-  const [opts, setOpts] = useState(['', '']);
+  // Each option carries a stable client-side id so React keeps input focus
+  // and value associated with the right row if/when options are added or
+  // removed (no `index` keys, which would shift on splice).
+  const newOpt = () => ({ id: Math.random().toString(36).slice(2), value: '' });
+  const [opts, setOpts] = useState(() => [newOpt(), newOpt()]);
   const [multi, setMulti] = useState(true);
   const [courseSlug, setCourseSlug] = useState('ia-ele');
   const [busy, setBusy] = useState(false);
@@ -1389,7 +1393,7 @@ function PollCreator({ onClose }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    const cleaned = opts.map((o) => o.trim()).filter(Boolean);
+    const cleaned = opts.map((o) => o.value.trim()).filter(Boolean);
     if (!question.trim() || cleaned.length < 2) {
       setErr('Pon una pregunta y al menos 2 opciones.');
       return;
@@ -1439,17 +1443,20 @@ function PollCreator({ onClose }) {
           <label>Opciones</label>
           {opts.map((o, i) => (
             <input
-              key={i}
+              key={o.id}
               className="form-input"
-              value={o}
-              onChange={(e) => setOpts((prev) => prev.map((x, j) => j === i ? e.target.value : x))}
+              value={o.value}
+              onChange={(e) => {
+                const v = e.target.value;
+                setOpts((prev) => prev.map((x) => x.id === o.id ? { ...x, value: v } : x));
+              }}
               placeholder={`Opción ${i + 1}`}
               style={{ marginBottom: '.5rem' }}
               data-testid={`poll-create-option-${i}`}
             />
           ))}
           {opts.length < 8 && (
-            <button type="button" className="linkish" onClick={() => setOpts((prev) => [...prev, ''])}>+ Añadir opción</button>
+            <button type="button" className="linkish" onClick={() => setOpts((prev) => [...prev, newOpt()])}>+ Añadir opción</button>
           )}
         </div>
         <div className="form-group" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -1648,22 +1655,64 @@ function PollResultsModal({ poll, onClose }) {
           <h3 style={{ fontFamily: 'var(--font-display)', margin: 0 }}>Resultados: {poll.question}</h3>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 0, fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
         </div>
-        {!data ? <p>Cargando…</p> : (
+        {!data ? <p>Cargando…</p> : (() => {
+          const totalResponses = Object.values(data.option_counts).reduce((a, b) => a + b, 0);
+          const isMulti = !!poll.multi_choice;
+          return (
           <>
             <p style={{ fontSize: '.85rem', color: 'var(--ink-muted)', margin: '0 0 .85rem' }}>
               {data.total_voters} {data.total_voters === 1 ? 'persona ha votado' : 'personas han votado'}
               {data.missing_voters?.length > 0 && ` · ${data.missing_voters.length} aún sin votar`}
+              {isMulti && data.total_voters > 0 && ` · ${totalResponses} respuestas en total`}
             </p>
+            {isMulti && data.total_voters > 0 && (
+              <p
+                style={{
+                  fontSize: '.78rem', color: 'var(--ink-muted)',
+                  background: 'var(--blue-light, #D6E8F7)', padding: '.5rem .75rem',
+                  borderRadius: 6, marginBottom: '.85rem', lineHeight: 1.45,
+                }}
+                data-testid="poll-multi-note"
+              >
+                ℹ️ Pregunta multirrespuesta: cada persona pudo marcar varias opciones,
+                por eso la columna "% personas" no suma 100 %. La columna "% respuestas"
+                sí suma 100 % sobre el total de marcas ({totalResponses}).
+              </p>
+            )}
             <table style={{ width: '100%', fontSize: '.9rem', borderCollapse: 'collapse', marginBottom: '1.25rem' }}>
+              {isMulti && (
+                <thead>
+                  <tr style={{ textAlign: 'left', color: 'var(--ink-muted)', fontSize: '.72rem', textTransform: 'uppercase', letterSpacing: '.06em' }}>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600 }}>Opción</th>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600, textAlign: 'right', width: 90 }}>Personas</th>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600, textAlign: 'right', width: 90 }}>% personas</th>
+                    <th style={{ padding: '.35rem .25rem', fontWeight: 600, textAlign: 'right', width: 90 }}>% respuestas</th>
+                  </tr>
+                </thead>
+              )}
               <tbody>
                 {Object.entries(data.option_counts).map(([oid, count]) => {
                   const opt = optById(oid);
-                  const pct = data.total_voters ? Math.round((count / data.total_voters) * 100) : 0;
+                  const pctPeople = data.total_voters ? Math.round((count / data.total_voters) * 100) : 0;
+                  const pctResponses = totalResponses ? Math.round((count / totalResponses) * 100) : 0;
+                  if (isMulti) {
+                    return (
+                      <tr key={oid} style={{ borderBottom: '1px solid var(--canvas-alt)' }}>
+                        <td style={{ padding: '.45rem .25rem' }}>{opt?.label || oid}</td>
+                        <td style={{ padding: '.45rem .25rem', textAlign: 'right' }}>
+                          <strong>{count}</strong>
+                          <span style={{ color: 'var(--ink-muted)' }}> / {data.total_voters}</span>
+                        </td>
+                        <td style={{ padding: '.45rem .25rem', textAlign: 'right', color: 'var(--ink-soft)' }}>{pctPeople}%</td>
+                        <td style={{ padding: '.45rem .25rem', textAlign: 'right', color: 'var(--blue)' }}>{pctResponses}%</td>
+                      </tr>
+                    );
+                  }
                   return (
-                    <tr key={oid} style={{ borderBottom: '1px solid var(--line)' }}>
+                    <tr key={oid} style={{ borderBottom: '1px solid var(--canvas-alt)' }}>
                       <td style={{ padding: '.45rem .25rem' }}>{opt?.label || oid}</td>
                       <td style={{ padding: '.45rem .25rem', textAlign: 'right', width: 100 }}>
-                        <strong>{count}</strong> <span style={{ color: 'var(--ink-muted)' }}>({pct}%)</span>
+                        <strong>{count}</strong> <span style={{ color: 'var(--ink-muted)' }}>({pctPeople}%)</span>
                       </td>
                     </tr>
                   );
@@ -1674,9 +1723,27 @@ function PollResultsModal({ poll, onClose }) {
               <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Detalle por persona ({data.voters.length})</summary>
               <ul style={{ fontSize: '.85rem', paddingLeft: '1.2rem', marginTop: '.5rem' }}>
                 {data.voters.map((v) => (
-                  <li key={v.user_id}>
+                  <li key={v.user_id} style={{ marginBottom: '.3rem', lineHeight: 1.5 }}>
                     <strong>{v.user_email}</strong>:{' '}
                     {v.option_ids.map((oid) => optById(oid)?.label || oid).join(', ')}
+                    {' '}
+                    <button
+                      type="button"
+                      className="linkish"
+                      style={{ color: 'var(--clm-red)', fontSize: '.78rem', marginLeft: '.4rem' }}
+                      data-testid={`admin-poll-delete-vote-${v.user_id}`}
+                      onClick={async () => {
+                        if (!window.confirm(`¿Eliminar el voto de ${v.user_email}? Esta acción no se puede deshacer.`)) return;
+                        try {
+                          await api.delete(`/admin/polls/${poll.id}/votes/${v.user_id}`);
+                          load();
+                        } catch (ex) {
+                          alert(ex.response?.data?.detail || 'No se pudo eliminar el voto');
+                        }
+                      }}
+                    >
+                      🗑 Eliminar voto
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -1708,7 +1775,8 @@ function PollResultsModal({ poll, onClose }) {
               </details>
             )}
           </>
-        )}
+          );
+        })()}
       </div>
     </div>
   );

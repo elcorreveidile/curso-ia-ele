@@ -136,7 +136,7 @@ _BIENVENIDA_PARAGRAPHS = (
 _CONSENTIMIENTO_PARAGRAPHS = (
     ("h2", "1. Identificación del responsable"),
     ("bullet", "**Responsable:** Javier Benítez Láinez"),
-    ("bullet", "**Actividad formativa:** IA para la enseñanza de ELE · Primera edición, mayo 2026"),
+    ("bullet", "**Actividad formativa:** IA para la enseñanza de ELE · edición 2026"),
     ("bullet", "**Plataforma:** laclasedigital.com"),
     ("bullet", "**Contacto:** benitezl@go.ugr.es"),
     ("h2", "2. Objeto del consentimiento"),

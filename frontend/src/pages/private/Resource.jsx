@@ -59,12 +59,13 @@ function MarkdownToPDF({ md }) {
 
   const flushList = () => {
     if (listBuffer.length) {
+      const blockIdx = elements.length;
       elements.push(
-        <View key={`list-${elements.length}`} style={{ marginVertical: 4 }}>
+        <View key={`list-${blockIdx}`} style={{ marginVertical: 4 }}>
           {listBuffer.map((t, i) => (
-            <View key={i} style={pdfStyles.listItem}>
+            <View key={`list-${blockIdx}-${i}`} style={pdfStyles.listItem}>
               <Text style={pdfStyles.bullet}>•</Text>
-              <Text style={pdfStyles.listText}>{renderInline(t, `li-${elements.length}-${i}`)}</Text>
+              <Text style={pdfStyles.listText}>{renderInline(t, `li-${blockIdx}-${i}`)}</Text>
             </View>
           ))}
         </View>
@@ -81,13 +82,14 @@ function MarkdownToPDF({ md }) {
   const flushTable = () => {
     if (tableBuffer.length >= 2) {
       const rows = tableBuffer.filter((r) => !/^\s*\|?\s*[-:| ]+\|?\s*$/.test(r));
+      const blockIdx = elements.length;
       elements.push(
-        <View key={`tbl-${elements.length}`} style={{ marginVertical: 8 }}>
+        <View key={`tbl-${blockIdx}`} style={{ marginVertical: 8 }}>
           {rows.map((row, ri) => {
             const cells = row.split('|').map((c) => c.trim()).filter((c, i, arr) => !(i === 0 && c === '') && !(i === arr.length - 1 && c === ''));
             return (
-              <View key={ri} style={[pdfStyles.tableRow, ri === 0 ? pdfStyles.tableHeader : {}]}>
-                {cells.map((c, ci) => (<Text key={ci} style={pdfStyles.tableCell}>{renderInline(c, `tc-${ri}-${ci}`)}</Text>))}
+              <View key={`tbl-${blockIdx}-${ri}`} style={[pdfStyles.tableRow, ri === 0 ? pdfStyles.tableHeader : {}]}>
+                {cells.map((c, ci) => (<Text key={`tbl-${blockIdx}-${ri}-${ci}`} style={pdfStyles.tableCell}>{renderInline(c, `tc-${ri}-${ci}`)}</Text>))}
               </View>
             );
           })}
