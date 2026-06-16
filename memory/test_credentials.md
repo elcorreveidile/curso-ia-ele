@@ -13,7 +13,11 @@
 
 ## Stripe
 - STRIPE_API_KEY in backend/.env uses emergent test key by default (sk_test_emergent).
-- Webhook URL: POST /api/webhook/stripe
+- Webhook endpoint: POST /api/webhook/stripe
+- Production webhook URL: https://laclasedigital.com/api/webhook/stripe
+- Event to subscribe: checkout.session.completed
+- STRIPE_WEBHOOK_SECRET: set to the whsec_... secret from the Stripe dashboard after creating the webhook.
+  Without it, signature verification is skipped (dev-only, insecure in production).
 - Checkout create: POST /api/checkout/create {course_slug, origin_url}
 
 ## Admin test helper
